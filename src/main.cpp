@@ -22,11 +22,6 @@ int lastButtonState[] = {0,0,0,0};  // previous state of the button
 int myLeds[]={32,15,33,27};        // define the pins for the LEDs
 int ledCount=4;                    // set the number of LEDs in the loop
 
-// // WiFi setup
-// char ssid[] = aSSID;                     // your network SSID (name)
-// char pass[] = aSSID_PASS;                     // your network password
-
-// TODO: local var?
 WiFiUDP wifiUdp;                                // A UDP instance to let us send and receive packets over UDP
 
 const IPAddress XR_IP(192,168,86,80);       // IP of the XR18 in Comma Separated Octets, NOT dots!
@@ -35,16 +30,18 @@ const unsigned int XR_PORT = 10024;         // remote port to receive OSC X-AIR 
 // If true, we will print extra debug information about WIFI
 const bool DEBUG_WIFI = true;
 
-const char* M_INFO = "/info";
+const char* M_XINFO = "/xinfo";
 const char* M_STATUS = "/status";
 const char* M_XREMOTE = "/xremote";
 
 void waitForConnection() {
     while (true) {
       wl_status_t status = WiFi.status();
+      if (DEBUG_WIFI) {
         Serial.print("[");
         Serial.print(status);
         Serial.print("]");
+      }
       if (status == WL_CONNECTED) {
         return;
       }
@@ -67,40 +64,43 @@ void handleStatus(OSCMessage &msg) {
 
 const int SIZE_OF_RECEIVE_BUFFER = 100;
 
-void receive() {
+void receiveOscIfAny(OSCMessage &msg) {
+  int size = wifiUdp.parsePacket();
 
+  if (size == 0) {
+    return;
+  }
+  while (size--) {
+    msg.fill(wifiUdp.read());
+  }
+}
+
+void receiveAndPrintOscIfAny() {
   OSCMessage msg;
-  
+
+  receiveOscIfAny(msg);
+  if (msg.size() == 0) {
+    return;
+  }
   char buffer[SIZE_OF_RECEIVE_BUFFER];
   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
 
-  int size = wifiUdp.parsePacket();
+  if (!msg.hasError()) {
+    msg.getAddress(buffer);
+    Serial.print("<<< ");
+    Serial.print(buffer);
 
-  if (size > 0) {
-    while (size--) {
-      msg.fill(wifiUdp.read());
+    for (int i = 0; i < msg.size(); i++) {
+      msg.getString(i, buffer);
+      Serial.print(" [");
+      Serial.print(buffer);
+      Serial.print("]");
     }
-    if (!msg.hasError()) {
-
-     if (msg.dispatch("/status", handleStatus)) {
-     }
-
-     msg.getAddress(buffer);
-     Serial.print("<<< ");
-     Serial.print(buffer);
-
-     for (int i = 0; i < msg.size(); i++) {
-       msg.getString(i, buffer);
-       Serial.print(" [");
-       Serial.print(buffer);
-       Serial.print("]");
-     }
-     Serial.println();
-    } else {
-      OSCErrorCode error = msg.getError();
-      Serial.print("error: ");
-      Serial.println(error);
-    }
+    Serial.println();
+  } else {
+    OSCErrorCode error = msg.getError();
+    Serial.print("error: ");
+    Serial.println(error);
   }
 }
 
@@ -112,9 +112,9 @@ void sendUdp(OSCMessage &msg) {
   //msg.empty();
 }
 
-void send(const char* mess) {
+void send(const char* &mess) {
   Serial.print(">>> ");
-  Serial.print(mess);
+  Serial.println(mess);
 
   OSCMessage msg(mess);
   sendUdp(msg);
@@ -129,6 +129,12 @@ void send(const char* &one, const char* &two) {
   OSCMessage msg(one);
   msg.add(two);
   sendUdp(msg);
+}
+
+IPAddress discoverXrIp() {
+  IPAddress broadcastIp = WiFi.broadcastIP();
+  send(M_STATUS);
+  return broadcastIp;
 }
 
 void connectThru(const char* ssid, const char* pass) {
@@ -187,26 +193,25 @@ void setup() {
     connectThru(aSSID, aSSID_PASS);
 
     // send(M_XREMOTE);
-    // receive();
-    send(M_INFO);
-    receive();
+    send(M_XINFO);
+    receiveAndPrintOscIfAny();
     send(M_STATUS);
-    receive();
+    receiveAndPrintOscIfAny();
 }
 
 template<std::size_t SIZE>
 void sendReceive(std::array<const char*,SIZE> ary, const char* &msg) {
   for (int z = 0; z < ary.size(); z++) {
     send(ary[z], msg);
-    receive();
+    receiveAndPrintOscIfAny();
     delay(2000);
   }
 }
 
-std::array<const char*,3> CHANNELS_TO_TURN_ON_AND_OFF {
+std::array<const char*,2> CHANNELS_TO_TURN_ON_AND_OFF {
   "/ch/01/mix/on",
   "/ch/03/mix/on",
-  "/rtn/aux/mix/on",
+  //"/rtn/aux/mix/on",
 };
 
 const char* CHANNEL_OFF = "OFF"; // i.e. Mute on
