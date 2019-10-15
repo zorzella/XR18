@@ -24,7 +24,7 @@ int ledCount=4;                    // set the number of LEDs in the loop
 
 WiFiUDP wifiUdp;                                // A UDP instance to let us send and receive packets over UDP
 
-const IPAddress XR_IP(192,168,86,80);       // IP of the XR18 in Comma Separated Octets, NOT dots!
+IPAddress xrIp;                             // IP of the XR18 in Comma Separated Octets, NOT dots!
 const unsigned int XR_PORT = 10024;         // remote port to receive OSC X-AIR is 10024, X32 is 10023
 
 // If true, we will print extra debug information about WIFI
@@ -35,6 +35,9 @@ const char* M_STATUS = "/status";
 const char* M_XREMOTE = "/xremote";
 
 void waitForConnection() {
+   // TODO: timeout and do something (look at more networks?). Also
+   // maybe there's a way to reset WiFi etc (I've seen it get stuck and
+   // need to have the tires kicked)...
     while (true) {
       wl_status_t status = WiFi.status();
       if (DEBUG_WIFI) {
@@ -42,8 +45,15 @@ void waitForConnection() {
         Serial.print(status);
         Serial.print("]");
       }
+      // TODO: deal with other statuses
+      // See https://www.arduino.cc/en/Reference/WiFiStatus
       if (status == WL_CONNECTED) {
         return;
+      } else if (status == WL_DISCONNECTED) {
+        // Fairly normal for starters, we should start here
+      } else if (status == WL_IDLE_STATUS) {
+        // Fairly normal for starters, it will be in this status
+        // while it tries to connect
       }
       delay(100);
       Serial.print(".");
@@ -72,6 +82,23 @@ void receiveOscIfAny(OSCMessage &msg) {
   }
   while (size--) {
     msg.fill(wifiUdp.read());
+  }
+}
+
+// TODO: this needs to timeout etc
+void receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
+  char buffer[SIZE_OF_RECEIVE_BUFFER];
+  memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
+  while (true) {
+    receiveOscIfAny(msg);
+    if (msg.size() > 0) {
+      msg.getAddress(buffer);
+      // TODO: if we receive more than, say, 3 messages, and none is the
+      // reply to our UDP, we need to give up etc
+      if (!address.compare(buffer)) {
+        return;
+      }
+    }
   }
 }
 
@@ -104,23 +131,24 @@ void receiveAndPrintOscIfAny() {
   }
 }
 
-void sendUdp(OSCMessage &msg) {
-  wifiUdp.beginPacket(XR_IP, XR_PORT);
+void sendUdp(const IPAddress &ip, OSCMessage &msg) {
+  // TODO: check result of beginPacket
+  wifiUdp.beginPacket(ip, XR_PORT);
   msg.send(wifiUdp);
+  // TODO: check result of endPacket
   wifiUdp.endPacket();
-  // TODO: understand what this does
-  //msg.empty();
+  msg.empty();
 }
 
-void send(const char* &mess) {
+void send1(const IPAddress &ip, const char* &mess) {
   Serial.print(">>> ");
   Serial.println(mess);
 
   OSCMessage msg(mess);
-  sendUdp(msg);
+  sendUdp(ip, msg);
 }
 
-void send(const char* &one, const char* &two) {
+void send2(const IPAddress &ip, const char* &one, const char* &two) {
   Serial.print(">>> ");
   Serial.print(one);
   Serial.print(" ");
@@ -128,13 +156,28 @@ void send(const char* &one, const char* &two) {
 
   OSCMessage msg(one);
   msg.add(two);
-  sendUdp(msg);
+  sendUdp(ip, msg);
 }
 
 IPAddress discoverXrIp() {
   IPAddress broadcastIp = WiFi.broadcastIP();
-  send(M_STATUS);
-  return broadcastIp;
+  send1(broadcastIp, M_STATUS);
+  OSCMessage msg;
+  receiveOscWithAddress(msg, M_STATUS);
+  
+  char buffer[SIZE_OF_RECEIVE_BUFFER];
+  memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
+  msg.getString(1, buffer);
+  Serial.print("Remote IP: ");
+  Serial.println(buffer);
+
+  // uint8_t ip[4];
+  // sscanf(buffer, "%u.%u.%u.%u", &ip[0], &ip[1], &ip[2], &ip[3]);
+  
+  IPAddress result;
+  result.fromString(buffer);
+
+  return result;
 }
 
 void connectThru(const char* ssid, const char* pass) {
@@ -172,12 +215,24 @@ void connectThru(const char* ssid, const char* pass) {
 }
 
 void setup() {
+    // TODO: understand better
+    int counter = 0;
     Serial.begin(115200); // DEBUG window
+    while (!Serial) {
+      counter++;
+    }
+
+    Serial.print("Counter before: ");
+    Serial.println(counter);
 
     if (DEBUG_WIFI) {
       // Give a second before doing anything, so the terminal is active
       delay(1000);
     }
+
+    Serial.print("Counter: ");
+    Serial.println(counter);
+
 
     //Setp pin mode for buttons
     for (int i=0;i<buttonCount; i++) { 
@@ -192,17 +247,19 @@ void setup() {
     // TODO: move to "loop"?
     connectThru(aSSID, aSSID_PASS);
 
+    xrIp = discoverXrIp();
+
     // send(M_XREMOTE);
-    send(M_XINFO);
+    send1(xrIp, M_XINFO);
     receiveAndPrintOscIfAny();
-    send(M_STATUS);
+    send1(xrIp, M_STATUS);
     receiveAndPrintOscIfAny();
 }
 
 template<std::size_t SIZE>
 void sendReceive(std::array<const char*,SIZE> ary, const char* &msg) {
   for (int z = 0; z < ary.size(); z++) {
-    send(ary[z], msg);
+    send2(xrIp, ary[z], msg);
     receiveAndPrintOscIfAny();
     delay(2000);
   }
