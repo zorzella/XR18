@@ -303,8 +303,7 @@ void setup() {
     // receiveAndPrintOscIfAny();
 }
 
-template<std::size_t SIZE>
-void sendReceive(std::array<const char*,SIZE> ary, const char* &msg) {
+void sendReceive(std::vector<const char*> ary, const char* &msg) {
   for (int z = 0; z < ary.size(); z++) {
     Serial.println("vvvvvvv");
     receiveAndPrintOscIfAny();
@@ -329,16 +328,17 @@ void sendReceive(std::array<const char*,SIZE> ary, const char* &msg) {
   }
 }
 
-std::array<const char*,2> CHANNELS_TO_TURN_ON_AND_OFF {
+std::vector<const char*> CHANNELS_TO_TURN_ON_AND_OFF {
   "/ch/01/mix/on",
   "/ch/03/mix/on",
   //"/rtn/aux/mix/on",
 };
 
+
 const char* CHANNEL_OFF = "OFF"; // i.e. Mute on
 const char* CHANNEL_ON = "ON";   // i.e. Mute off
 
-std::array<const char*,2> CHANNEL_MSGS_TO_CHANGE_SEND_LEVEL {
+std::vector<const char*> CHANNEL_MSGS_TO_CHANGE_SEND_LEVEL {
   "/ch/01/mix/01/level",
   "/ch/03/mix/01/level",
   };
