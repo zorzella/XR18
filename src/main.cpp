@@ -86,6 +86,18 @@ void receiveOscIfAny(OSCMessage &msg) {
 }
 
 // TODO: this needs to timeout etc
+void receiveOsc(OSCMessage &msg) {
+  char buffer[SIZE_OF_RECEIVE_BUFFER];
+  memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
+  while (true) {
+    receiveOscIfAny(msg);
+    if (msg.size() > 0) {
+        return;
+    }
+  }
+}
+
+// TODO: this needs to timeout etc
 void receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
   char buffer[SIZE_OF_RECEIVE_BUFFER];
   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
@@ -98,17 +110,12 @@ void receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
       if (!address.compare(buffer)) {
         return;
       }
+      msg.empty();
     }
   }
 }
 
-void receiveAndPrintOscIfAny() {
-  OSCMessage msg;
-
-  receiveOscIfAny(msg);
-  if (msg.size() == 0) {
-    return;
-  }
+void printOsc(OSCMessage &msg) {
   char buffer[SIZE_OF_RECEIVE_BUFFER];
   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
 
@@ -118,9 +125,18 @@ void receiveAndPrintOscIfAny() {
     Serial.print(buffer);
 
     for (int i = 0; i < msg.size(); i++) {
-      msg.getString(i, buffer);
-      Serial.print(" [");
-      Serial.print(buffer);
+        Serial.print(" [");
+      if (msg.isString(i)) {
+        msg.getString(i, buffer);
+        Serial.print(buffer);
+      } else if (msg.isInt(i)) {
+        Serial.print(msg.getInt(i));
+      } else if (msg.isFloat(i)) {
+        Serial.print(msg.getFloat(i));
+      } else {
+        Serial.print("type: ");
+        Serial.print(msg.getType(i));
+      }
       Serial.print("]");
     }
     Serial.println();
@@ -128,6 +144,18 @@ void receiveAndPrintOscIfAny() {
     OSCErrorCode error = msg.getError();
     Serial.print("error: ");
     Serial.println(error);
+  }
+}
+
+void receiveAndPrintOscIfAny() {
+  OSCMessage msg;
+  while(true) {
+    receiveOscIfAny(msg);
+    if (msg.size() == 0) {
+      return;
+    }
+    printOsc(msg);
+    msg.empty();
   }
 }
 
@@ -141,10 +169,9 @@ void sendUdp(const IPAddress &ip, OSCMessage &msg) {
 }
 
 void send1(const IPAddress &ip, const char* &mess) {
+  OSCMessage msg(mess);
   Serial.print(">>> ");
   Serial.println(mess);
-
-  OSCMessage msg(mess);
   sendUdp(ip, msg);
 }
 
@@ -159,6 +186,30 @@ void send2(const IPAddress &ip, const char* &one, const char* &two) {
   sendUdp(ip, msg);
 }
 
+void send3(
+    const IPAddress &ip,
+    const char* one,
+    const char* two,
+    const int &three
+    // ,
+    // const char* &four
+    ) {
+  Serial.print(">>> ");
+  Serial.print(one);
+  Serial.print(" ");
+  Serial.print(two);
+  Serial.print(" ");
+  Serial.println(three);
+  // Serial.print(" ");
+  // Serial.println(four);
+
+  OSCMessage msg(one);
+  msg.add(two);
+  msg.add(three);
+  // msg.add(four);
+  sendUdp(ip, msg);
+}
+
 IPAddress discoverXrIp() {
   IPAddress broadcastIp = WiFi.broadcastIP();
   send1(broadcastIp, M_STATUS);
@@ -169,11 +220,7 @@ IPAddress discoverXrIp() {
   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
   msg.getString(1, buffer);
   Serial.print("Remote IP: ");
-  Serial.println(buffer);
-
-  // uint8_t ip[4];
-  // sscanf(buffer, "%u.%u.%u.%u", &ip[0], &ip[1], &ip[2], &ip[3]);
-  
+  Serial.println(buffer);  
   IPAddress result;
   result.fromString(buffer);
 
@@ -250,17 +297,34 @@ void setup() {
     xrIp = discoverXrIp();
 
     // send(M_XREMOTE);
-    send1(xrIp, M_XINFO);
-    receiveAndPrintOscIfAny();
-    send1(xrIp, M_STATUS);
-    receiveAndPrintOscIfAny();
+    // send1(xrIp, M_XINFO);
+    // receiveAndPrintOscIfAny();
+    // send1(xrIp, M_STATUS);
+    // receiveAndPrintOscIfAny();
 }
 
 template<std::size_t SIZE>
 void sendReceive(std::array<const char*,SIZE> ary, const char* &msg) {
   for (int z = 0; z < ary.size(); z++) {
+    Serial.println("vvvvvvv");
+    receiveAndPrintOscIfAny();
+
+    OSCMessage query;
+
+    send1(xrIp, ary[z]);
+    receiveOsc(query);
+    printOsc(query);
+    query.empty();
+
     send2(xrIp, ary[z], msg);
     receiveAndPrintOscIfAny();
+
+    send1(xrIp, ary[z]);
+    receiveOsc(query);
+    printOsc(query);
+    query.empty();
+    Serial.println("^^^^^^^");
+
     delay(2000);
   }
 }
