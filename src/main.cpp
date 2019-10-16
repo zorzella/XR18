@@ -10,6 +10,8 @@
 #include <WiFi.h>        // For WiFi
 #include <WiFiUdp.h>     // For WiFi
 
+#include "networks.h"
+
 // Setup button pins
 int myButtons[] = {39, 34, 25, 26};  // define the pins for the buttons
 int buttonCount = 4;                 // set the number of buttons in the loop
@@ -36,16 +38,14 @@ const char *M_STATUS = "/status";
 const char *M_XREMOTE = "/xremote";
 
 int waitForConnection() {
-  unsigned long timeoutAt = millis() + 2000;
+  unsigned long timeoutAt = millis() + 4000;
   // TODO: timeout and do something (look at more networks?). Also
   // maybe there's a way to reset WiFi etc (I've seen it get stuck and
   // need to have the tires kicked)...
   while (millis() < timeoutAt) {
     wl_status_t status = WiFi.status();
     if (DEBUG_WIFI) {
-      Serial.print("[");
       Serial.print(status);
-      Serial.print("]");
     }
     // TODO: deal with other statuses
     // See https://www.arduino.cc/en/Reference/WiFiStatus
@@ -213,6 +213,7 @@ void send3(const IPAddress &ip, const char *one, const char *two,
 }
 
 IPAddress discoverXrIp() {
+  // TODO: handle XR_NAMES
   IPAddress broadcastIp = WiFi.broadcastIP();
   send1(broadcastIp, M_STATUS);
   OSCMessage msg;
@@ -342,15 +343,31 @@ void sendABunchOfMessages() {
   sendReceive(CHANNELS_TO_TURN_ON_AND_OFF, CHANNEL_ON);
 }
 
+int tryToReconnectWifi() {
+  int result = 10;
+  // TODO: start with the last successful network
+  for (int i = 0; i < XR_NETWORKS.size(); i++) {
+    std::string ssid = XR_NETWORKS[i].ssid;
+    std::string pass = XR_NETWORKS[i].password;
+    int result = connectThru(ssid.c_str(), pass.c_str());
+    if (!result) {
+      // TODO: handle not finding an XR in the network
+      xrIp = discoverXrIp();
+      return result;
+    }
+  }
+  return result;
+}
+
 void loop() {
-    // TODO: move to "loop"?
   if (WiFi.status() != WL_CONNECTED) {
     Serial.println("wifi down. Reconnecting.");
-    // TODO: handle multiple networks
-    connectThru(aSSID, aSSID_PASS);
-    xrIp = discoverXrIp();
-    delay(200);
-    return;
+    if (tryToReconnectWifi()) {
+      Serial.println("wifi reconnection failed. Will try again in 200ms.");
+      delay(200);
+      return;
+    }
+    Serial.println("wifi reconnection succeeded.");
   } else {
     Serial.println("wifi ok");
   }
