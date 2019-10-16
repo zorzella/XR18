@@ -35,11 +35,12 @@ const char *M_XINFO = "/xinfo";
 const char *M_STATUS = "/status";
 const char *M_XREMOTE = "/xremote";
 
-void waitForConnection() {
+int waitForConnection() {
+  unsigned long timeoutAt = millis() + 2000;
   // TODO: timeout and do something (look at more networks?). Also
   // maybe there's a way to reset WiFi etc (I've seen it get stuck and
   // need to have the tires kicked)...
-  while (true) {
+  while (millis() < timeoutAt) {
     wl_status_t status = WiFi.status();
     if (DEBUG_WIFI) {
       Serial.print("[");
@@ -49,7 +50,8 @@ void waitForConnection() {
     // TODO: deal with other statuses
     // See https://www.arduino.cc/en/Reference/WiFiStatus
     if (status == WL_CONNECTED) {
-      return;
+      Serial.println();
+      return 0;
     } else if (status == WL_DISCONNECTED) {
       // Fairly normal for starters, we should start here
     } else if (status == WL_IDLE_STATUS) {
@@ -59,6 +61,8 @@ void waitForConnection() {
     delay(100);
     Serial.print(".");
   }
+  Serial.println();
+  return 1;
 }
 
 void handleStatus(OSCMessage &msg) {
@@ -225,9 +229,8 @@ IPAddress discoverXrIp() {
   return result;
 }
 
-void connectThru(const char *ssid, const char *pass) {
-  // TODO: do IP discovery by sending to .255 (Broadcast IP)
-  // TODO: handle multiple networks
+int connectThru(const char *ssid, const char *pass) {
+  unsigned long start = millis();
   // Connect to WiFi network
   Serial.println();
   Serial.println();
@@ -235,27 +238,30 @@ void connectThru(const char *ssid, const char *pass) {
   Serial.println(ssid);
   WiFi.begin(ssid, pass);
 
-  waitForConnection();
+  int result = waitForConnection();
+  int elapsed = millis() - start;
+  Serial.print("Elapsed: ");
+  Serial.println(elapsed);
+  if (result) {
+    Serial.println("Failed to connect");
+    return result;
+  }
 
   Serial.println("");
 
-  Serial.println("WiFi connected");
+  Serial.print("Connected to WiFi: ");
+  Serial.println(ssid);
 
   Serial.println("Local IP: ");
   Serial.println(WiFi.localIP());
-  Serial.println("Starting UDP");
-
-  // TODO: understand what this does
-  // Udp.begin(XR_PORT);
-
   Serial.print("Broadcast IP: ");
   Serial.println(WiFi.broadcastIP());
-  Serial.print("Network ID: ");
-  Serial.println(WiFi.networkID());
   Serial.print("Gateway IP: ");
   Serial.println(WiFi.gatewayIP());
   Serial.println();
   Serial.println();
+
+  return result;
 }
 
 void setup() {
@@ -286,17 +292,6 @@ void setup() {
   for (int i = 0; i < ledCount; i++) {
     pinMode(myLeds[i], OUTPUT);  // initialize the LED as an output
   }
-
-  // TODO: move to "loop"?
-  connectThru(aSSID, aSSID_PASS);
-
-  xrIp = discoverXrIp();
-
-  // send(M_XREMOTE);
-  // send1(xrIp, M_XINFO);
-  // receiveAndPrintOscIfAny();
-  // send1(xrIp, M_STATUS);
-  // receiveAndPrintOscIfAny();
 }
 
 void sendReceive(std::vector<const char *> ary, const char *&msg) {
@@ -347,4 +342,17 @@ void sendABunchOfMessages() {
   sendReceive(CHANNELS_TO_TURN_ON_AND_OFF, CHANNEL_ON);
 }
 
-void loop() { sendABunchOfMessages(); }  // End of main loop
+void loop() {
+    // TODO: move to "loop"?
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("wifi down. Reconnecting.");
+    // TODO: handle multiple networks
+    connectThru(aSSID, aSSID_PASS);
+    xrIp = discoverXrIp();
+    delay(200);
+    return;
+  } else {
+    Serial.println("wifi ok");
+  }
+  sendABunchOfMessages();
+}  // End of main loop
