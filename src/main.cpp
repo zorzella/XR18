@@ -33,9 +33,9 @@ const unsigned int XR_PORT =
 // If true, we will print extra debug information about WIFI
 const bool DEBUG_WIFI = true;
 
-const char *M_XINFO = "/xinfo";
-const char *M_STATUS = "/status";
-const char *M_XREMOTE = "/xremote";
+const std::string M_XINFO = "/xinfo";
+const std::string M_STATUS = "/status";
+const std::string M_XREMOTE = "/xremote";
 
 int waitForConnection() {
   unsigned long timeoutAt = millis() + 4000;
@@ -173,21 +173,22 @@ void sendUdp(const IPAddress &ip, OSCMessage &msg) {
   msg.empty();
 }
 
-void send1(const IPAddress &ip, const char *&mess) {
-  OSCMessage msg(mess);
+void send1(const IPAddress &ip, const std::string &mess) {
+  OSCMessage msg(mess.c_str());
   Serial.print(">>> ");
-  Serial.println(mess);
+  Serial.println(mess.c_str());
   sendUdp(ip, msg);
 }
 
-void send2(const IPAddress &ip, const char *&one, const char *&two) {
+void send2(const IPAddress &ip, const std::string &one,
+           const std::string &two) {
   Serial.print(">>> ");
-  Serial.print(one);
+  Serial.print(one.c_str());
   Serial.print(" ");
-  Serial.println(two);
+  Serial.println(two.c_str());
 
-  OSCMessage msg(one);
-  msg.add(two);
+  OSCMessage msg(one.c_str());
+  msg.add(two.c_str());
   sendUdp(ip, msg);
 }
 
@@ -230,14 +231,14 @@ IPAddress discoverXrIp() {
   return result;
 }
 
-int connectThru(const char *ssid, const char *pass) {
+int connectThru(const std::string &ssid, const std::string &pass) {
   unsigned long start = millis();
   // Connect to WiFi network
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
-  Serial.println(ssid);
-  WiFi.begin(ssid, pass);
+  Serial.println(ssid.c_str());
+  WiFi.begin(ssid.c_str(), pass.c_str());
 
   int result = waitForConnection();
   int elapsed = millis() - start;
@@ -251,7 +252,7 @@ int connectThru(const char *ssid, const char *pass) {
   Serial.println("");
 
   Serial.print("Connected to WiFi: ");
-  Serial.println(ssid);
+  Serial.println(ssid.c_str());
 
   Serial.println("Local IP: ");
   Serial.println(WiFi.localIP());
@@ -266,27 +267,19 @@ int connectThru(const char *ssid, const char *pass) {
 }
 
 void setup() {
-  // TODO: understand better
-  int counter = 0;
   Serial.begin(115200);  // DEBUG window
   while (!Serial) {
-    counter++;
+    ;
   }
-
-  Serial.print("Counter before: ");
-  Serial.println(counter);
 
   if (DEBUG_WIFI) {
     // Give a second before doing anything, so the terminal is active
     delay(1000);
   }
 
-  Serial.print("Counter: ");
-  Serial.println(counter);
-
   // Setp pin mode for buttons
   for (int i = 0; i < buttonCount; i++) {
-    pinMode(myButtons[i], INPUT);  // initialize the button pin as a input
+    pinMode(myButtons[i], INPUT_PULLUP);  // initialize the button pin as a input
   }
 
   // Setp pin mode for LEDs
@@ -295,7 +288,7 @@ void setup() {
   }
 }
 
-void sendReceive(std::vector<const char *> ary, const char *&msg) {
+void sendReceive(const std::vector<std::string> &ary, const std::string &msg) {
   for (int z = 0; z < ary.size(); z++) {
     Serial.println("vvvvvvv");
     receiveAndPrintOscIfAny();
@@ -320,21 +313,21 @@ void sendReceive(std::vector<const char *> ary, const char *&msg) {
   }
 }
 
-std::vector<const char *> CHANNELS_TO_TURN_ON_AND_OFF{
+const std::vector<std::string> CHANNELS_TO_TURN_ON_AND_OFF{
     "/ch/01/mix/on", "/ch/03/mix/on",
     //"/rtn/aux/mix/on",
 };
 
-const char *CHANNEL_OFF = "OFF";  // i.e. Mute on
-const char *CHANNEL_ON = "ON";    // i.e. Mute off
+const std::string CHANNEL_OFF = "OFF";  // i.e. Mute on
+const std::string CHANNEL_ON = "ON";    // i.e. Mute off
 
-std::vector<const char *> CHANNEL_MSGS_TO_CHANGE_SEND_LEVEL{
+const std::vector<std::string> CHANNEL_MSGS_TO_CHANGE_SEND_LEVEL{
     "/ch/01/mix/01/level",
     "/ch/03/mix/01/level",
 };
 
-const char *LEVEL_ON = "0";
-const char *LEVEL_OFF = "-127";
+const std::string LEVEL_ON = "0";
+const std::string LEVEL_OFF = "-127";
 
 void sendABunchOfMessages() {
   sendReceive(CHANNEL_MSGS_TO_CHANGE_SEND_LEVEL, LEVEL_ON);
