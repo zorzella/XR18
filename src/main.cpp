@@ -38,6 +38,11 @@ const std::string M_XINFO = "/xinfo";
 const std::string M_STATUS = "/status";
 const std::string M_XREMOTE = "/xremote";
 
+unsigned long sendOk = 0;
+unsigned long sendError = 0;
+unsigned long recOk = 0;
+unsigned long recError = 0;
+
 bool waitForConnection() {
   unsigned long timeoutAt = millis() + 4000;
   // TODO: timeout and do something (look at more networks?). Also
@@ -91,7 +96,6 @@ void receiveOscIfAny(OSCMessage &msg) {
   }
 }
 
-// TODO: this needs to timeout etc
 bool receiveOsc(OSCMessage &msg) {
   unsigned long timeoutAt = millis() + 100;
   char buffer[SIZE_OF_RECEIVE_BUFFER];
@@ -99,9 +103,11 @@ bool receiveOsc(OSCMessage &msg) {
   while (millis() < timeoutAt) {
     receiveOscIfAny(msg);
     if (msg.size() > 0) {
+      recOk++;
       return true;
     }
   }
+  recError++;
   return false;
 }
 
@@ -130,7 +136,11 @@ void printOsc(OSCMessage &msg) {
 
   if (!msg.hasError()) {
     msg.getAddress(buffer);
-    Serial.print("<<< ");
+    Serial.print("<<< [");
+    Serial.print(recOk);
+    Serial.print(",");
+    Serial.print(recError);
+    Serial.print("] ");
     Serial.print(buffer);
 
     for (int i = 0; i < msg.size(); i++) {
@@ -172,29 +182,41 @@ bool sendUdp(const IPAddress &ip, OSCMessage &msg) {
   unsigned long timeoutAt = millis() + 100;
   while (millis() < timeoutAt) {
     if (!wifiUdp.beginPacket(ip, XR_PORT)) {
+      sendError++;
       continue;
     }
     msg.send(wifiUdp);
     int endPacketResult = wifiUdp.endPacket();
     msg.empty();
     if (!endPacketResult) {
+      sendError++;
       continue;
     }
+    sendOk++;
     return true;
   }
+  sendError++;
   return false;
 }
 
 bool send1(const IPAddress &ip, const std::string &mess) {
   OSCMessage msg(mess.c_str());
-  Serial.print(">>> ");
+  Serial.print(">>> [");
+  Serial.print(sendOk);
+  Serial.print(",");
+  Serial.print(sendError);
+  Serial.print("] ");
   Serial.println(mess.c_str());
   return sendUdp(ip, msg);
 }
 
 bool send2(const IPAddress &ip, const std::string &one,
            const std::string &two) {
-  Serial.print(">>> ");
+  Serial.print(">>> [");
+  Serial.print(sendOk);
+  Serial.print(",");
+  Serial.print(sendError);
+  Serial.print("] ");
   Serial.print(one.c_str());
   Serial.print(" ");
   Serial.println(two.c_str());
@@ -209,7 +231,11 @@ void send3(const IPAddress &ip, const char *one, const char *two,
            // ,
            // const char* &four
 ) {
-  Serial.print(">>> ");
+  Serial.print(">>> [");
+  Serial.print(sendOk);
+  Serial.print(",");
+  Serial.print(sendError);
+  Serial.print("] ");
   Serial.print(one);
   Serial.print(" ");
   Serial.print(two);
