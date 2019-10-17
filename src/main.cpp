@@ -26,7 +26,8 @@ int ledCount = 4;                 // set the number of LEDs in the loop
 
 WiFiUDP wifiUdp;  // A UDP instance to let us send and receive packets over UDP
 
-IPAddress xrIp {INADDR_NONE};  // IP of the XR18 in Comma Separated Octets, NOT dots!
+IPAddress xrIp{
+    INADDR_NONE};  // IP of the XR18 in Comma Separated Octets, NOT dots!
 const unsigned int XR_PORT =
     10024;  // remote port to receive OSC X-AIR is 10024, X32 is 10023
 
@@ -37,7 +38,7 @@ const std::string M_XINFO = "/xinfo";
 const std::string M_STATUS = "/status";
 const std::string M_XREMOTE = "/xremote";
 
-int waitForConnection() {
+bool waitForConnection() {
   unsigned long timeoutAt = millis() + 4000;
   // TODO: timeout and do something (look at more networks?). Also
   // maybe there's a way to reset WiFi etc (I've seen it get stuck and
@@ -51,7 +52,7 @@ int waitForConnection() {
     // See https://www.arduino.cc/en/Reference/WiFiStatus
     if (status == WL_CONNECTED) {
       Serial.println();
-      return 0;
+      return true;
     } else if (status == WL_DISCONNECTED) {
       // Fairly normal for starters, we should start here
     } else if (status == WL_IDLE_STATUS) {
@@ -62,7 +63,7 @@ int waitForConnection() {
     Serial.print(".");
   }
   Serial.println();
-  return 1;
+  return false;
 }
 
 void handleStatus(OSCMessage &msg) {
@@ -91,19 +92,20 @@ void receiveOscIfAny(OSCMessage &msg) {
 }
 
 // TODO: this needs to timeout etc
-void receiveOsc(OSCMessage &msg) {
+bool receiveOsc(OSCMessage &msg) {
+  unsigned long timeoutAt = millis() + 100;
   char buffer[SIZE_OF_RECEIVE_BUFFER];
   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
-  while (true) {
+  while (millis() < timeoutAt) {
     receiveOscIfAny(msg);
     if (msg.size() > 0) {
-      return;
+      return true;
     }
   }
+  return false;
 }
 
-// TODO: this needs to timeout etc
-int receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
+bool receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
   unsigned long timeoutAt = millis() + 100;
   char buffer[SIZE_OF_RECEIVE_BUFFER];
   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
@@ -114,12 +116,12 @@ int receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
       // TODO: if we receive more than, say, 3 messages, and none is the
       // reply to our UDP, we need to give up etc
       if (!address.compare(buffer)) {
-        return 0;
+        return true;
       }
       msg.empty();
     }
   }
-  return 1;
+  return false;
 }
 
 void printOsc(OSCMessage &msg) {
@@ -166,23 +168,31 @@ void receiveAndPrintOscIfAny() {
   }
 }
 
-void sendUdp(const IPAddress &ip, OSCMessage &msg) {
-  // TODO: check result of beginPacket
-  wifiUdp.beginPacket(ip, XR_PORT);
-  msg.send(wifiUdp);
-  // TODO: check result of endPacket
-  wifiUdp.endPacket();
-  msg.empty();
+bool sendUdp(const IPAddress &ip, OSCMessage &msg) {
+  unsigned long timeoutAt = millis() + 100;
+  while (millis() < timeoutAt) {
+    if (!wifiUdp.beginPacket(ip, XR_PORT)) {
+      continue;
+    }
+    msg.send(wifiUdp);
+    int endPacketResult = wifiUdp.endPacket();
+    msg.empty();
+    if (!endPacketResult) {
+      continue;
+    }
+    return true;
+  }
+  return false;
 }
 
-void send1(const IPAddress &ip, const std::string &mess) {
+bool send1(const IPAddress &ip, const std::string &mess) {
   OSCMessage msg(mess.c_str());
   Serial.print(">>> ");
   Serial.println(mess.c_str());
-  sendUdp(ip, msg);
+  return sendUdp(ip, msg);
 }
 
-void send2(const IPAddress &ip, const std::string &one,
+bool send2(const IPAddress &ip, const std::string &one,
            const std::string &two) {
   Serial.print(">>> ");
   Serial.print(one.c_str());
@@ -191,7 +201,7 @@ void send2(const IPAddress &ip, const std::string &one,
 
   OSCMessage msg(one.c_str());
   msg.add(two.c_str());
-  sendUdp(ip, msg);
+  return sendUdp(ip, msg);
 }
 
 void send3(const IPAddress &ip, const char *one, const char *two,
@@ -215,30 +225,32 @@ void send3(const IPAddress &ip, const char *one, const char *two,
   sendUdp(ip, msg);
 }
 
-int discoverXrIp(IPAddress& result) {
+bool discoverXrIp(IPAddress &result) {
   // TODO: handle XR_NAMES
   IPAddress broadcastIp = WiFi.broadcastIP();
   unsigned long timeoutAt = millis() + 1000;
-  while(millis() < timeoutAt) {
-    send1(broadcastIp, M_STATUS);
+  while (millis() < timeoutAt) {
+    if (!send1(broadcastIp, M_STATUS)) {
+      continue;
+    }
     OSCMessage msg;
-    int receiveResult = receiveOscWithAddress(msg, M_STATUS);
-    if (!receiveResult) {
+    bool receiveResult = receiveOscWithAddress(msg, M_STATUS);
+    if (receiveResult) {
       char buffer[SIZE_OF_RECEIVE_BUFFER];
       memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
       msg.getString(1, buffer);
       Serial.print("Remote IP: ");
       Serial.println(buffer);
       result.fromString(buffer);
-      return 0;
+      return true;
     } else {
       Serial.println("Retrying");
     }
   }
-  return 1;
+  return false;
 }
 
-int connectThru(const std::string &ssid, const std::string &pass) {
+bool connectThru(const std::string &ssid, const std::string &pass) {
   unsigned long start = millis();
   // Connect to WiFi network
   Serial.println();
@@ -247,11 +259,11 @@ int connectThru(const std::string &ssid, const std::string &pass) {
   Serial.println(ssid.c_str());
   WiFi.begin(ssid.c_str(), pass.c_str());
 
-  int result = waitForConnection();
+  bool result = waitForConnection();
   int elapsed = millis() - start;
   Serial.print("Elapsed: ");
   Serial.println(elapsed);
-  if (result) {
+  if (!result) {
     Serial.println("Failed to connect");
     return result;
   }
@@ -286,7 +298,8 @@ void setup() {
 
   // Setp pin mode for buttons
   for (int i = 0; i < buttonCount; i++) {
-    pinMode(myButtons[i], INPUT_PULLUP);  // initialize the button pin as a input
+    pinMode(myButtons[i],
+            INPUT_PULLUP);  // initialize the button pin as a input
   }
 
   // Setp pin mode for LEDs
@@ -295,29 +308,40 @@ void setup() {
   }
 }
 
-void sendReceive(const std::vector<std::string> &ary, const std::string &msg) {
+bool sendReceive(const std::vector<std::string> &ary, const std::string &msg) {
   for (int z = 0; z < ary.size(); z++) {
     Serial.println("vvvvvvv");
     receiveAndPrintOscIfAny();
 
     OSCMessage query;
 
-    send1(xrIp, ary[z]);
-    receiveOsc(query);
+    if (!send1(xrIp, ary[z])) {
+      return false;
+    }
+    if (!receiveOsc(query)) {
+      return false;
+    }
     printOsc(query);
     query.empty();
 
-    send2(xrIp, ary[z], msg);
+    if (!send2(xrIp, ary[z], msg)) {
+      return false;
+    }
     receiveAndPrintOscIfAny();
 
-    send1(xrIp, ary[z]);
-    receiveOsc(query);
+    if (!send1(xrIp, ary[z])) {
+      return false;
+    }
+    if (!receiveOsc(query)) {
+      return false;
+    }
     printOsc(query);
     query.empty();
     Serial.println("^^^^^^^");
 
     delay(2000);
   }
+  return true;
 }
 
 const std::vector<std::string> CHANNELS_TO_TURN_ON_AND_OFF{
@@ -343,17 +367,17 @@ void sendABunchOfMessages() {
   sendReceive(CHANNELS_TO_TURN_ON_AND_OFF, CHANNEL_ON);
 }
 
-int tryToReconnectWifi() {
-  int result = 10;
+bool tryToReconnectWifi() {
+  bool result = false;
   // TODO: start with the last successful network
   for (int i = 0; i < XR_NETWORKS.size(); i++) {
     std::string ssid = XR_NETWORKS[i].ssid;
     std::string pass = XR_NETWORKS[i].password;
-    int connectResult = connectThru(ssid.c_str(), pass.c_str());
-    if (!connectResult) {
-      int discoverResult = discoverXrIp(xrIp);
-      if (!discoverResult) {
-        return 0;
+    bool connectResult = connectThru(ssid.c_str(), pass.c_str());
+    if (connectResult) {
+      bool discoverResult = discoverXrIp(xrIp);
+      if (discoverResult) {
+        return true;
       } else {
         result = discoverResult;
       }
