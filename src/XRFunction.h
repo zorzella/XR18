@@ -3,6 +3,7 @@
 class XRFunction {
  private:
  public:
-   std::string oscAddr();
+   const std::string oscAddr();
+   const std::string name();
 
 };

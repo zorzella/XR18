@@ -4,6 +4,6 @@
 
 class XRNavigation {
  public:
-  XRFunction right(XRFunction that);
-  XRFunction left(XRFunction that);
+  // XRFunction right(XRFunction that);
+  // XRFunction left(XRFunction that);
 };
