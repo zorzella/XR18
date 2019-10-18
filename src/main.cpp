@@ -147,20 +147,20 @@ void printMsg(OSCMessage &msg) {
   Serial.print(buffer);
 
   for (int i = 0; i < msg.size(); i++) {
-      Serial.print(" [");
-      if (msg.isString(i)) {
-        msg.getString(i, buffer);
-        Serial.print(buffer);
-      } else if (msg.isInt(i)) {
-        Serial.print(msg.getInt(i));
-      } else if (msg.isFloat(i)) {
-        Serial.print(msg.getFloat(i));
-      } else {
-        Serial.print("type: ");
-        Serial.print(msg.getType(i));
-      }
-      Serial.print("]");
+    Serial.print(" [");
+    if (msg.isString(i)) {
+      msg.getString(i, buffer);
+      Serial.print(buffer);
+    } else if (msg.isInt(i)) {
+      Serial.print(msg.getInt(i));
+    } else if (msg.isFloat(i)) {
+      Serial.print(msg.getFloat(i));
+    } else {
+      Serial.print("type: ");
+      Serial.print(msg.getType(i));
     }
+    Serial.print("]");
+  }
 }
 
 // prints a received message.
@@ -214,7 +214,7 @@ bool send(const IPAddress &ip, OSCMessage &msg) {
   Serial.print(",");
   Serial.print(sendError);
   Serial.print("] ");
- // Serial.println(msg.);
+  // Serial.println(msg.);
   return sendUdp(ip, msg);
 }
 
@@ -337,44 +337,54 @@ void setup() {
   }
 }
 
-bool sendReceiveOne(std::string &addr, std::string &msg) {
+bool sendReceiveOne(const std::string &addr, const std::string &msg) {
+  OSCMessage query;
+
+  if (!send1(xrIp, addr)) {
+    return false;
+  }
+  if (!receiveOsc(query)) {
+    return false;
+  }
+  printOsc(query);
+  query.empty();
+
+  if (!send2(xrIp, addr, msg)) {
+    return false;
+  }
+  // receiveAndPrintOscIfAny();
+
+  if (!send1(xrIp, addr)) {
+    return false;
+  }
+  if (!receiveOsc(query)) {
+    return false;
+  }
+  printOsc(query);
+  query.empty();
   return true;
 }
 
 bool sendReceive(const std::vector<std::string> &ary, const std::string &msg) {
+  bool result = true;
+
   for (int z = 0; z < ary.size(); z++) {
     Serial.println("vvvvvvv");
     // receiveAndPrintOscIfAny();
+    const std::string addr = ary[z];
 
-    OSCMessage query;
+    bool thisResult = sendReceiveOne(addr, msg);
+    result &= thisResult;
 
-    if (!send1(xrIp, ary[z])) {
-      return false;
+    if (thisResult) {
+      Serial.println("^^^^^^^");
+    } else {
+      Serial.println("^^XXX^^");
     }
-    if (!receiveOsc(query)) {
-      return false;
-    }
-    printOsc(query);
-    query.empty();
-
-    if (!send2(xrIp, ary[z], msg)) {
-      return false;
-    }
-    // receiveAndPrintOscIfAny();
-
-    if (!send1(xrIp, ary[z])) {
-      return false;
-    }
-    if (!receiveOsc(query)) {
-      return false;
-    }
-    printOsc(query);
-    query.empty();
-    Serial.println("^^^^^^^");
 
     delay(2000);
   }
-  return true;
+  return result;
 }
 
 const std::vector<std::string> CHANNELS_TO_TURN_ON_AND_OFF{
