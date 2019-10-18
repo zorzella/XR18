@@ -26,8 +26,7 @@ int ledCount = 4;                 // set the number of LEDs in the loop
 
 WiFiUDP wifiUdp;  // A UDP instance to let us send and receive packets over UDP
 
-IPAddress xrIp{
-    INADDR_NONE};  // IP of the XR18 in Comma Separated Octets, NOT dots!
+IPAddress xrIp{INADDR_NONE};  // IP of the XR18
 const unsigned int XR_PORT =
     10024;  // remote port to receive OSC X-AIR is 10024, X32 is 10023
 
@@ -38,11 +37,10 @@ const std::string M_XINFO = "/xinfo";
 const std::string M_STATUS = "/status";
 const std::string M_XREMOTE = "/xremote";
 
-// TODO: rename these to fooCount
-unsigned long sendOk = 0;
-unsigned long sendError = 0;
-unsigned long recOk = 0;
-unsigned long recError = 0;
+unsigned long sendOkCount = 0;
+unsigned long sendErrorCount = 0;
+unsigned long recOkCount = 0;
+unsigned long recErrorCount = 0;
 
 bool waitForConnection() {
   unsigned long timeoutAt = millis() + 4000;
@@ -108,12 +106,12 @@ bool receiveOsc(OSCMessage &msg) {
   while (millis() < timeoutAt) {
     receiveOscIfAny(msg);
     if (msg.size() > 0) {
-      recOk++;
+      recOkCount++;
       return true;
     }
     delay(10);
   }
-  recError++;
+  recErrorCount++;
   return false;
 }
 
@@ -153,9 +151,9 @@ void printMsg(OSCMessage &msg) {
 // TODO: rename to printRec
 void printOsc(OSCMessage &msg) {
   Serial.print("<<< [");
-  Serial.print(recOk);
+  Serial.print(recOkCount);
   Serial.print(",");
-  Serial.print(recError);
+  Serial.print(recErrorCount);
   Serial.print("] ");
   printMsg(msg);
   Serial.println();
@@ -174,7 +172,7 @@ bool receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
         Serial.print("Unexpected ");
         printOsc(msg);
       } else {
-        recOk++;
+        recOkCount++;
         Serial.print(millis() - startTs);
         Serial.print("ms ");
         return true;
@@ -184,7 +182,7 @@ bool receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
       delay(10);
     }
   }
-  recError++;
+  recErrorCount++;
   return false;
 }
 
@@ -204,17 +202,17 @@ bool sendUdp(const IPAddress &ip, OSCMessage &msg) {
   unsigned long timeoutAt = millis() + 100;
   while (millis() < timeoutAt) {
     if (!wifiUdp.beginPacket(ip, XR_PORT)) {
-      sendError++;
+      sendErrorCount++;
       continue;
     }
     msg.send(wifiUdp);
     int endPacketResult = wifiUdp.endPacket();
     msg.empty();
     if (!endPacketResult) {
-      sendError++;
+      sendErrorCount++;
       continue;
     }
-    sendOk++;
+    sendOkCount++;
     return true;
   }
   return false;
@@ -223,9 +221,9 @@ bool sendUdp(const IPAddress &ip, OSCMessage &msg) {
 bool send1(const IPAddress &ip, const std::string &mess) {
   OSCMessage msg(mess.c_str());
   Serial.print(">>> [");
-  Serial.print(sendOk);
+  Serial.print(sendOkCount);
   Serial.print(",");
-  Serial.print(sendError);
+  Serial.print(sendErrorCount);
   Serial.print("] ");
   Serial.println(mess.c_str());
   bool result = sendUdp(ip, msg);
@@ -235,9 +233,9 @@ bool send1(const IPAddress &ip, const std::string &mess) {
 bool send2(const IPAddress &ip, const std::string &one,
            const std::string &two) {
   Serial.print(">>> [");
-  Serial.print(sendOk);
+  Serial.print(sendOkCount);
   Serial.print(",");
-  Serial.print(sendError);
+  Serial.print(sendErrorCount);
   Serial.print("] ");
 
   Serial.print(one.c_str());
