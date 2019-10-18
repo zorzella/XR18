@@ -38,6 +38,7 @@ const std::string M_XINFO = "/xinfo";
 const std::string M_STATUS = "/status";
 const std::string M_XREMOTE = "/xremote";
 
+// TODO: rename these to fooCount
 unsigned long sendOk = 0;
 unsigned long sendError = 0;
 unsigned long recOk = 0;
@@ -112,38 +113,40 @@ bool receiveOsc(OSCMessage &msg) {
 }
 
 bool receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
-  unsigned long timeoutAt = millis() + 100;
+  unsigned long timeoutAt = millis() + 200;
   char buffer[SIZE_OF_RECEIVE_BUFFER];
   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
   while (millis() < timeoutAt) {
     receiveOscIfAny(msg);
     if (msg.size() > 0) {
       msg.getAddress(buffer);
-      // TODO: if we receive more than, say, 3 messages, and none is the
-      // reply to our UDP, we need to give up etc
       if (!address.compare(buffer)) {
+        recOk++;
         return true;
       }
       msg.empty();
     }
   }
+  recError++;
   return false;
 }
 
-void printOsc(OSCMessage &msg) {
+// prints an OSCMessage
+void printMsg(OSCMessage &msg) {
+  if (msg.hasError()) {
+    OSCErrorCode error = msg.getError();
+    Serial.print("Error Code: ");
+    Serial.println(error);
+    return;
+  }
+
   char buffer[SIZE_OF_RECEIVE_BUFFER];
   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
 
-  if (!msg.hasError()) {
-    msg.getAddress(buffer);
-    Serial.print("<<< [");
-    Serial.print(recOk);
-    Serial.print(",");
-    Serial.print(recError);
-    Serial.print("] ");
-    Serial.print(buffer);
+  msg.getAddress(buffer);
+  Serial.print(buffer);
 
-    for (int i = 0; i < msg.size(); i++) {
+  for (int i = 0; i < msg.size(); i++) {
       Serial.print(" [");
       if (msg.isString(i)) {
         msg.getString(i, buffer);
@@ -158,12 +161,18 @@ void printOsc(OSCMessage &msg) {
       }
       Serial.print("]");
     }
-    Serial.println();
-  } else {
-    OSCErrorCode error = msg.getError();
-    Serial.print("error: ");
-    Serial.println(error);
-  }
+}
+
+// prints a received message.
+// TODO: rename to printRec
+void printOsc(OSCMessage &msg) {
+  Serial.print("<<< [");
+  Serial.print(recOk);
+  Serial.print(",");
+  Serial.print(recError);
+  Serial.print("] ");
+  printMsg(msg);
+  Serial.println();
 }
 
 void receiveAndPrintOscIfAny() {
@@ -199,6 +208,16 @@ bool sendUdp(const IPAddress &ip, OSCMessage &msg) {
   return false;
 }
 
+bool send(const IPAddress &ip, OSCMessage &msg) {
+  Serial.print(">>> [");
+  Serial.print(sendOk);
+  Serial.print(",");
+  Serial.print(sendError);
+  Serial.print("] ");
+ // Serial.println(msg.);
+  return sendUdp(ip, msg);
+}
+
 bool send1(const IPAddress &ip, const std::string &mess) {
   OSCMessage msg(mess.c_str());
   Serial.print(">>> [");
@@ -207,7 +226,10 @@ bool send1(const IPAddress &ip, const std::string &mess) {
   Serial.print(sendError);
   Serial.print("] ");
   Serial.println(mess.c_str());
-  return sendUdp(ip, msg);
+  bool result = sendUdp(ip, msg);
+  // printOsc(msg);
+  // Serial.println();
+  return result;
 }
 
 bool send2(const IPAddress &ip, const std::string &one,
@@ -217,38 +239,18 @@ bool send2(const IPAddress &ip, const std::string &one,
   Serial.print(",");
   Serial.print(sendError);
   Serial.print("] ");
+
   Serial.print(one.c_str());
   Serial.print(" ");
   Serial.println(two.c_str());
 
   OSCMessage msg(one.c_str());
   msg.add(two.c_str());
-  return sendUdp(ip, msg);
-}
 
-void send3(const IPAddress &ip, const char *one, const char *two,
-           const int &three
-           // ,
-           // const char* &four
-) {
-  Serial.print(">>> [");
-  Serial.print(sendOk);
-  Serial.print(",");
-  Serial.print(sendError);
-  Serial.print("] ");
-  Serial.print(one);
-  Serial.print(" ");
-  Serial.print(two);
-  Serial.print(" ");
-  Serial.println(three);
-  // Serial.print(" ");
-  // Serial.println(four);
-
-  OSCMessage msg(one);
-  msg.add(two);
-  msg.add(three);
-  // msg.add(four);
-  sendUdp(ip, msg);
+  bool result = sendUdp(ip, msg);
+  // printOsc(msg);
+  // Serial.println();
+  return result;
 }
 
 bool discoverXrIp(IPAddress &result) {
@@ -282,28 +284,29 @@ bool connectThru(const std::string &ssid, const std::string &pass) {
   Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
-  Serial.println(ssid.c_str());
+  Serial.print(ssid.c_str());
+  Serial.print(" ");
   WiFi.begin(ssid.c_str(), pass.c_str());
 
   bool result = waitForConnection();
   int elapsed = millis() - start;
-  Serial.print("Elapsed: ");
-  Serial.println(elapsed);
-  if (!result) {
-    Serial.println("Failed to connect");
+  if (result) {
+    Serial.print("Success in: ");
+    Serial.println(elapsed);
+    return result;
+  } else {
+    Serial.print("Failed to connect in: ");
+    Serial.println(elapsed);
     return result;
   }
-
-  Serial.println("");
-
   Serial.print("Connected to WiFi: ");
   Serial.println(ssid.c_str());
 
-  Serial.println("Local IP: ");
+  Serial.print("Local IP / Broadcast / Gateway: ");
   Serial.println(WiFi.localIP());
-  Serial.print("Broadcast IP: ");
+  Serial.print(" / ");
   Serial.println(WiFi.broadcastIP());
-  Serial.print("Gateway IP: ");
+  Serial.print(" / ");
   Serial.println(WiFi.gatewayIP());
   Serial.println();
   Serial.println();
@@ -334,10 +337,14 @@ void setup() {
   }
 }
 
+bool sendReceiveOne(std::string &addr, std::string &msg) {
+  return true;
+}
+
 bool sendReceive(const std::vector<std::string> &ary, const std::string &msg) {
   for (int z = 0; z < ary.size(); z++) {
     Serial.println("vvvvvvv");
-    receiveAndPrintOscIfAny();
+    // receiveAndPrintOscIfAny();
 
     OSCMessage query;
 
@@ -353,7 +360,7 @@ bool sendReceive(const std::vector<std::string> &ary, const std::string &msg) {
     if (!send2(xrIp, ary[z], msg)) {
       return false;
     }
-    receiveAndPrintOscIfAny();
+    // receiveAndPrintOscIfAny();
 
     if (!send1(xrIp, ary[z])) {
       return false;
@@ -415,15 +422,15 @@ bool tryToReconnectWifi() {
 void loop() {
   // TODO: split XR unreachable from wifi down
   if (WiFi.status() != WL_CONNECTED || xrIp == INADDR_NONE) {
-    Serial.println("wifi down or XR unreachable. Reconnecting.");
-    if (tryToReconnectWifi()) {
-      Serial.println("wifi reconnection failed. Will try again in 200ms.");
+    Serial.println("Wifi down or XR unreachable. Reconnecting.");
+    if (!tryToReconnectWifi()) {
+      Serial.println("Wifi reconnection failed. Will try again in 200ms.");
       delay(200);
       return;
     }
-    Serial.println("wifi reconnection succeeded.");
+    Serial.println("Wifi reconnection succeeded.");
   } else {
-    Serial.println("wifi ok");
+    Serial.println("Wifi ok");
     sendABunchOfMessages();
   }
 }  // End of main loop
