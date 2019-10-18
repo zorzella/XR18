@@ -46,13 +46,17 @@ unsigned long recError = 0;
 
 bool waitForConnection() {
   unsigned long timeoutAt = millis() + 4000;
+  wl_status_t lastStatus{WL_NO_SHIELD};
   // TODO: timeout and do something (look at more networks?). Also
   // maybe there's a way to reset WiFi etc (I've seen it get stuck and
   // need to have the tires kicked)...
   while (millis() < timeoutAt) {
     wl_status_t status = WiFi.status();
     if (DEBUG_WIFI) {
-      Serial.print(status);
+      if (status != lastStatus) {
+        Serial.print(status);
+      }
+      lastStatus = status;
     }
     // TODO: deal with other statuses
     // See https://www.arduino.cc/en/Reference/WiFiStatus
@@ -98,7 +102,7 @@ void receiveOscIfAny(OSCMessage &msg) {
 }
 
 bool receiveOsc(OSCMessage &msg) {
-  unsigned long timeoutAt = millis() + 100;
+  unsigned long timeoutAt = millis() + 300;
   char buffer[SIZE_OF_RECEIVE_BUFFER];
   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
   while (millis() < timeoutAt) {
@@ -107,25 +111,7 @@ bool receiveOsc(OSCMessage &msg) {
       recOk++;
       return true;
     }
-  }
-  recError++;
-  return false;
-}
-
-bool receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
-  unsigned long timeoutAt = millis() + 200;
-  char buffer[SIZE_OF_RECEIVE_BUFFER];
-  memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
-  while (millis() < timeoutAt) {
-    receiveOscIfAny(msg);
-    if (msg.size() > 0) {
-      msg.getAddress(buffer);
-      if (!address.compare(buffer)) {
-        recOk++;
-        return true;
-      }
-      msg.empty();
-    }
+    delay(10);
   }
   recError++;
   return false;
@@ -175,6 +161,33 @@ void printOsc(OSCMessage &msg) {
   Serial.println();
 }
 
+bool receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
+  unsigned long startTs = millis();
+  unsigned long timeoutAt = startTs + 400;
+
+  char buffer[SIZE_OF_RECEIVE_BUFFER];
+  memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
+  while (millis() < timeoutAt) {
+    if (receiveOsc(msg)) {
+      msg.getAddress(buffer);
+      if (address.compare(buffer)) {
+        Serial.print("Unexpected ");
+        printOsc(msg);
+      } else {
+        recOk++;
+        Serial.print(millis() - startTs);
+        Serial.print("ms ");
+        return true;
+      }
+      msg.empty();
+    } else {
+      delay(10);
+    }
+  }
+  recError++;
+  return false;
+}
+
 void receiveAndPrintOscIfAny() {
   OSCMessage msg;
   while (true) {
@@ -204,18 +217,7 @@ bool sendUdp(const IPAddress &ip, OSCMessage &msg) {
     sendOk++;
     return true;
   }
-  sendError++;
   return false;
-}
-
-bool send(const IPAddress &ip, OSCMessage &msg) {
-  Serial.print(">>> [");
-  Serial.print(sendOk);
-  Serial.print(",");
-  Serial.print(sendError);
-  Serial.print("] ");
-  // Serial.println(msg.);
-  return sendUdp(ip, msg);
 }
 
 bool send1(const IPAddress &ip, const std::string &mess) {
@@ -227,8 +229,6 @@ bool send1(const IPAddress &ip, const std::string &mess) {
   Serial.print("] ");
   Serial.println(mess.c_str());
   bool result = sendUdp(ip, msg);
-  // printOsc(msg);
-  // Serial.println();
   return result;
 }
 
@@ -248,8 +248,6 @@ bool send2(const IPAddress &ip, const std::string &one,
   msg.add(two.c_str());
 
   bool result = sendUdp(ip, msg);
-  // printOsc(msg);
-  // Serial.println();
   return result;
 }
 
@@ -343,7 +341,7 @@ bool sendReceiveOne(const std::string &addr, const std::string &msg) {
   if (!send1(xrIp, addr)) {
     return false;
   }
-  if (!receiveOsc(query)) {
+  if (!receiveOscWithAddress(query, addr)) {
     return false;
   }
   printOsc(query);
@@ -352,12 +350,11 @@ bool sendReceiveOne(const std::string &addr, const std::string &msg) {
   if (!send2(xrIp, addr, msg)) {
     return false;
   }
-  // receiveAndPrintOscIfAny();
 
   if (!send1(xrIp, addr)) {
     return false;
   }
-  if (!receiveOsc(query)) {
+  if (!receiveOscWithAddress(query, addr)) {
     return false;
   }
   printOsc(query);
@@ -370,7 +367,6 @@ bool sendReceive(const std::vector<std::string> &ary, const std::string &msg) {
 
   for (int z = 0; z < ary.size(); z++) {
     Serial.println("vvvvvvv");
-    // receiveAndPrintOscIfAny();
     const std::string addr = ary[z];
 
     bool thisResult = sendReceiveOne(addr, msg);
@@ -403,7 +399,17 @@ const std::vector<std::string> CHANNEL_MSGS_TO_CHANGE_SEND_LEVEL{
 const std::string LEVEL_ON = "0";
 const std::string LEVEL_OFF = "-127";
 
+void warmup() {
+  // The first message (after /status) takes much longer than the
+  // rest for some reason. This warms things up.
+  send1(xrIp, CHANNELS_TO_TURN_ON_AND_OFF[1]);
+  OSCMessage query;
+  receiveOscWithAddress(query, CHANNELS_TO_TURN_ON_AND_OFF[1]);
+  printOsc(query);
+}
+
 void sendABunchOfMessages() {
+  warmup();
   sendReceive(CHANNEL_MSGS_TO_CHANGE_SEND_LEVEL, LEVEL_ON);
   sendReceive(CHANNELS_TO_TURN_ON_AND_OFF, CHANNEL_OFF);
   sendReceive(CHANNEL_MSGS_TO_CHANGE_SEND_LEVEL, LEVEL_OFF);
