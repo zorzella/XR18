@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "XRRowDescription.h"
 #include "XRFunctionDescription.h"
+#include "XRRowDescription.h"
 
 class XRFunction {
  private:
@@ -14,13 +14,14 @@ class XRFunction {
   const int m_vPos;
 
  public:
-  XRFunction(const XRRowDescription &m_row, const XRFunctionDescription &m_func, int hPos, int vPos);
+  XRFunction(const XRRowDescription &m_row, const XRFunctionDescription &m_func,
+             int hPos, int vPos);
   const XRRowDescription row() const;
   const XRFunctionDescription func() const;
   const int hPos() const;
   const int vPos() const;
 
-  // const std::string toStr() const;
+  const std::string toStr() const;
 };
 
 #endif

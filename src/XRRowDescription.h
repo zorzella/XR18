@@ -15,7 +15,7 @@ class XRRowDescription {
   XRRowDescription(const std::string name, const std::vector<XRFunctionDescription> funcs);
 
   const std::string rowName() const;
-  const std::vector<XRFunctionDescription> funcs();
+  const std::vector<XRFunctionDescription> funcs() const;
 };
 
 #endif

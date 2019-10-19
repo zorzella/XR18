@@ -9,4 +9,4 @@ XRRowDescription::XRRowDescription(
     : m_name(name), m_funcs(funcs){};
 
 const std::string XRRowDescription::rowName() const { return m_name; }
-const std::vector<XRFunctionDescription> XRRowDescription::funcs() { return m_funcs; }
+const std::vector<XRFunctionDescription> XRRowDescription::funcs() const { return m_funcs; }

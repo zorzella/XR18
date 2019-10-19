@@ -4,6 +4,8 @@
 #include <utility>
 #include <vector>
 
+#include <ArduinoTrace.h>
+
 #include "XRFunction.h"
 #include "XRFunctionDescription.h"
 #include "XRNavigation.h"
@@ -43,24 +45,32 @@ static XRRowDescription buildRowDescription(int i) {
   throw - 1;
 }
 
-static std::map<const std::pair<int, int>, const XRFunction> buildFunctions() {
-  std::map<const std::pair<int, int>, const XRFunction> result{};
+// std::map<const std::pair<int, int>, const XRFunction> allFunctions;
+
+static void buildFunctions(
+  std::map<const std::pair<int, int>, const XRFunction> allFunctions) {
   for (int i = 0; i < 1; i++) {
     XRRowDescription row = buildRowDescription(i);
     for (int j = 0; j < row.funcs().size(); j++) {
-      result.emplace(std::pair<int, int>{i, j},
-                     XRFunction(row, row.funcs()[j], i, j));
+      allFunctions.emplace(std::pair<int, int>{i, j},
+                     new XRFunction(row, row.funcs()[j], i, j));
     }
   }
 
-  return result;
+  // return allFunctions;
 }
 
 XRFunction* m_currentFunction;
 
 XRNavigation::XRNavigation() {
-  m_functions = buildFunctions();
+  TRACE();
+  m_functions = {};
+  // m_functions = 
+  TRACE();
+  // buildFunctions(m_functions);
+  TRACE();
   XRFunction f = m_functions.at({0, 0});
+  TRACE();
   m_currentFunction = &f;
 }
 
@@ -83,8 +93,9 @@ XRNavigation::XRNavigation() {
  * @return the XRFunction to go to when the current function is @a other and
  * the "right" button is pressed.
  */
-const XRFunction& XRNavigation::right() const {
-  return right(*m_currentFunction);
+const void XRNavigation::goRight() const {
+  XRFunction f = right(*m_currentFunction);
+  m_currentFunction = &f;
 }
 
 const XRFunction& XRNavigation::right(const XRFunction& other) const {

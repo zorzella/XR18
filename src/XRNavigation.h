@@ -7,8 +7,10 @@
 
 class XRNavigation {
  public:
+  XRNavigation();
+
   const XRFunction& current() const;
-  const XRFunction& right() const;
+  const void goRight() const;
 
   // const XRFunction right(const XRFunction &other) const;
   // const XRFunction left(const XRFunction &other) const;
@@ -16,8 +18,6 @@ class XRNavigation {
  private:
   // const XRFunction m_currentFunction;
   int foo;
-
-  XRNavigation();
 
   const int rowPosition(const XRFunction& other) const;
 

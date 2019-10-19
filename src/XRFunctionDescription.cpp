@@ -8,10 +8,11 @@ XRFunctionDescription::XRFunctionDescription(const std::string name,
                                              const float notch)
     : m_name(name), m_oscAddr(oscAddr), m_notch(notch) {}
 
-const std::string XRFunctionDescription::name() { return m_name; }
+const std::string XRFunctionDescription::name() const { return m_name; }
 
-const std::string XRFunctionDescription::oscAddr() { return m_oscAddr; }
+const std::string XRFunctionDescription::oscAddr() const { return m_oscAddr; }
 
-void XRFunctionDescription::plus(OSCMessage &outParam, OSCMessage &source) {
+void XRFunctionDescription::plus(OSCMessage &outParam,
+                                 OSCMessage &source) const {
   outParam = source;
 }

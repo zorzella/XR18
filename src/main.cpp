@@ -5,13 +5,14 @@
 // ***************************************************************
 
 #include <Arduino.h>
+#include <ArduinoTrace.h>
 
 #include <OSCMessage.h>  // For OSC support
 #include <WiFi.h>        // For WiFi
 #include <WiFiUdp.h>     // For WiFi
 
+#include "XRNavigation.h"
 #include "networks.h"
-// #include "XRNavigation.h"
 
 // Setup button pins
 int myButtons[] = {39, 34, 25, 26};  // define the pins for the buttons
@@ -434,10 +435,29 @@ bool tryToReconnectWifi() {
   return result;
 }
 
-// XRNavigation navigation {};
+// XRNavigation navigation;
 
 void navigate() {
+  XRNavigation nav;
+  if (true) {
+    return;
+  }
+  // TRACE();
   // navigation.current();
+  // TRACE();
+  // navigation.current().toStr();
+  // TRACE();
+  // navigation.current().toStr().c_str();
+  // TRACE();
+
+  // Serial.println(navigation.current().toStr().c_str());
+  // navigation.goRight();
+  // Serial.println(navigation.current().toStr().c_str());
+  // navigation.goRight();
+  // Serial.println(navigation.current().toStr().c_str());
+  // navigation.goRight();
+  // Serial.println(navigation.current().toStr().c_str());
+  // navigation.goRight();
 }
 
 void loop() {
@@ -454,5 +474,6 @@ void loop() {
     Serial.println("Wifi ok");
     // sendABunchOfMessages();
     navigate();
+    delay(4000);
   }
 }  // End of main loop
