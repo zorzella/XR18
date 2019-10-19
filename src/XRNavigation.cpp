@@ -1,14 +1,16 @@
 #include <vector>
 
 #include "XRFunction.h"
-#include "XRRowDescription.h"
 
-class XRNavigation {
+#include "XRRowDescription.h"
+#include "XRNavigation.h"
+
+// class XRNavigation {
 
   const XRRowDescription CH01{"CH01"};
   const XRRowDescription CH02{"CH02"};
 
- private:
+//  private:
   const std::vector<XRRowDescription> rows{
       CH01,
       CH02,
@@ -23,7 +25,7 @@ class XRNavigation {
   //   throw - 1;
   // }
 
- public:
+//  public:
   // XRFunction right(XRFunction that) {
   //   int resultPosition = position(that);
   //   resultPosition++;
@@ -41,4 +43,4 @@ class XRNavigation {
   //   }
   //   return rows[resultPosition];
   // };
-};
+// };

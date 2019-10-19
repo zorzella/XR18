@@ -1,11 +1,13 @@
-#include <XRFunction.h>
+// #include "XRFunction.h"
 #include <string>
 #include <vector>
 
 class XRRowDescription {
  private:
+   const std::string name;
+
  public:
-  XRRowDescription(std::string name);
+  XRRowDescription(const std::string name);
 
   std::string rowName();
 };
