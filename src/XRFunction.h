@@ -1,12 +1,23 @@
+#ifndef XR_FUNCTION_h
+#define XR_FUNCTION_h
+
 #include <string>
+
+#include "XRRowDescription.h"
+#include "XRFunctionDescription.h"
 
 class XRFunction {
  private:
-  const std::string m_name;
-  const std::string m_oscAddr;
+  const XRRowDescription m_row;
+  const XRFunctionDescription m_func;
+
+  const int m_vPos;
 
  public:
-  const std::string oscAddr();
-  const std::string name();
-  XRFunction(const std::string oscAddr, const std::string name);
+  XRFunction(const XRRowDescription m_row, const XRFunctionDescription m_func, const int vPos);
+  const XRRowDescription row() const;
+  const XRFunctionDescription func() const;
+  const int vPos() const;
 };
+
+#endif

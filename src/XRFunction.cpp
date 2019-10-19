@@ -2,22 +2,20 @@
 #include <string>
 
 #include "XRFunction.h"
+#include "XRFunctionDescription.h"
+#include "XRRowDescription.h"
 
-// class XRFunction {
-//  private:
+XRFunction::XRFunction(const XRRowDescription row,
+                       const XRFunctionDescription func,
+                       const int vPos)
+    : m_row(row), m_func(func), m_vPos(vPos) {}
 
-//  public:
-XRFunction::XRFunction(const std::string oscAddr, const std::string name)
-    : m_name(), m_oscAddr() {}
+const XRRowDescription XRFunction::row() const { return m_row; };
+const XRFunctionDescription XRFunction::func() const { return m_func; };
 
-const std::string XRFunction::name() { return m_name; }
-
-const std::string XRFunction::oscAddr() { return m_oscAddr; }
-
-void plus(OSCMessage &outParam, OSCMessage &source) {
+void plus(OSCMessage& outParam, OSCMessage& source) {
   // source.getAddress(buffer);
   outParam = source;
   // if (source.ge)
   // outParam
 }
-// };

@@ -1,4 +1,6 @@
-// #include "XRFunction.h"
+#ifndef XR_ROW_DESCRIPTION_h
+#define XR_ROW_DESCRIPTION_h
+
 #include <string>
 #include <vector>
 
@@ -9,5 +11,7 @@ class XRRowDescription {
  public:
   XRRowDescription(const std::string name);
 
-  std::string rowName();
+  const std::string rowName() const;
 };
+
+#endif
