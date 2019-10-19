@@ -19,6 +19,8 @@ class XRFunction {
   const XRFunctionDescription func() const;
   const int hPos() const;
   const int vPos() const;
+
+  // const std::string toStr() const;
 };
 
 #endif

@@ -11,6 +11,7 @@
 #include <WiFiUdp.h>     // For WiFi
 
 #include "networks.h"
+// #include "XRNavigation.h"
 
 // Setup button pins
 int myButtons[] = {39, 34, 25, 26};  // define the pins for the buttons
@@ -433,6 +434,12 @@ bool tryToReconnectWifi() {
   return result;
 }
 
+// XRNavigation navigation {};
+
+void navigate() {
+  // navigation.current();
+}
+
 void loop() {
   // TODO: split XR unreachable from wifi down
   if (WiFi.status() != WL_CONNECTED || xrIp == INADDR_NONE) {
@@ -445,6 +452,7 @@ void loop() {
     Serial.println("Wifi reconnection succeeded.");
   } else {
     Serial.println("Wifi ok");
-    sendABunchOfMessages();
+    // sendABunchOfMessages();
+    navigate();
   }
 }  // End of main loop

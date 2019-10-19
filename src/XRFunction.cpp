@@ -20,3 +20,10 @@ void plus(OSCMessage& outParam, OSCMessage& source) {
   // if (source.ge)
   // outParam
 }
+
+// const std::string XRFunction::toStr() const {
+//   return "foo";
+//   // char buffer[50];
+//   // sprintf(buffer, "", row().rowName(), func().name());
+//   // return buffer;
+// };

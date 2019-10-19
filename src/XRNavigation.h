@@ -6,13 +6,22 @@
 #include "XRFunction.h"
 
 class XRNavigation {
-  private:
-  const int rowPosition(const XRFunction &other) const;
+ public:
+  const XRFunction& current() const;
+  const XRFunction& right() const;
+
+  // const XRFunction right(const XRFunction &other) const;
+  // const XRFunction left(const XRFunction &other) const;
+
+ private:
+  // const XRFunction m_currentFunction;
+  int foo;
 
   XRNavigation();
- public:
-  const XRFunction right(const XRFunction &other) const;
-  // const XRFunction left(const XRFunction &other) const;
+
+  const int rowPosition(const XRFunction& other) const;
+
+  const XRFunction& right(const XRFunction& other) const;
 };
 
 #endif

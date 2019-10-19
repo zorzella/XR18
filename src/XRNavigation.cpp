@@ -1,5 +1,6 @@
 // #include <map>
 #include <bits/stdc++.h>
+#include <iterator>
 #include <utility>
 #include <vector>
 
@@ -14,22 +15,38 @@ const std::vector<XRFunctionDescription> oneToSixteenFuncs(
       XRFunctionDescription{"Gain", "headamp/" + channelNo + "/gain", 0.5}};
 };
 
-const XRRowDescription CH01{"CH01", oneToSixteenFuncs("01")};
-const XRRowDescription CH02{"CH02", oneToSixteenFuncs("02")};
+// const XRRowDescription CH01{"CH01", oneToSixteenFuncs("01")};
+// const XRRowDescription CH02{"CH02", oneToSixteenFuncs("02")};
 
 // TODO: delete
-const std::vector<XRRowDescription> ROWS{
-    CH01,
-    CH02,
-};
+// const std::vector<XRRowDescription> ROWS{
+//     CH01,
+//     CH02,
+// };
 
-// std::vector<XRFunction> m_functions;
-std::map<std::pair<int, int>, XRFunction> m_functions;
+int numRows = 2;
 
-static std::map<std::pair<int, int>, XRFunction> buildFunctions() {
-  std::map<std::pair<int, int>, XRFunction> result{};
+std::map<const std::pair<int, int>, const XRFunction> m_functions;
+
+static XRRowDescription buildRowDescription(int i) {
+  if (i < 0 || i >= numRows) {
+    throw - 1;
+  }
+  if (i < 16) {
+    char buffer[10];
+    sprintf(buffer, "CH0%d", i);
+    std::string name = buffer;
+    sprintf(buffer, "0%d", i);
+    std::string channelNo = buffer;
+    return XRRowDescription{name, oneToSixteenFuncs(channelNo)};
+  }
+  throw - 1;
+}
+
+static std::map<const std::pair<int, int>, const XRFunction> buildFunctions() {
+  std::map<const std::pair<int, int>, const XRFunction> result{};
   for (int i = 0; i < 1; i++) {
-    XRRowDescription row = ROWS[i];
+    XRRowDescription row = buildRowDescription(i);
     for (int j = 0; j < row.funcs().size(); j++) {
       result.emplace(std::pair<int, int>{i, j},
                      XRFunction(row, row.funcs()[j], i, j));
@@ -39,7 +56,13 @@ static std::map<std::pair<int, int>, XRFunction> buildFunctions() {
   return result;
 }
 
-XRNavigation::XRNavigation() { m_functions = buildFunctions(); }
+XRFunction* m_currentFunction;
+
+XRNavigation::XRNavigation() {
+  m_functions = buildFunctions();
+  XRFunction f = m_functions.at({0, 0});
+  m_currentFunction = &f;
+}
 
 // const int XRNavigation::rowPosition(const XRFunction &other) const {
 //   const XRRowDescription otherDesc = other.row();
@@ -56,18 +79,27 @@ XRNavigation::XRNavigation() { m_functions = buildFunctions(); }
 
 // ch/../config/name
 
-const XRFunction XRNavigation::right(const XRFunction &other) const {
-  int rowPos = other.hPos();  // rowPosition(other);
+/**
+ * @return the XRFunction to go to when the current function is @a other and
+ * the "right" button is pressed.
+ */
+const XRFunction& XRNavigation::right() const {
+  return right(*m_currentFunction);
+}
+
+const XRFunction& XRNavigation::right(const XRFunction& other) const {
+  int rowPos = other.hPos();
   rowPos++;
-  if (rowPos == ROWS.size()) {
+  if (rowPos == numRows) {
     rowPos = 0;
   }
 
-  // other.vPos()
+  const XRFunction& result = m_functions.at({rowPos, other.vPos()});
 
-  throw - 1;
-  // return ROWS[rowPos];
+  return result;
 }
+
+const XRFunction& XRNavigation::current() const { return *m_currentFunction; }
 
 // const XRFunction left(const XRFunction &other) const  {
 //       int rowPos = rowPosition(other);
