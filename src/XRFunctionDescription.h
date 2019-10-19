@@ -7,13 +7,14 @@
 
 class XRFunctionDescription {
  private:
-  const std::string m_oscAddr;
   const std::string m_name;
+  const std::string m_oscAddr;
+  const float m_notch;
 
  public:
-  XRFunctionDescription(const std::string oscAddr, const std::string name);
-  const std::string oscAddr();
+  XRFunctionDescription(const std::string name, const std::string oscAddr, const float notch);
   const std::string name();
+  const std::string oscAddr();
   void plus(OSCMessage &outParam, OSCMessage &source);
 };
 

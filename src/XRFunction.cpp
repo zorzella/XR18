@@ -5,10 +5,11 @@
 #include "XRFunctionDescription.h"
 #include "XRRowDescription.h"
 
-XRFunction::XRFunction(const XRRowDescription row,
-                       const XRFunctionDescription func,
-                       const int vPos)
-    : m_row(row), m_func(func), m_vPos(vPos) {}
+XRFunction::XRFunction(const XRRowDescription &row,
+                       const XRFunctionDescription &func,
+                       int hPos,
+                       int vPos)
+    : m_row(row), m_func(func), m_hPos(hPos), m_vPos(vPos) {}
 
 const XRRowDescription XRFunction::row() const { return m_row; };
 const XRFunctionDescription XRFunction::func() const { return m_func; };
