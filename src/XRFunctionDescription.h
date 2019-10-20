@@ -7,9 +7,9 @@
 
 class XRFunctionDescription {
  private:
-  const std::string m_name;
-  const std::string m_oscAddr;
-  const float m_notch;
+  std::string m_name;
+  std::string m_oscAddr;
+  float m_notch;
 
  public:
   XRFunctionDescription(const std::string name, const std::string oscAddr,

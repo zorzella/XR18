@@ -1,4 +1,3 @@
-// #include <map>
 #include <bits/stdc++.h>
 #include <iterator>
 #include <utility>
@@ -17,18 +16,22 @@ const std::vector<XRFunctionDescription> oneToSixteenFuncs(
       XRFunctionDescription{"Gain", "headamp/" + channelNo + "/gain", 0.5}};
 };
 
-// const XRRowDescription CH01{"CH01", oneToSixteenFuncs("01")};
-// const XRRowDescription CH02{"CH02", oneToSixteenFuncs("02")};
-
-// TODO: delete
-// const std::vector<XRRowDescription> ROWS{
-//     CH01,
-//     CH02,
-// };
-
 int numRows = 2;
 
-std::map<const std::pair<int, int>, const XRFunction> m_functions;
+const std::vector<XRFunctionDescription> CH01_FUNCTION_DESCRIPTIONS{
+    {XRFunctionDescription{"Gain", "headamp/01/gain", 0.5}},
+};
+
+const std::vector<XRFunctionDescription> CH02_FUNCTION_DESCRIPTIONS{
+    {XRFunctionDescription{"Gain", "headamp/02/gain", 0.5}},
+};
+
+const std::vector<XRRowDescription> ROWS{
+    XRRowDescription{"CH01", CH01_FUNCTION_DESCRIPTIONS},
+    XRRowDescription{"CH02", CH02_FUNCTION_DESCRIPTIONS},
+};
+
+std::map<std::pair<int, int>, XRFunction> m_functions;
 
 static XRRowDescription buildRowDescription(int i) {
   if (i < 0 || i >= numRows) {
@@ -45,33 +48,36 @@ static XRRowDescription buildRowDescription(int i) {
   throw - 1;
 }
 
-// std::map<const std::pair<int, int>, const XRFunction> allFunctions;
-
 static void buildFunctions(
-  std::map<const std::pair<int, int>, const XRFunction> allFunctions) {
-  for (int i = 0; i < 1; i++) {
-    XRRowDescription row = buildRowDescription(i);
-    for (int j = 0; j < row.funcs().size(); j++) {
-      allFunctions.emplace(std::pair<int, int>{i, j},
-                     new XRFunction(row, row.funcs()[j], i, j));
-    }
-  }
+    std::map<std::pair<int, int>, XRFunction>& allFunctions) {
+  std::pair<int, int> pair{0, 0};
+  XRFunction value{CH01_FUNCTION_DESCRIPTIONS[0], 0, 0};
+  allFunctions.insert({{0, 0}, value});
+  // for (int i = 0; i < 1; i++) {
+  //   XRRowDescription row = buildRowDescription(i);
+  //   for (int j = 0; j < row.funcs().size(); j++) {
+  //     auto pair = std::pair<int, int>{i, j};
+  //     auto func = XRFunction{row.funcs()[j], i, j};
+  //     allFunctions.insert({pair, func});
 
-  // return allFunctions;
+  //   }
+  // }
 }
 
 XRFunction* m_currentFunction;
 
 XRNavigation::XRNavigation() {
-  TRACE();
   m_functions = {};
-  // m_functions = 
-  TRACE();
-  // buildFunctions(m_functions);
-  TRACE();
+  buildFunctions(m_functions);
+  if (m_functions.find({0, 0}) == m_functions.end()) {
+    Serial.printf("No functions found at 0,0. Size is %i\n",
+                  m_functions.size());
+    return;
+  }
   XRFunction f = m_functions.at({0, 0});
-  TRACE();
   m_currentFunction = &f;
+  Serial.printf("Current function name: %s\n",
+                m_currentFunction->func().name().c_str());
 }
 
 // const int XRNavigation::rowPosition(const XRFunction &other) const {

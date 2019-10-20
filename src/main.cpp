@@ -438,29 +438,24 @@ bool tryToReconnectWifi() {
 // XRNavigation navigation;
 
 void navigate() {
-  XRNavigation nav;
-  if (true) {
-    return;
-  }
-  // TRACE();
-  // navigation.current();
-  // TRACE();
-  // navigation.current().toStr();
-  // TRACE();
-  // navigation.current().toStr().c_str();
-  // TRACE();
+  XRNavigation navigation;
+  // if (true) {
+  //   return;
+  // }
 
-  // Serial.println(navigation.current().toStr().c_str());
-  // navigation.goRight();
-  // Serial.println(navigation.current().toStr().c_str());
-  // navigation.goRight();
-  // Serial.println(navigation.current().toStr().c_str());
-  // navigation.goRight();
-  // Serial.println(navigation.current().toStr().c_str());
-  // navigation.goRight();
+
+  Serial.println(navigation.current().toStr().c_str());
+  navigation.goRight();
+  Serial.println(navigation.current().toStr().c_str());
+  navigation.goRight();
+  Serial.println(navigation.current().toStr().c_str());
+  navigation.goRight();
+  Serial.println(navigation.current().toStr().c_str());
+  navigation.goRight();
 }
 
 void loop() {
+  navigate();
   // TODO: split XR unreachable from wifi down
   if (WiFi.status() != WL_CONNECTED || xrIp == INADDR_NONE) {
     Serial.println("Wifi down or XR unreachable. Reconnecting.");

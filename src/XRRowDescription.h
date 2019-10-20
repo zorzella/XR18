@@ -8,8 +8,8 @@
 
 class XRRowDescription {
  private:
-   const std::string m_name;
-   const std::vector<XRFunctionDescription> m_funcs;
+   std::string m_name;
+   std::vector<XRFunctionDescription> m_funcs;
 
  public:
   XRRowDescription(const std::string name, const std::vector<XRFunctionDescription> funcs);
