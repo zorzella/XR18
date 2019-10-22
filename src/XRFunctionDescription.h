@@ -16,6 +16,7 @@ class XRFunctionDescription {
                         const float notch);
   const std::string name() const;
   const std::string oscAddr() const;
+  const float notch() const;
   void plus(OSCMessage &outParam, OSCMessage &source) const;
 };
 

@@ -33,25 +33,25 @@ const std::vector<XRRowDescription> ROWS{
 
 std::map<std::pair<int, int>, XRFunction> m_functions;
 
-static XRRowDescription buildRowDescription(int i) {
-  if (i < 0 || i >= numRows) {
-    throw - 1;
-  }
-  if (i < 16) {
-    char buffer[10];
-    sprintf(buffer, "CH0%d", i);
-    std::string name = buffer;
-    sprintf(buffer, "0%d", i);
-    std::string channelNo = buffer;
-    return XRRowDescription{name, oneToSixteenFuncs(channelNo)};
-  }
-  throw - 1;
-}
+// static XRRowDescription buildRowDescription(int i) {
+//   if (i < 0 || i >= numRows) {
+//     throw - 1;
+//   }
+//   if (i < 16) {
+//     char buffer[10];
+//     sprintf(buffer, "CH0%d", i);
+//     std::string name = buffer;
+//     sprintf(buffer, "0%d", i);
+//     std::string channelNo = buffer;
+//     return XRRowDescription{name, oneToSixteenFuncs(channelNo)};
+//   }
+//   throw - 1;
+// }
 
 static void buildFunctions(
     std::map<std::pair<int, int>, XRFunction>& allFunctions) {
-  std::pair<int, int> pair{0, 0};
-  XRFunction value{CH01_FUNCTION_DESCRIPTIONS[0], 0, 0};
+  // std::pair<int, int> pair{0, 0};
+  XRFunction value{"Gain", "headamp/02/gain", 0.5, 0, 0};
   allFunctions.insert({{0, 0}, value});
   // for (int i = 0; i < 1; i++) {
   //   XRRowDescription row = buildRowDescription(i);
@@ -64,20 +64,26 @@ static void buildFunctions(
   // }
 }
 
-XRFunction* m_currentFunction;
+int m_currentHPos;
+int m_currentVPos;
+
+const XRFunction XRNavigation::currentFunction() const {
+  return m_functions.at({m_currentHPos, m_currentVPos});
+};
+
 
 XRNavigation::XRNavigation() {
-  m_functions = {};
+  // m_functions = {};
   buildFunctions(m_functions);
   if (m_functions.find({0, 0}) == m_functions.end()) {
-    Serial.printf("No functions found at 0,0. Size is %i\n",
+    Serial.printf("No function found at 0,0. Size is %i\n",
                   m_functions.size());
     return;
   }
-  XRFunction f = m_functions.at({0, 0});
-  m_currentFunction = &f;
-  Serial.printf("Current function name: %s\n",
-                m_currentFunction->func().name().c_str());
+  // XRFunction f = m_functions.at({0, 0});
+  // m_currentFunction = &f;
+  // Serial.printf("Current function name: %s\n",
+  //               currentFunction->name().c_str());
 }
 
 // const int XRNavigation::rowPosition(const XRFunction &other) const {
@@ -100,23 +106,27 @@ XRNavigation::XRNavigation() {
  * the "right" button is pressed.
  */
 const void XRNavigation::goRight() const {
-  XRFunction f = right(*m_currentFunction);
-  m_currentFunction = &f;
-}
-
-const XRFunction& XRNavigation::right(const XRFunction& other) const {
-  int rowPos = other.hPos();
-  rowPos++;
-  if (rowPos == numRows) {
-    rowPos = 0;
+  // XRFunction f = right(*m_currentFunction);
+  // m_currentFunction = &f;
+  m_currentHPos++;
+  if (m_currentHPos == numRows) {
+    m_currentHPos = 0;
   }
-
-  const XRFunction& result = m_functions.at({rowPos, other.vPos()});
-
-  return result;
 }
 
-const XRFunction& XRNavigation::current() const { return *m_currentFunction; }
+// const XRFunction& XRNavigation::right(const XRFunction& other) const {
+//   int rowPos = other.hPos();
+//   rowPos++;
+//   if (rowPos == numRows) {
+//     rowPos = 0;
+//   }
+
+//   const XRFunction& result = m_functions.at({rowPos, other.vPos()});
+
+//   return result;
+// }
+
+// const XRFunction& XRNavigation::current() const { return currentFunction(); }
 
 // const XRFunction left(const XRFunction &other) const  {
 //       int rowPos = rowPosition(other);

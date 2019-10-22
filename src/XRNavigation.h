@@ -9,7 +9,8 @@ class XRNavigation {
  public:
   XRNavigation();
 
-  const XRFunction& current() const;
+  // TODO: return &XRFunction ?
+  const XRFunction currentFunction() const;
   const void goRight() const;
 
   // const XRFunction right(const XRFunction &other) const;

@@ -435,23 +435,39 @@ bool tryToReconnectWifi() {
   return result;
 }
 
-// XRNavigation navigation;
+XRNavigation navigation;
+
+void printCurrentFunction() {
+  // XRNavigation navigation;
+  Serial.print("Name: ");
+  Serial.print(navigation.currentFunction().name().c_str());
+  Serial.print(", OSC: ");
+  Serial.println(navigation.currentFunction().oscAddr().c_str());
+}
 
 void navigate() {
-  XRNavigation navigation;
-  // if (true) {
-  //   return;
-  // }
+
+  printCurrentFunction();
+  navigation.goRight();
+  printCurrentFunction();
+  navigation.goRight();
+  printCurrentFunction();
+  navigation.goRight();
+
+  // XRNavigation navigation;
+  // // if (true) {
+  // //   return;
+  // // }
 
 
-  Serial.println(navigation.current().toStr().c_str());
-  navigation.goRight();
-  Serial.println(navigation.current().toStr().c_str());
-  navigation.goRight();
-  Serial.println(navigation.current().toStr().c_str());
-  navigation.goRight();
-  Serial.println(navigation.current().toStr().c_str());
-  navigation.goRight();
+  // Serial.println(navigation.currentFunction().toStr().c_str());
+  // navigation.goRight();
+  // Serial.println(navigation.currentFunction().toStr().c_str());
+  // navigation.goRight();
+  // Serial.println(navigation.currentFunction().toStr().c_str());
+  // navigation.goRight();
+  // Serial.println(navigation.currentFunction().toStr().c_str());
+  // navigation.goRight();
 }
 
 void loop() {
