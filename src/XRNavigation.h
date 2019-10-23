@@ -9,16 +9,18 @@ class XRNavigation {
  public:
   XRNavigation();
 
-  // TODO: return &XRFunction ?
-  const XRFunction currentFunction() const;
-  const void goRight() const;
+  void init();
 
-  // const XRFunction right(const XRFunction &other) const;
-  // const XRFunction left(const XRFunction &other) const;
+  const XRFunction& currentFunction() const;
+  void goRight();
+  void goLeft();
+  void goUp();
+  void goDown();
 
  private:
-  // const XRFunction m_currentFunction;
-  int foo;
+  // int foo;
+
+  void buildFunctions();
 
   const int rowPosition(const XRFunction& other) const;
 

@@ -44,6 +44,8 @@ unsigned long sendErrorCount = 0;
 unsigned long recOkCount = 0;
 unsigned long recErrorCount = 0;
 
+XRNavigation navigation;
+
 bool waitForConnection() {
   unsigned long timeoutAt = millis() + 4000;
   wl_status_t lastStatus{WL_NO_SHIELD};
@@ -333,6 +335,8 @@ void setup() {
   for (int i = 0; i < ledCount; i++) {
     pinMode(myLeds[i], OUTPUT);  // initialize the LED as an output
   }
+
+  navigation.init();
 }
 
 bool sendReceiveOne(const std::string &addr, const std::string &msg) {
@@ -435,10 +439,7 @@ bool tryToReconnectWifi() {
   return result;
 }
 
-XRNavigation navigation;
-
 void printCurrentFunction() {
-  // XRNavigation navigation;
   Serial.print("Name: ");
   Serial.print(navigation.currentFunction().name().c_str());
   Serial.print(", OSC: ");
@@ -446,28 +447,26 @@ void printCurrentFunction() {
 }
 
 void navigate() {
-
   printCurrentFunction();
   navigation.goRight();
   printCurrentFunction();
   navigation.goRight();
   printCurrentFunction();
   navigation.goRight();
-
-  // XRNavigation navigation;
-  // // if (true) {
-  // //   return;
-  // // }
-
-
-  // Serial.println(navigation.currentFunction().toStr().c_str());
-  // navigation.goRight();
-  // Serial.println(navigation.currentFunction().toStr().c_str());
-  // navigation.goRight();
-  // Serial.println(navigation.currentFunction().toStr().c_str());
-  // navigation.goRight();
-  // Serial.println(navigation.currentFunction().toStr().c_str());
-  // navigation.goRight();
+  printCurrentFunction();
+  navigation.goUp();
+  printCurrentFunction();
+  navigation.goUp();
+  printCurrentFunction();
+  navigation.goLeft();
+  printCurrentFunction();
+  navigation.goLeft();
+  printCurrentFunction();
+  navigation.goDown();
+  printCurrentFunction();
+  navigation.goDown();
+  printCurrentFunction();
+  navigation.goDown();
 }
 
 void loop() {
