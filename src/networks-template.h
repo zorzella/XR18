@@ -1,3 +1,6 @@
+#ifndef NETWORKS_h
+#define NETWORKS_h
+
 #include <vector>
 #include <string>
 
@@ -18,3 +21,5 @@ std::vector<WifiNetwork> XR_NETWORKS {
 std::vector<std::string> XR_NAMES {
   "name of your XR",
 };
+
+#endif

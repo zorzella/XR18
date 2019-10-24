@@ -40,13 +40,13 @@ void XRNavigation::buildFunctions() {
         switch (v) {
           case GAIN:
             toPopulate.m_name = "Gain";
-            sprintf(temp, "headamp/%02d/gain", h);
+            sprintf(temp, "/headamp/%02d/gain", h);
             toPopulate.m_oscAddr = temp;
             toPopulate.m_notch = 0.5;
             break;
           case FADER:
             toPopulate.m_name = "Fader";
-            sprintf(temp, "ch/%02d/mix/fader", h);
+            sprintf(temp, "/ch/%02d/mix/fader", h);
             toPopulate.m_oscAddr = temp;
             toPopulate.m_notch = 0.5;
             break;
