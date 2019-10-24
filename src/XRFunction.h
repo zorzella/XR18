@@ -3,6 +3,10 @@
 
 #include <string>
 
+#include <OSCMessage.h>
+
+static const char UNKNOWN[] = "Unknown";
+
 class XRFunction {
  public:
   XRFunction();
@@ -15,6 +19,7 @@ class XRFunction {
   const float notch() const;
   const int hPos() const;
   const int vPos() const;
+  void plus();
 
  private:
   friend class XRNavigation;
@@ -25,6 +30,9 @@ class XRFunction {
   std::string m_name;
   std::string m_oscAddr;
   float m_notch;
+
+  unsigned long lastUpdated;
+  OSCData *oscData;
 };
 
 #endif

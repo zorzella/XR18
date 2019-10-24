@@ -8,8 +8,8 @@
 XRFunction::XRFunction()
     : m_hPos{-1},
       m_vPos{-1},
-      m_name{"Unknown"},
-      m_oscAddr{"Unknown"},
+      m_name{UNKNOWN},
+      m_oscAddr{UNKNOWN},
       m_notch{0} {}
 
 XRFunction::XRFunction(const int hPos, const int vPos, const std::string name,
@@ -30,3 +30,8 @@ const std::string XRFunction::name() const { return m_name; }
 const std::string XRFunction::oscAddr() const { return m_oscAddr; }
 
 const float XRFunction::notch() const { return m_notch; }
+
+void XRFunction::plus() {
+
+  // send
+}

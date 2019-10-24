@@ -138,10 +138,13 @@ void printMsg(OSCMessage &msg) {
     Serial.print(" [");
     if (msg.isString(i)) {
       msg.getString(i, buffer);
+      Serial.print("s - ");
       Serial.print(buffer);
     } else if (msg.isInt(i)) {
+      Serial.print("i - ");
       Serial.print(msg.getInt(i));
     } else if (msg.isFloat(i)) {
+      Serial.print("f - ");
       Serial.print(msg.getFloat(i));
     } else {
       Serial.print("type: ");
@@ -230,6 +233,25 @@ bool send1(const IPAddress &ip, const std::string &mess) {
   Serial.print(sendErrorCount);
   Serial.print("] ");
   Serial.println(mess.c_str());
+  bool result = sendUdp(ip, msg);
+  return result;
+}
+
+bool send2(const IPAddress &ip, const std::string &one,
+           const int &two) {
+  Serial.print(">>> [");
+  Serial.print(sendOkCount);
+  Serial.print(",");
+  Serial.print(sendErrorCount);
+  Serial.print("] ");
+
+  Serial.print(one.c_str());
+  Serial.print(" ");
+  Serial.println(two);
+
+  OSCMessage msg(one.c_str());
+  msg.add(two);
+
   bool result = sendUdp(ip, msg);
   return result;
 }
@@ -446,7 +468,42 @@ void printCurrentFunction() {
   Serial.println(navigation.currentFunction().oscAddr().c_str());
 }
 
+void receiveAndPrintIfAny() {
+  OSCMessage query;
+  receiveOscIfAny(query);
+  printOsc(query);
+  query.empty();
+}
+
+void monitorOsc() {
+  send1(xrIp, "/xremote");
+  for (int i = 0; i < 150; i++) {
+    receiveAndPrintIfAny();
+    delay(100);
+  }
+}
+
 void navigate() {
+  // monitorOsc();
+
+  // delay(3000);
+
+  OSCMessage query;
+  send1(xrIp, "/-snap/01/name");
+  receiveOscWithAddress(query, "/-snap/01/name");
+  printOsc(query);
+  query.empty();
+
+  OSCMessage query3;
+  send2(xrIp, "/-snap/load", 1);
+  // TODO: this works, but returns an INVALID_OSC message. Why?
+  receiveOscWithAddress(query3, "/-snap/load");
+  printOsc(query3);
+  query3.empty();
+
+  delay(5000);
+  sendReceiveOne(CHANNELS_TO_TURN_ON_AND_OFF[0], CHANNEL_OFF);
+
   printCurrentFunction();
   navigation.goRight();
   printCurrentFunction();
@@ -470,7 +527,6 @@ void navigate() {
 }
 
 void loop() {
-  navigate();
   // TODO: split XR unreachable from wifi down
   if (WiFi.status() != WL_CONNECTED || xrIp == INADDR_NONE) {
     Serial.println("Wifi down or XR unreachable. Reconnecting.");

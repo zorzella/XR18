@@ -11,10 +11,12 @@
 static const int H_COUNT = 16;
 static const int V_COUNT = 2;
 
+XRFunction m_functions[H_COUNT * V_COUNT];
+// TODO: capacity!
+std::map<std::string, int> oscAddrToFunctionsArrayIndexMap;
+
 int m_currentHPos;
 int m_currentVPos;
-
-XRFunction m_functions[H_COUNT * V_COUNT];
 
 static const int index(int h, int v) { return h + v * H_COUNT; }
 
@@ -50,19 +52,21 @@ void XRNavigation::buildFunctions() {
             break;
         }
       }
+      if (toPopulate.m_oscAddr != UNKNOWN) {
+        // TODO?
+        oscAddrToFunctionsArrayIndexMap.insert({toPopulate.m_oscAddr, ind});
+      }
     }
   }
 }
 
-const XRFunction& XRNavigation::currentFunction() const {
-  return m_functions[index()];
-}
-
-XRNavigation::XRNavigation() { Serial.println("XRNavigation ctor"); }
-
 void XRNavigation::init() {
   TRACE();
   buildFunctions();
+}
+
+const XRFunction& XRNavigation::currentFunction() const {
+  return m_functions[index()];
 }
 
 // ch/../config/name
