@@ -3,6 +3,7 @@
 #include <OSCMessage.h>
 #include <string>
 
+#include "XRComm.h"
 #include "XRFunction.h"
 
 XRFunction::XRFunction()
@@ -31,7 +32,10 @@ const std::string XRFunction::oscAddr() const { return m_oscAddr; }
 
 const float XRFunction::notch() const { return m_notch; }
 
-void XRFunction::plus() {
+void XRFunction::clickPlus() {
+  // send1()
+}
 
-  // send
+void XRFunction::clickMinus() {
+
 }

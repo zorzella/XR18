@@ -9,11 +9,14 @@ class XRNavigation {
  public:
   void init();
 
-  const XRFunction& currentFunction() const;
+  XRFunction& currentFunction() const;
   void goRight();
   void goLeft();
   void goUp();
   void goDown();
+
+  void clickPlus();
+  void clickMinus();
 
  private:
   void buildFunctions();

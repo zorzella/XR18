@@ -19,7 +19,8 @@ class XRFunction {
   const float notch() const;
   const int hPos() const;
   const int vPos() const;
-  void plus();
+  void clickPlus();
+  void clickMinus();
 
  private:
   friend class XRNavigation;

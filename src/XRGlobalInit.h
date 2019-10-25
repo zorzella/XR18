@@ -43,7 +43,7 @@ bool discoverXrIp(IPAddress &result) {
   IPAddress broadcastIp = WiFi.broadcastIP();
   unsigned long timeoutAt = millis() + 1000;
   while (millis() < timeoutAt) {
-    if (!send1(broadcastIp, M_STATUS)) {
+    if (!send1To(broadcastIp, M_STATUS)) {
       continue;
     }
     OSCMessage msg;

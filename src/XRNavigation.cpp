@@ -65,7 +65,7 @@ void XRNavigation::init() {
   buildFunctions();
 }
 
-const XRFunction& XRNavigation::currentFunction() const {
+XRFunction& XRNavigation::currentFunction() const {
   return m_functions[index()];
 }
 
@@ -105,4 +105,12 @@ void XRNavigation::goUp() {
   if (m_currentVPos < 0) {
     m_currentVPos = V_COUNT - 1;
   }
+}
+
+void XRNavigation::clickPlus() {
+  currentFunction().clickPlus();
+}
+
+void XRNavigation::clickMinus() {
+    currentFunction().clickMinus();
 }

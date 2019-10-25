@@ -8,7 +8,7 @@
 bool sendReceiveOne(const std::string &addr, const std::string &msg) {
   OSCMessage query;
 
-  if (!send1(xrIp, addr)) {
+  if (!send1(addr)) {
     return false;
   }
   if (!receiveOscWithAddress(query, addr)) {
@@ -17,11 +17,11 @@ bool sendReceiveOne(const std::string &addr, const std::string &msg) {
   printRec(query);
   query.empty();
 
-  if (!send2(xrIp, addr, msg)) {
+  if (!send2(addr, msg)) {
     return false;
   }
 
-  if (!send1(xrIp, addr)) {
+  if (!send1(addr)) {
     return false;
   }
   if (!receiveOscWithAddress(query, addr)) {
@@ -83,13 +83,13 @@ void runTestScript() {
   // delay(3000);
 
   OSCMessage query;
-  send1(xrIp, "/-snap/01/name");
+  send1("/-snap/01/name");
   receiveOscWithAddress(query, "/-snap/01/name");
   printRec(query);
   query.empty();
 
   OSCMessage query3;
-  send2(xrIp, "/-snap/load", 1);
+  send2("/-snap/load", 1);
   // TODO: this works, but returns an INVALID_OSC message. Why?
   receiveOscWithAddress(query3, "/-snap/load");
   printRec(query3);

@@ -73,7 +73,7 @@ bool sendUdp(const IPAddress &ip, OSCMessage &msg) {
   return false;
 }
 
-bool send1(const IPAddress &ip, const std::string &mess) {
+bool send1To(const IPAddress &ip, const std::string &mess) {
   OSCMessage msg(mess.c_str());
   Serial.print(">>> [");
   Serial.print(sendOkCount);
@@ -85,7 +85,11 @@ bool send1(const IPAddress &ip, const std::string &mess) {
   return result;
 }
 
-bool send2(const IPAddress &ip, const std::string &one, const int &two) {
+bool send1(const std::string &mess) {
+    return send1To(xrIp, mess);
+}
+
+bool send2(const std::string &one, const int &two) {
   Serial.print(">>> [");
   Serial.print(sendOkCount);
   Serial.print(",");
@@ -99,11 +103,11 @@ bool send2(const IPAddress &ip, const std::string &one, const int &two) {
   OSCMessage msg(one.c_str());
   msg.add(two);
 
-  bool result = sendUdp(ip, msg);
+  bool result = sendUdp(xrIp, msg);
   return result;
 }
 
-bool send2(const IPAddress &ip, const std::string &one,
+bool send2(const std::string &one,
            const std::string &two) {
   Serial.print(">>> [");
   Serial.print(sendOkCount);
@@ -118,7 +122,7 @@ bool send2(const IPAddress &ip, const std::string &one,
   OSCMessage msg(one.c_str());
   msg.add(two.c_str());
 
-  bool result = sendUdp(ip, msg);
+  bool result = sendUdp(xrIp, msg);
   return result;
 }
 
@@ -211,7 +215,7 @@ void warmup() {
   std::string someMessage = "/headamp/01/gain";
   // The first message (after /status) takes much longer than the
   // rest for some reason. This warms things up.
-  send1(xrIp, someMessage);
+  send1(someMessage);
   OSCMessage query;
   receiveOscWithAddress(query, someMessage);
   printRec(query);
@@ -225,7 +229,7 @@ void receiveAndPrintIfAny() {
 }
 
 void monitorOsc() {
-  send1(xrIp, "/xremote");
+  send1("/xremote");
   for (int i = 0; i < 150; i++) {
     receiveAndPrintIfAny();
     delay(100);
