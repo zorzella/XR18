@@ -33,7 +33,10 @@ const std::string XRFunction::oscAddr() const { return m_oscAddr; }
 const float XRFunction::notch() const { return m_notch; }
 
 void XRFunction::clickPlus() {
-  // send1()
+  if (!send1(m_oscAddr)) {
+    Serial.println("Failed");
+    return;
+  }
 }
 
 void XRFunction::clickMinus() {

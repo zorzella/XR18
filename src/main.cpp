@@ -12,8 +12,7 @@
 #include <WiFiUdp.h>     // For WiFi
 
 #include "XRComm.h"
-#include "XRGlobalInit.h"
-#include "XRNavigation.h"
+#include "XRGlobal.h"
 #include "XRTestScript.h"
 
 // Setup button pins
@@ -53,12 +52,12 @@ void setup() {
     pinMode(myLeds[i], OUTPUT);  // initialize the LED as an output
   }
 
-  navigation.init();
+  navigation().init();
 }
 
 void loop() {
   // TODO: split XR unreachable from wifi down
-  if (WiFi.status() != WL_CONNECTED || xrIp == INADDR_NONE) {
+  if (WiFi.status() != WL_CONNECTED || xrIp() == INADDR_NONE) {
     Serial.println("Wifi down or XR unreachable. Reconnecting.");
     if (!tryToReconnectWifi()) {
       Serial.println("Wifi reconnection failed. Will try again in 200ms.");

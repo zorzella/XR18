@@ -2,9 +2,14 @@
 #define XR_GLOBAL_INIT_h
 
 #include "XRComm.h"
+#include "XRNavigation.h"
 #include "networks.h"
 
 const std::string M_STATUS = "/status";
+
+XRNavigation m_navigation;
+
+XRNavigation &navigation() { return m_navigation; }
 
 bool waitForConnection() {
   unsigned long timeoutAt = millis() + 4000;
@@ -107,7 +112,7 @@ bool tryToReconnectWifi() {
     std::string pass = XR_NETWORKS[i].password;
     bool connectResult = connectThru(ssid.c_str(), pass.c_str());
     if (connectResult) {
-      bool discoverResult = discoverXrIp(xrIp);
+      bool discoverResult = discoverXrIp(xrIp());
       if (discoverResult) {
         return true;
       } else {
