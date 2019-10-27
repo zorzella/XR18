@@ -8,7 +8,7 @@ enum ZOSCType {
   ZOSC_I,
   ZOSC_F,
   ZOSC_D,
-  ZOSC_L,
+  // ZOSC_L,
 };
 
 class ZOSCValue {
@@ -22,21 +22,23 @@ class ZOSCValue {
 
   const ZOSCValue plus(const float notch) const;
 
-  const void print() const;
-
   void addItselfTo(OSCMessage& msg) const;
+
+  const std::string& asStr() const;
 
  private:
   bool m_isPresent;
 
   ZOSCType m_type;
 
+  std::string m_asStr;
+
   union {
     // char * s; //string
     int32_t i;   // int
     float f;     // float
     double d;    // double
-    uint64_t l;  // long
+    // uint64_t l;  // long
                  // uint8_t * b; //blob
     // osctime_t time;
   } m_data;

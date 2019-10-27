@@ -99,7 +99,7 @@ void runTestScript() {
 
   printCurrentFunction();
   navigation().goRight();
-  XRFunction f = navigation().currentFunction();
+  XRFunction& f = navigation().currentFunction();
 
   printCurrentFunction();
   navigation().goRight();

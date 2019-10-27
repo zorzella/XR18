@@ -12,6 +12,8 @@ class XRFunction {
  public:
   XRFunction();
 
+  XRFunction(const XRFunction& other) = delete;
+
   XRFunction(const int hPos, const int vPos, const std::string name,
              const std::string oscAddr, const float notch);
 

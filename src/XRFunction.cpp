@@ -35,12 +35,18 @@ void XRFunction::clickChange(const float notch) {
   bool sentRefreshRequest = false;
   long timeoutAt = millis() + 2000;
   while (millis() < timeoutAt) {
+    Serial.print("m_oscAddr: ");
+    Serial.print(m_oscAddr.c_str());
+    Serial.print(", m_lastUpdated: ");
+    Serial.println(m_lastUpdated);
     if (m_lastUpdated + CACHE_TOLERANCE > millis()) {
+      Serial.println("Cached value is up-to-date.");
       // ok, we seem to be sufficiently up-to-date
       send2(m_oscAddr, m_cachedValue.plus(notch));
       // invalidate the cache and initiate a message that will refresh it
       m_lastUpdated = -1;
       send1(m_oscAddr);
+      return;
     } else if (!sentRefreshRequest) {
       if (send1(m_oscAddr)) {
         sentRefreshRequest = true;
@@ -83,4 +89,12 @@ void XRFunction::updateCachedValue(OSCMessage& msg) {
   }
   m_lastUpdated = millis();
   m_cachedValue = ZOSCValue(msg, 0);
+  printRec(msg);
+  Serial.print("New cached value: ");
+  Serial.print(m_cachedValue.asStr().c_str());
+
+  Serial.print(", m_oscAddr: ");
+  Serial.print(m_oscAddr.c_str());
+  Serial.print(", m_lastUpdated: ");
+  Serial.println(m_lastUpdated);
 }

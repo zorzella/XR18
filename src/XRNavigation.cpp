@@ -32,6 +32,7 @@ void XRNavigation::buildFunctions() {
 
   for (int h = 0; h < H_COUNT; h++) {
     for (int v = 0; v < V_COUNT; v++) {
+      int channelNumber = h + 1;
       int ind = index(h, v);
       XRFunction& toPopulate = m_functions[ind];
       toPopulate.m_hPos = h;
@@ -40,13 +41,13 @@ void XRNavigation::buildFunctions() {
         switch (v) {
           case GAIN:
             toPopulate.m_name = "Gain";
-            sprintf(temp, "/headamp/%02d/gain", h);
+            sprintf(temp, "/headamp/%02d/gain", channelNumber);
             toPopulate.m_oscAddr = temp;
             toPopulate.m_notch = 0.5;
             break;
           case FADER:
             toPopulate.m_name = "Fader";
-            sprintf(temp, "/ch/%02d/mix/fader", h);
+            sprintf(temp, "/ch/%02d/mix/fader", channelNumber);
             toPopulate.m_oscAddr = temp;
             toPopulate.m_notch = 0.5;
             break;
@@ -68,12 +69,20 @@ void XRNavigation::init() {
 const int SIZE_OF_OSC_ADDRESS_BUFFER = 100;
 
 void XRNavigation::updateCachedValue(OSCMessage& msg) {
+  TRACE();
   char buffer[SIZE_OF_OSC_ADDRESS_BUFFER];
   msg.getAddress(buffer);
 
+  auto it = m_oscAddrToFunctionsArrayIndexMap.find(buffer);
+  if (it == m_oscAddrToFunctionsArrayIndexMap.end()) {
+    Serial.print("Ingoring. No cache value for: ");
+    Serial.println(buffer);
+    return;
+  }
   int index = m_oscAddrToFunctionsArrayIndexMap[buffer];
-  XRFunction func = m_functions[index];
-  func.updateCachedValue(msg);
+
+  XRFunction* func = &m_functions[index];
+  func->updateCachedValue(msg);
 }
 
 XRFunction& XRNavigation::currentFunction() const {

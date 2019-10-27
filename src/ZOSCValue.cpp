@@ -1,8 +1,11 @@
 #include <OSCMessage.h>
+#include <iostream>
+#include <sstream>
+#include <string>
 
 #include "ZOSCValue.h"
 
-ZOSCValue::ZOSCValue() : m_isPresent{false}, m_type{ZOSC_UNKNOWN} {}
+ZOSCValue::ZOSCValue() : m_isPresent{false}, m_type{ZOSC_UNKNOWN}, m_asStr {""} {}
 
 // ZOSCValue::ZOSCValue(const ZOSCValue& other) : m_isPresent { true }, m_data {
 // other.m_data} {};
@@ -15,17 +18,27 @@ ZOSCValue::ZOSCValue() : m_isPresent{false}, m_type{ZOSC_UNKNOWN} {}
 // }
 
 ZOSCValue::ZOSCValue(OSCMessage& msg, int index) : m_isPresent{true} {
+  std::ostringstream strs;
+
   if (msg.isInt(index)) {
     m_type = ZOSC_I;
     m_data.i = msg.getInt(index);
+    strs << m_data.i;
   } else if (msg.isFloat(index)) {
     m_type = ZOSC_F;
     m_data.f = msg.getFloat(index);
+    strs << m_data.f;
+  } else if (msg.isDouble(index)) {
+    m_type = ZOSC_D;
+    m_data.d = msg.getDouble(index);
+    strs << m_data.d;
   } else {
     m_type = ZOSC_UNKNOWN;
-    Serial.print("Type not yet implemented: ");
+    Serial.print("OSC type not yet implemented: ");
     Serial.println(msg.getType(index));
   }
+  m_asStr = strs.str();
+  strs.clear();
 }
 
 const ZOSCValue ZOSCValue::plus(const float notch) const {
@@ -35,6 +48,12 @@ const ZOSCValue ZOSCValue::plus(const float notch) const {
     case ZOSC_I:
       result.m_data.i += notch;
       break;
+    case ZOSC_F:
+      result.m_data.f += notch;
+      break;
+    case ZOSC_D:
+      result.m_data.d += notch;
+      break;
     default:
       printNotYetImplemented();
       break;
@@ -42,25 +61,16 @@ const ZOSCValue ZOSCValue::plus(const float notch) const {
   return result;
 }
 
-// TODO: keep a string m_asStr;
-const void ZOSCValue::print() const {
-  switch (m_type) {
-    case ZOSC_I:
-      Serial.println(m_data.i);
-      break;
-    default:
-      Serial.print("Unknown");
-      Serial.print("Type not yet implemented: ");
-      Serial.println(m_type);
-      break;
-  }
-  return;
-}
-
 void ZOSCValue::addItselfTo(OSCMessage& msg) const {
   switch (m_type) {
     case ZOSC_I:
       msg.add(m_data.i);
+      break;
+    case ZOSC_F:
+      msg.add(m_data.f);
+      break;
+    case ZOSC_D:
+      msg.add(m_data.d);
       break;
     default:
       printNotYetImplemented();
@@ -70,4 +80,8 @@ void ZOSCValue::addItselfTo(OSCMessage& msg) const {
 void ZOSCValue::printNotYetImplemented() const {
   Serial.print("Type not yet implemented: ");
   Serial.println(m_type);
+}
+
+const std::string& ZOSCValue::asStr() const {
+  return m_asStr;
 }

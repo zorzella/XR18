@@ -6,10 +6,12 @@
 
 #include <Arduino.h>
 #include <ArduinoTrace.h>
-
 #include <OSCMessage.h>  // For OSC support
 #include <WiFi.h>        // For WiFi
 #include <WiFiUdp.h>     // For WiFi
+#include <iostream>
+#include <sstream>
+#include <string>
 
 #include "XRComm.h"
 #include "XRGlobal.h"
@@ -55,7 +57,29 @@ void setup() {
   navigation().init();
 }
 
+void testString() {
+  int i = 1;
+  float f = 2.5;
+
+  std::ostringstream str1;
+
+  str1 << i;
+  std::string is = str1.str();
+  str1.clear();
+
+  str1 << f;
+  std::string fs = str1.str();
+  str1.clear();
+
+  Serial.print("Values: ");
+  Serial.print(is.c_str());
+  Serial.print(",: ");
+  Serial.println(fs.c_str());
+}
+
 void loop() {
+  testString();
+
   // TODO: split XR unreachable from wifi down
   if (WiFi.status() != WL_CONNECTED || xrIp() == INADDR_NONE) {
     Serial.println("Wifi down or XR unreachable. Reconnecting.");
