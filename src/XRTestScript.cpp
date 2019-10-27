@@ -103,10 +103,16 @@ void runTestScript() {
 
   printCurrentFunction();
   navigation().goRight();
+  navigation().clickPlus();
+
   printCurrentFunction();
   navigation().goRight();
+  navigation().clickPlus();
+
   printCurrentFunction();
   navigation().goUp();
+  navigation().clickMinus();
+
   printCurrentFunction();
   navigation().goUp();
   printCurrentFunction();

@@ -9,6 +9,8 @@ class XRNavigation {
  public:
   void init();
 
+  void updateCachedValue(OSCMessage& msg);
+
   XRFunction& currentFunction() const;
   void goRight();
   void goLeft();

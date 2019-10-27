@@ -5,6 +5,8 @@
 #include <WiFi.h>        // For WiFi
 #include <WiFiUdp.h>     // For WiFi
 
+#include "ZOSCValue.h"
+
 const unsigned int XR_PORT =
     10024;  // remote port to receive OSC X-AIR is 10024, X32 is 10023
 
@@ -14,7 +16,7 @@ const int SIZE_OF_RECEIVE_BUFFER = 100;
 const bool DEBUG_WIFI = true;
 
 // IP of the XR18
-IPAddress& xrIp();
+IPAddress &xrIp();
 
 void receiveOscIfAny(OSCMessage &msg);
 
@@ -25,6 +27,8 @@ bool sendUdp(const IPAddress &ip, OSCMessage &msg);
 bool send1To(const IPAddress &ip, const std::string &mess);
 
 bool send1(const std::string &mess);
+
+bool send2(const std::string &one, const ZOSCValue &two);
 
 bool send2(const std::string &one, const int &two);
 

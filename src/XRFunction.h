@@ -1,9 +1,10 @@
 #ifndef XR_FUNCTION_h
 #define XR_FUNCTION_h
 
+#include <OSCMessage.h>
 #include <string>
 
-#include <OSCMessage.h>
+#include "ZOSCValue.h"
 
 static const char UNKNOWN[] = "Unknown";
 
@@ -21,6 +22,7 @@ class XRFunction {
   const int vPos() const;
   void clickPlus();
   void clickMinus();
+  void updateCachedValue(OSCMessage& msg);
 
  private:
   friend class XRNavigation;
@@ -32,8 +34,13 @@ class XRFunction {
   std::string m_oscAddr;
   float m_notch;
 
-  unsigned long lastUpdated;
-  OSCData *oscData;
+  // The timestamp when m_cachedValue was last updated (by updateCachedValue)
+  unsigned long m_lastUpdated;
+
+  // The last known value of this function.
+  ZOSCValue m_cachedValue;
+
+  void clickChange(const float notch);
 };
 
 #endif

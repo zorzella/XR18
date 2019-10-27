@@ -13,7 +13,7 @@ static const int V_COUNT = 2;
 
 XRFunction m_functions[H_COUNT * V_COUNT];
 // TODO: capacity!
-std::map<std::string, int> oscAddrToFunctionsArrayIndexMap;
+std::map<std::string, int> m_oscAddrToFunctionsArrayIndexMap;
 
 int m_currentHPos;
 int m_currentVPos;
@@ -54,7 +54,7 @@ void XRNavigation::buildFunctions() {
       }
       if (toPopulate.m_oscAddr != UNKNOWN) {
         // TODO?
-        oscAddrToFunctionsArrayIndexMap.insert({toPopulate.m_oscAddr, ind});
+        m_oscAddrToFunctionsArrayIndexMap.insert({toPopulate.m_oscAddr, ind});
       }
     }
   }
@@ -63,6 +63,17 @@ void XRNavigation::buildFunctions() {
 void XRNavigation::init() {
   TRACE();
   buildFunctions();
+}
+
+const int SIZE_OF_OSC_ADDRESS_BUFFER = 100;
+
+void XRNavigation::updateCachedValue(OSCMessage& msg) {
+  char buffer[SIZE_OF_OSC_ADDRESS_BUFFER];
+  msg.getAddress(buffer);
+
+  int index = m_oscAddrToFunctionsArrayIndexMap[buffer];
+  XRFunction func = m_functions[index];
+  func.updateCachedValue(msg);
 }
 
 XRFunction& XRNavigation::currentFunction() const {

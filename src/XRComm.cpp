@@ -2,7 +2,9 @@
 #include <string>
 
 #include "XRComm.h"
+#include "XRGlobal.h"
 #include "XRNavigation.h"
+#include "ZOSCValue.h"
 
 WiFiUDP wifiUdp;  // A UDP instance to let us send and receive packets over UDP
 
@@ -15,6 +17,11 @@ unsigned long recErrorCount = 0;
 
 IPAddress &xrIp() { return m_xrIp; };
 
+/*
+ * Receives a OSC message from the network, if any.
+ * 
+ * Return true if a message was there to be received, false otherwise.
+ */
 void receiveOscIfAny(OSCMessage &msg) {
   int size = wifiUdp.parsePacket();
 
@@ -24,12 +31,14 @@ void receiveOscIfAny(OSCMessage &msg) {
   while (size--) {
     msg.fill(wifiUdp.read());
   }
+
+  navigation().updateCachedValue(msg);
 }
 
 bool receiveOsc(OSCMessage &msg) {
   unsigned long timeoutAt = millis() + 300;
-  char buffer[SIZE_OF_RECEIVE_BUFFER];
-  memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
+  //   char buffer[SIZE_OF_RECEIVE_BUFFER];
+  //   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
   while (millis() < timeoutAt) {
     receiveOscIfAny(msg);
     if (msg.size() > 0) {
@@ -75,6 +84,25 @@ bool send1To(const IPAddress &ip, const std::string &mess) {
 }
 
 bool send1(const std::string &mess) { return send1To(m_xrIp, mess); }
+
+bool send2(const std::string &one, const ZOSCValue &two) {
+  Serial.print(">>> [");
+  Serial.print(sendOkCount);
+  Serial.print(",");
+  Serial.print(sendErrorCount);
+  Serial.print("] ");
+
+  Serial.print(one.c_str());
+  Serial.print(" ");
+  two.print();
+
+  OSCMessage msg(one.c_str());
+  two.addItselfTo(msg);
+
+  bool result = sendUdp(m_xrIp, msg);
+  return result;
+}
+
 bool send2(const std::string &one, const int &two) {
   Serial.print(">>> [");
   Serial.print(sendOkCount);
@@ -121,7 +149,7 @@ void printMsg(OSCMessage &msg) {
   }
 
   char buffer[SIZE_OF_RECEIVE_BUFFER];
-  memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
+  //   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
 
   msg.getAddress(buffer);
   Serial.print(buffer);
