@@ -3,6 +3,8 @@
 #include <OSCMessage.h>
 #include <inttypes.h>
 
+#include "ZrFuncTypeDescription.h"
+
 enum ZoscType {
   ZOSC_UNKNOWN,
   ZOSC_I,
@@ -20,7 +22,7 @@ class ZoscValue {
 
   const bool isPresent() const;
 
-  const ZoscValue plus(const float notch) const;
+  const ZoscValue plus(const ZrFuncTypeDescription& typeDesc, const float notch) const;
 
   void addItselfTo(OSCMessage& msg) const;
 

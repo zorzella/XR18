@@ -14,6 +14,9 @@ class ZrFuncTypeDescription {
   const std::string humanName() const;
   const float humanNotch() const;
 
+  const float humanToOscValue(float human) const;
+  const float oscValueToHuman(float oscValue) const;
+
   static const ZrFuncTypeDescription fromType(const ZrFuncType type) {
     switch (type) {
       case GAIN:

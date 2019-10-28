@@ -28,9 +28,9 @@ const std::string ZrFunction::oscAddr() const { return m_oscAddr; }
 
 const float ZrFunction::notch() const { return m_typeDesc.humanNotch(); }
 
-const int CACHE_TOLERANCE = 500;
+static const int CACHE_TOLERANCE = 500;
 
-void ZrFunction::clickChange(const float notch) {
+void ZrFunction::clickChange(const float humanNotch) {
   bool sentRefreshRequest = false;
   long timeoutAt = millis() + 2000;
   while (millis() < timeoutAt) {
@@ -41,7 +41,7 @@ void ZrFunction::clickChange(const float notch) {
     if (m_lastUpdated + CACHE_TOLERANCE > millis()) {
       Serial.println("Cached value is up-to-date.");
       // ok, we seem to be sufficiently up-to-date
-      send2(m_oscAddr, m_cachedValue.plus(notch));
+      send2(m_oscAddr, m_cachedValue.plus(m_typeDesc, humanNotch));
       // invalidate the cache and initiate a message that will refresh it
       m_lastUpdated = -1;
       send1(m_oscAddr);

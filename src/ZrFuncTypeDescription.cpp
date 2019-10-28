@@ -1,6 +1,7 @@
 #include <string>
 
 #include "ZrFuncTypeDescription.h"
+#include "ZrGain.h"
 
 ZrFuncTypeDescription::ZrFuncTypeDescription()
     : m_type{TYPE_UNKNOWN}, m_humanName{"Unknown"}, m_humanNotch{0} {}
@@ -17,3 +18,23 @@ const std::string ZrFuncTypeDescription::humanName() const {
 }
 
 const float ZrFuncTypeDescription::humanNotch() const { return m_humanNotch; }
+
+const float ZrFuncTypeDescription::humanToOscValue(float human) const {
+  switch (m_type) {
+    case GAIN:
+      return ZrGain::humanToOscValue(human);
+    default:
+      TRACE();
+      return 0;
+  }
+}
+
+const float ZrFuncTypeDescription::oscValueToHuman(float oscValue) const {
+  switch (m_type) {
+    case GAIN:
+      return ZrGain::oscValueToHuman(oscValue);
+    default:
+      TRACE();
+      return 0;
+  }
+}
