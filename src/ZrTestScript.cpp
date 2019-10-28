@@ -99,7 +99,6 @@ void runTestScript() {
 
   printCurrentFunction();
   navigation().goRight();
-  ZrFunction& f = navigation().currentFunction();
 
   printCurrentFunction();
   navigation().goRight();

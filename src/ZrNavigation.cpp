@@ -81,8 +81,8 @@ void ZrNavigation::updateCachedValue(OSCMessage& msg) {
   }
   int index = m_oscAddrToFunctionsArrayIndexMap[buffer];
 
-  ZrFunction* func = &m_functions[index];
-  func->updateCachedValue(msg);
+  ZrFunction& func = m_functions[index];
+  func.updateCachedValue(msg);
 }
 
 ZrFunction& ZrNavigation::currentFunction() const {
