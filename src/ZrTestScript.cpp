@@ -70,60 +70,82 @@ const std::string LEVEL_OFF = "-127";
 
 void printCurrentFunction() {
   Serial.print("Name: ");
-  Serial.print(navigation().currentFunction().name().c_str());
+  Serial.print(navigation().currentFunction().humanName().c_str());
   Serial.print(", OSC: ");
   Serial.println(navigation().currentFunction().oscAddr().c_str());
 }
 
-void runTestScript() {
-  warmup();
-  // monitorOsc();
-
-  // delay(3000);
-
+void queryForName() {
   OSCMessage query;
   send1("/-snap/01/name");
   receiveOscWithAddress(query, "/-snap/01/name");
   printRec(query);
   query.empty();
+}
 
-  OSCMessage query3;
+void loadSnapshotOne() {
+  OSCMessage query;
   send2("/-snap/load", 1);
   // TODO: this works, but returns an INVALID_OSC message. Why?
-  receiveOscWithAddress(query3, "/-snap/load");
-  printRec(query3);
-  query3.empty();
+  receiveOscWithAddress(query, "/-snap/load");
+  printRec(query);
+  query.empty();
+}
 
-  delay(5000);
-  sendReceiveOne(CHANNELS_TO_TURN_ON_AND_OFF[0], CHANNEL_OFF);
+void runTestScript() {
+  warmup();
+
+  if (false) {
+    monitorOsc();
+    queryForName();
+  }
+
+  loadSnapshotOne();
+
+  delay(2000);
+
+  if (false) {
+    sendReceiveOne(CHANNELS_TO_TURN_ON_AND_OFF[0], CHANNEL_OFF);
+  }
 
   printCurrentFunction();
-  navigation().goRight();
 
-  printCurrentFunction();
   navigation().goRight();
+  printCurrentFunction();
   navigation().clickPlus();
 
-  printCurrentFunction();
   navigation().goRight();
+  printCurrentFunction();
+
+  navigation().goRight();
+  printCurrentFunction();
   navigation().clickPlus();
 
-  printCurrentFunction();
   navigation().goUp();
+  printCurrentFunction();
   navigation().clickMinus();
 
-  printCurrentFunction();
-  navigation().goUp();
-  printCurrentFunction();
-  navigation().goLeft();
-  printCurrentFunction();
-  navigation().goLeft();
-  printCurrentFunction();
-  navigation().goDown();
-  printCurrentFunction();
-  navigation().goDown();
-  printCurrentFunction();
-  navigation().goDown();
+  if (false) {
+    navigation().goUp();
+    printCurrentFunction();
+
+    navigation().goLeft();
+    printCurrentFunction();
+
+    navigation().goLeft();
+    printCurrentFunction();
+
+    navigation().goDown();
+    printCurrentFunction();
+
+    navigation().goDown();
+    printCurrentFunction();
+
+    navigation().goDown();
+    printCurrentFunction();
+  }
+
+  delay(2000);
 }
 
 void sendABunchOfMessages() {

@@ -5,6 +5,8 @@
 #include <string>
 
 #include "ZoscValue.h"
+#include "ZrFuncType.h"
+#include "ZrFuncTypeDescription.h"
 
 static const char UNKNOWN[] = "Unknown";
 
@@ -14,10 +16,9 @@ class ZrFunction {
 
   ZrFunction(const ZrFunction& other) = delete;
 
-  ZrFunction(const int hPos, const int vPos, const std::string name,
-             const std::string oscAddr, const float notch);
+  ZrFunction(const int hPos, const int vPos, const std::string oscAddr);
 
-  const std::string name() const;
+  const std::string humanName() const;
   const std::string oscAddr() const;
   const float notch() const;
   const int hPos() const;
@@ -32,9 +33,8 @@ class ZrFunction {
   int m_hPos;
   int m_vPos;
 
-  std::string m_name;
+  ZrFuncTypeDescription m_typeDesc;
   std::string m_oscAddr;
-  float m_notch;
 
   // The timestamp when m_cachedValue was last updated (by updateCachedValue)
   unsigned long m_lastUpdated;

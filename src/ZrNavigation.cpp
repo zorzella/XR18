@@ -5,6 +5,8 @@
 
 #include <ArduinoTrace.h>
 
+#include "ZrFuncType.h"
+#include "ZrFuncTypeDescription.h"
 #include "ZrFunction.h"
 #include "ZrNavigation.h"
 
@@ -22,10 +24,16 @@ static const int index(int h, int v) { return h + v * H_COUNT; }
 
 const int index() { return index(m_currentHPos, m_currentVPos); }
 
-enum ZrFunc {
-  GAIN,
-  FADER,
-};
+/*
+
+linear parameter:      value = fmin + (fmax - fmin) * float
+log parameter:         value = fmin * exp(log(fmax / fmin) * float)
+fader/level parameter: dblevel = 40  * idx / (steps - 1) - 30; if idx >= steps /
+2 80  * idx / (steps - 1) - 50; if idx >= steps / 4 160 * idx / (steps - 1) -
+70; if idx >= steps / 16 480 * idx / (steps - 1) - 90; if idx > 0 -144; if idx =
+0
+
+ */
 
 void ZrNavigation::buildFunctions() {
   char temp[50];
@@ -38,18 +46,22 @@ void ZrNavigation::buildFunctions() {
       toPopulate.m_hPos = h;
       toPopulate.m_vPos = v;
       if (h < 18) {
-        switch (v) {
+        toPopulate.m_typeDesc =
+            ZrFuncTypeDescription::posToFuncTypeDescription(h, v);
+        switch (toPopulate.m_typeDesc.type()) {
           case GAIN:
-            toPopulate.m_name = "Gain";
+            // toPopulate.m_name = "Gain";
             sprintf(temp, "/headamp/%02d/gain", channelNumber);
             toPopulate.m_oscAddr = temp;
-            toPopulate.m_notch = 0.5;
+            // toPopulate.m_notch = 0.5;
             break;
           case FADER:
-            toPopulate.m_name = "Fader";
+            // toPopulate.m_name = "Fader";
             sprintf(temp, "/ch/%02d/mix/fader", channelNumber);
             toPopulate.m_oscAddr = temp;
-            toPopulate.m_notch = 0.5;
+            // toPopulate.m_notch = 0.5;
+            break;
+          default:
             break;
         }
       }
@@ -75,7 +87,12 @@ void ZrNavigation::updateCachedValue(OSCMessage& msg) {
 
   auto it = m_oscAddrToFunctionsArrayIndexMap.find(buffer);
   if (it == m_oscAddrToFunctionsArrayIndexMap.end()) {
-    Serial.print("Ingoring. No cache value for: ");
+    std::string oscAddr = buffer;
+    if (oscAddr.find("/status", 0) != 0 || oscAddr.find("/xremote", 0) != 0) {
+      return;
+    }
+
+    Serial.print("Warning: no cache value for: ");
     Serial.println(buffer);
     return;
   }

@@ -13,21 +13,29 @@
 #include <sstream>
 #include <string>
 
+// #include <esp32-hal-touch.h>
+// #include "esp32-hal.h"
+
 #include "ZrComm.h"
 #include "ZrGlobal.h"
 #include "ZrTestScript.h"
 
+#define BRACELET_ON GPIO_NUM_27
+#define TOUCH GPIO_NUM_32
+
+static const int touchPin = 32;
+
 // Setup button pins
-int myButtons[] = {39, 34, 25, 26};  // define the pins for the buttons
-int buttonCount = 4;                 // set the number of buttons in the loop
+int myButtons[] = {};  // 39, 34, 25, 26};  // define the pins for the buttons
+int buttonCount = 0;   // set the number of buttons in the loop
 
 // Define program Variables
 int buttonState[] = {0, 0, 0, 0};      // current state of the button
 int lastButtonState[] = {0, 0, 0, 0};  // previous state of the button
 
 // Setup LED pins
-int myLeds[] = {32, 15, 33, 27};  // define the pins for the LEDs
-int ledCount = 4;                 // set the number of LEDs in the loop
+int myLeds[] = {};  // 32, 15, 33, 27};  // define the pins for the LEDs
+int ledCount = 0;   // set the number of LEDs in the loop
 
 const std::string M_XINFO = "/xinfo";
 const std::string M_XREMOTE = "/xremote";
@@ -54,33 +62,19 @@ void setup() {
     pinMode(myLeds[i], OUTPUT);  // initialize the LED as an output
   }
 
+  pinMode(33, INPUT_PULLUP);
+
   navigation().init();
 }
 
-void testString() {
-  int i = 1;
-  float f = 2.5;
-
-  std::ostringstream str1;
-
-  str1 << i;
-  std::string is = str1.str();
-  str1.clear();
-
-  str1 << f;
-  std::string fs = str1.str();
-  str1.clear();
-
-  Serial.print("Values: ");
-  Serial.print(is.c_str());
-  Serial.print(",: ");
-  Serial.println(fs.c_str());
-}
-
 void loop() {
-  testString();
+  Serial.print("Waiting click button.");
+  while (digitalRead(33) == HIGH) {
+    Serial.print(".");
+    delay(1000);
+  }
+  Serial.println();
 
-  // TODO: split XR unreachable from wifi down
   if (WiFi.status() != WL_CONNECTED || xrIp() == INADDR_NONE) {
     Serial.println("Wifi down or XR unreachable. Reconnecting.");
     if (!tryToReconnectWifi()) {
@@ -89,10 +83,9 @@ void loop() {
       return;
     }
     Serial.println("Wifi reconnection succeeded.");
-  } else {
-    Serial.println("Wifi ok");
-    // sendABunchOfMessages();
-    runTestScript();
-    delay(4000);
   }
+
+  Serial.println("Wifi ok");
+  // sendABunchOfMessages();
+  runTestScript();
 }  // End of main loop

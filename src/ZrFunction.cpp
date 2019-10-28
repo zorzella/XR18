@@ -5,29 +5,28 @@
 
 #include "ZoscValue.h"
 #include "ZrComm.h"
+#include "ZrFuncType.h"
+#include "ZrFuncTypeDescription.h"
 #include "ZrFunction.h"
 
-ZrFunction::ZrFunction()
-    : m_hPos{-1}, m_vPos{-1}, m_name{UNKNOWN}, m_oscAddr{UNKNOWN}, m_notch{0} {}
+ZrFunction::ZrFunction() : m_hPos{-1}, m_vPos{-1}, m_oscAddr{UNKNOWN} {}
 
-ZrFunction::ZrFunction(const int hPos, const int vPos, const std::string name,
-                       const std::string oscAddr, const float notch)
-    : m_hPos(hPos),
-      m_vPos(vPos),
-      m_name(name),
-      m_oscAddr(oscAddr),
-      m_notch(notch) {}
+ZrFunction::ZrFunction(const int hPos, const int vPos,
+                       const std::string oscAddr)
+    : m_hPos(hPos), m_vPos(vPos), m_oscAddr(oscAddr) {}
 
 void plus(OSCMessage& outParam, OSCMessage& source) { outParam = source; }
 
 const int ZrFunction::hPos() const { return m_hPos; }
 const int ZrFunction::vPos() const { return m_vPos; }
 
-const std::string ZrFunction::name() const { return m_name; }
+const std::string ZrFunction::humanName() const {
+  return m_typeDesc.humanName();
+}
 
 const std::string ZrFunction::oscAddr() const { return m_oscAddr; }
 
-const float ZrFunction::notch() const { return m_notch; }
+const float ZrFunction::notch() const { return m_typeDesc.humanNotch(); }
 
 const int CACHE_TOLERANCE = 500;
 
@@ -70,12 +69,12 @@ void ZrFunction::clickChange(const float notch) {
 
 void ZrFunction::clickPlus() {
   TRACE();
-  clickChange(m_notch);
+  clickChange(m_typeDesc.humanNotch());
 }
 
 void ZrFunction::clickMinus() {
   TRACE();
-  clickChange(-m_notch);
+  clickChange(-(m_typeDesc.humanNotch()));
 }
 
 void ZrFunction::updateCachedValue(OSCMessage& msg) {

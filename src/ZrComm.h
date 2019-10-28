@@ -13,7 +13,7 @@ const unsigned int XR_PORT =
 const int SIZE_OF_RECEIVE_BUFFER = 100;
 
 // If true, we will print extra debug information about WIFI
-const bool DEBUG_WIFI = true;
+const bool DEBUG_WIFI = false;
 
 // IP of the XR18
 IPAddress &xrIp();
