@@ -1,7 +1,8 @@
 #include <string>
 
 #include "ZrFuncTypeDescription.h"
-#include "ZrGain.h"
+#include "func/ZrGain.h"
+#include "func/ZrFader.h"
 
 ZrFuncTypeDescription::ZrFuncTypeDescription()
     : m_type{TYPE_UNKNOWN}, m_humanName{"Unknown"}, m_humanNotch{0} {}
@@ -23,6 +24,8 @@ const float ZrFuncTypeDescription::humanToOscValue(float human) const {
   switch (m_type) {
     case GAIN:
       return ZrGain::humanToOscValue(human);
+    case FADER:
+      return ZrFader::humanToOscValue(human);
     default:
       TRACE();
       return 0;
@@ -33,6 +36,8 @@ const float ZrFuncTypeDescription::oscValueToHuman(float oscValue) const {
   switch (m_type) {
     case GAIN:
       return ZrGain::oscValueToHuman(oscValue);
+    case FADER:
+      return ZrFader::oscValueToHuman(oscValue);
     default:
       TRACE();
       return 0;
