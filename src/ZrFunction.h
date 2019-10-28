@@ -1,20 +1,20 @@
-#ifndef XR_FUNCTION_h
-#define XR_FUNCTION_h
+#ifndef ZR_FUNCTION_h
+#define ZR_FUNCTION_h
 
 #include <OSCMessage.h>
 #include <string>
 
-#include "ZOSCValue.h"
+#include "ZoscValue.h"
 
 static const char UNKNOWN[] = "Unknown";
 
-class XRFunction {
+class ZrFunction {
  public:
-  XRFunction();
+  ZrFunction();
 
-  XRFunction(const XRFunction& other) = delete;
+  ZrFunction(const ZrFunction& other) = delete;
 
-  XRFunction(const int hPos, const int vPos, const std::string name,
+  ZrFunction(const int hPos, const int vPos, const std::string name,
              const std::string oscAddr, const float notch);
 
   const std::string name() const;
@@ -27,7 +27,7 @@ class XRFunction {
   void updateCachedValue(OSCMessage& msg);
 
  private:
-  friend class XRNavigation;
+  friend class ZrNavigation;
 
   int m_hPos;
   int m_vPos;
@@ -40,7 +40,7 @@ class XRFunction {
   unsigned long m_lastUpdated;
 
   // The last known value of this function.
-  ZOSCValue m_cachedValue;
+  ZoscValue m_cachedValue;
 
   void clickChange(const float notch);
 };

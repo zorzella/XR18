@@ -1,11 +1,11 @@
-#ifndef XR_COMM_h
-#define XR_COMM_h
+#ifndef ZR_COMM_h
+#define ZR_COMM_h
 
 #include <OSCMessage.h>  // For OSC support
 #include <WiFi.h>        // For WiFi
 #include <WiFiUdp.h>     // For WiFi
 
-#include "ZOSCValue.h"
+#include "ZoscValue.h"
 
 const unsigned int XR_PORT =
     10024;  // remote port to receive OSC X-AIR is 10024, X32 is 10023
@@ -28,7 +28,7 @@ bool send1To(const IPAddress &ip, const std::string &mess);
 
 bool send1(const std::string &mess);
 
-bool send2(const std::string &one, const ZOSCValue &two);
+bool send2(const std::string &one, const ZoscValue &two);
 
 bool send2(const std::string &one, const int &two);
 

@@ -3,7 +3,7 @@
 #include <OSCMessage.h>
 #include <inttypes.h>
 
-enum ZOSCType {
+enum ZoscType {
   ZOSC_UNKNOWN,
   ZOSC_I,
   ZOSC_F,
@@ -11,16 +11,16 @@ enum ZOSCType {
   // ZOSC_L,
 };
 
-class ZOSCValue {
+class ZoscValue {
  public:
-  ZOSCValue();
+  ZoscValue();
   //   ZOSCValue(const ZOSCValue& other);
-  ZOSCValue(OSCMessage& osc, int index);
+  ZoscValue(OSCMessage& osc, int index);
   //   ZOSCValue& operator=(const ZOSCValue& source);
 
   const bool isPresent() const;
 
-  const ZOSCValue plus(const float notch) const;
+  const ZoscValue plus(const float notch) const;
 
   void addItselfTo(OSCMessage& msg) const;
 
@@ -29,17 +29,17 @@ class ZOSCValue {
  private:
   bool m_isPresent;
 
-  ZOSCType m_type;
+  ZoscType m_type;
 
   std::string m_asStr;
 
   union {
     // char * s; //string
-    int32_t i;   // int
-    float f;     // float
-    double d;    // double
+    int32_t i;  // int
+    float f;    // float
+    double d;   // double
     // uint64_t l;  // long
-                 // uint8_t * b; //blob
+    // uint8_t * b; //blob
     // osctime_t time;
   } m_data;
 

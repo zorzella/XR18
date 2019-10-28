@@ -1,15 +1,15 @@
-#ifndef XR_GLOBAL_INIT_h
-#define XR_GLOBAL_INIT_h
+#ifndef ZR_GLOBAL_INIT_h
+#define ZR_GLOBAL_INIT_h
 
-#include "XRComm.h"
-#include "XRNavigation.h"
+#include "ZrComm.h"
+#include "ZrNavigation.h"
 #include "networks.h"
 
 const std::string M_STATUS = "/status";
 
-XRNavigation m_navigation;
+ZrNavigation m_navigation;
 
-XRNavigation &navigation() { return m_navigation; }
+ZrNavigation &navigation() { return m_navigation; }
 
 bool waitForConnection() {
   unsigned long timeoutAt = millis() + 4000;

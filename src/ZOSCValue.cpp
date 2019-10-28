@@ -3,9 +3,10 @@
 #include <sstream>
 #include <string>
 
-#include "ZOSCValue.h"
+#include "ZoscValue.h"
 
-ZOSCValue::ZOSCValue() : m_isPresent{false}, m_type{ZOSC_UNKNOWN}, m_asStr {""} {}
+ZoscValue::ZoscValue()
+    : m_isPresent{false}, m_type{ZOSC_UNKNOWN}, m_asStr{""} {}
 
 // ZOSCValue::ZOSCValue(const ZOSCValue& other) : m_isPresent { true }, m_data {
 // other.m_data} {};
@@ -17,7 +18,7 @@ ZOSCValue::ZOSCValue() : m_isPresent{false}, m_type{ZOSC_UNKNOWN}, m_asStr {""} 
 //     // this.m_isPresent =
 // }
 
-ZOSCValue::ZOSCValue(OSCMessage& msg, int index) : m_isPresent{true} {
+ZoscValue::ZoscValue(OSCMessage& msg, int index) : m_isPresent{true} {
   std::ostringstream strs;
 
   if (msg.isInt(index)) {
@@ -41,8 +42,8 @@ ZOSCValue::ZOSCValue(OSCMessage& msg, int index) : m_isPresent{true} {
   strs.clear();
 }
 
-const ZOSCValue ZOSCValue::plus(const float notch) const {
-  ZOSCValue result{*this};
+const ZoscValue ZoscValue::plus(const float notch) const {
+  ZoscValue result{*this};
   // if ()
   switch (m_type) {
     case ZOSC_I:
@@ -61,7 +62,7 @@ const ZOSCValue ZOSCValue::plus(const float notch) const {
   return result;
 }
 
-void ZOSCValue::addItselfTo(OSCMessage& msg) const {
+void ZoscValue::addItselfTo(OSCMessage& msg) const {
   switch (m_type) {
     case ZOSC_I:
       msg.add(m_data.i);
@@ -77,11 +78,9 @@ void ZOSCValue::addItselfTo(OSCMessage& msg) const {
   }
 }
 
-void ZOSCValue::printNotYetImplemented() const {
+void ZoscValue::printNotYetImplemented() const {
   Serial.print("Type not yet implemented: ");
   Serial.println(m_type);
 }
 
-const std::string& ZOSCValue::asStr() const {
-  return m_asStr;
-}
+const std::string& ZoscValue::asStr() const { return m_asStr; }

@@ -3,14 +3,14 @@
 #include <OSCMessage.h>
 #include <string>
 
-#include "XRComm.h"
-#include "XRFunction.h"
-#include "ZOSCValue.h"
+#include "ZoscValue.h"
+#include "ZrComm.h"
+#include "ZrFunction.h"
 
-XRFunction::XRFunction()
+ZrFunction::ZrFunction()
     : m_hPos{-1}, m_vPos{-1}, m_name{UNKNOWN}, m_oscAddr{UNKNOWN}, m_notch{0} {}
 
-XRFunction::XRFunction(const int hPos, const int vPos, const std::string name,
+ZrFunction::ZrFunction(const int hPos, const int vPos, const std::string name,
                        const std::string oscAddr, const float notch)
     : m_hPos(hPos),
       m_vPos(vPos),
@@ -20,18 +20,18 @@ XRFunction::XRFunction(const int hPos, const int vPos, const std::string name,
 
 void plus(OSCMessage& outParam, OSCMessage& source) { outParam = source; }
 
-const int XRFunction::hPos() const { return m_hPos; }
-const int XRFunction::vPos() const { return m_vPos; }
+const int ZrFunction::hPos() const { return m_hPos; }
+const int ZrFunction::vPos() const { return m_vPos; }
 
-const std::string XRFunction::name() const { return m_name; }
+const std::string ZrFunction::name() const { return m_name; }
 
-const std::string XRFunction::oscAddr() const { return m_oscAddr; }
+const std::string ZrFunction::oscAddr() const { return m_oscAddr; }
 
-const float XRFunction::notch() const { return m_notch; }
+const float ZrFunction::notch() const { return m_notch; }
 
 const int CACHE_TOLERANCE = 500;
 
-void XRFunction::clickChange(const float notch) {
+void ZrFunction::clickChange(const float notch) {
   bool sentRefreshRequest = false;
   long timeoutAt = millis() + 2000;
   while (millis() < timeoutAt) {
@@ -68,17 +68,17 @@ void XRFunction::clickChange(const float notch) {
   Serial.println("\n Timed out in clickChange.");
 }
 
-void XRFunction::clickPlus() {
+void ZrFunction::clickPlus() {
   TRACE();
   clickChange(m_notch);
 }
 
-void XRFunction::clickMinus() {
+void ZrFunction::clickMinus() {
   TRACE();
   clickChange(-m_notch);
 }
 
-void XRFunction::updateCachedValue(OSCMessage& msg) {
+void ZrFunction::updateCachedValue(OSCMessage& msg) {
   TRACE();
   if (msg.size() == 0) {
     Serial.println("Too few data points!");
@@ -88,7 +88,7 @@ void XRFunction::updateCachedValue(OSCMessage& msg) {
     Serial.println("Too many data points! Ignoring.");
   }
   m_lastUpdated = millis();
-  m_cachedValue = ZOSCValue(msg, 0);
+  m_cachedValue = ZoscValue(msg, 0);
   printRec(msg);
   Serial.print("New cached value: ");
   Serial.print(m_cachedValue.asStr().c_str());

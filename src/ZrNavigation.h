@@ -1,17 +1,17 @@
-#ifndef XR_NAVIGATION_h
-#define XR_NAVIGATION_h
+#ifndef ZR_NAVIGATION_h
+#define ZR_NAVIGATION_h
 
 #include <vector>
 
-#include "XRFunction.h"
+#include "ZrFunction.h"
 
-class XRNavigation {
+class ZrNavigation {
  public:
   void init();
 
   void updateCachedValue(OSCMessage& msg);
 
-  XRFunction& currentFunction() const;
+  ZrFunction& currentFunction() const;
   void goRight();
   void goLeft();
   void goUp();

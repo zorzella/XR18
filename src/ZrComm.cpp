@@ -1,10 +1,10 @@
 #include <OSCMessage.h>
 #include <string>
 
-#include "XRComm.h"
-#include "XRGlobal.h"
-#include "XRNavigation.h"
-#include "ZOSCValue.h"
+#include "ZoscValue.h"
+#include "ZrComm.h"
+#include "ZrGlobal.h"
+#include "ZrNavigation.h"
 
 WiFiUDP wifiUdp;  // A UDP instance to let us send and receive packets over UDP
 
@@ -19,7 +19,7 @@ IPAddress &xrIp() { return m_xrIp; };
 
 /*
  * Receives a OSC message from the network, if any.
- * 
+ *
  * Return true if a message was there to be received, false otherwise.
  */
 void receiveOscIfAny(OSCMessage &msg) {
@@ -85,7 +85,7 @@ bool send1To(const IPAddress &ip, const std::string &mess) {
 
 bool send1(const std::string &mess) { return send1To(m_xrIp, mess); }
 
-bool send2(const std::string &one, const ZOSCValue &two) {
+bool send2(const std::string &one, const ZoscValue &two) {
   Serial.print(">>> [");
   Serial.print(sendOkCount);
   Serial.print(",");

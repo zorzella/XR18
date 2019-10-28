@@ -13,9 +13,9 @@
 #include <sstream>
 #include <string>
 
-#include "XRComm.h"
-#include "XRGlobal.h"
-#include "XRTestScript.h"
+#include "ZrComm.h"
+#include "ZrGlobal.h"
+#include "ZrTestScript.h"
 
 // Setup button pins
 int myButtons[] = {39, 34, 25, 26};  // define the pins for the buttons

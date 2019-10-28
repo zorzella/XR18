@@ -1,8 +1,8 @@
 #include <OSCMessage.h>
 
-#include "XRComm.h"
-#include "XRGlobal.h"
-#include "XRTestScript.h"
+#include "ZrComm.h"
+#include "ZrGlobal.h"
+#include "ZrTestScript.h"
 
 bool sendReceiveOne(const std::string &addr, const std::string &msg) {
   OSCMessage query;
@@ -99,7 +99,7 @@ void runTestScript() {
 
   printCurrentFunction();
   navigation().goRight();
-  XRFunction& f = navigation().currentFunction();
+  ZrFunction& f = navigation().currentFunction();
 
   printCurrentFunction();
   navigation().goRight();

@@ -1,11 +1,11 @@
-#ifndef XR_GLOBAL_INIT_h
-#define XR_GLOBAL_INIT_h
+#ifndef ZR_GLOBAL_INIT_h
+#define ZR_GLOBAL_INIT_h
 
-#include "XRNavigation.h"
+#include "ZrNavigation.h"
 
 const std::string M_STATUS = "/status";
 
-XRNavigation &navigation();
+ZrNavigation &navigation();
 
 bool waitForConnection();
 

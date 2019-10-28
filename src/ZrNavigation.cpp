@@ -5,13 +5,13 @@
 
 #include <ArduinoTrace.h>
 
-#include "XRFunction.h"
-#include "XRNavigation.h"
+#include "ZrFunction.h"
+#include "ZrNavigation.h"
 
 static const int H_COUNT = 16;
 static const int V_COUNT = 2;
 
-XRFunction m_functions[H_COUNT * V_COUNT];
+ZrFunction m_functions[H_COUNT * V_COUNT];
 // TODO: capacity!
 std::map<std::string, int> m_oscAddrToFunctionsArrayIndexMap;
 
@@ -22,19 +22,19 @@ static const int index(int h, int v) { return h + v * H_COUNT; }
 
 const int index() { return index(m_currentHPos, m_currentVPos); }
 
-enum XRFunc {
+enum ZrFunc {
   GAIN,
   FADER,
 };
 
-void XRNavigation::buildFunctions() {
+void ZrNavigation::buildFunctions() {
   char temp[50];
 
   for (int h = 0; h < H_COUNT; h++) {
     for (int v = 0; v < V_COUNT; v++) {
       int channelNumber = h + 1;
       int ind = index(h, v);
-      XRFunction& toPopulate = m_functions[ind];
+      ZrFunction& toPopulate = m_functions[ind];
       toPopulate.m_hPos = h;
       toPopulate.m_vPos = v;
       if (h < 18) {
@@ -61,14 +61,14 @@ void XRNavigation::buildFunctions() {
   }
 }
 
-void XRNavigation::init() {
+void ZrNavigation::init() {
   TRACE();
   buildFunctions();
 }
 
 const int SIZE_OF_OSC_ADDRESS_BUFFER = 100;
 
-void XRNavigation::updateCachedValue(OSCMessage& msg) {
+void ZrNavigation::updateCachedValue(OSCMessage& msg) {
   TRACE();
   char buffer[SIZE_OF_OSC_ADDRESS_BUFFER];
   msg.getAddress(buffer);
@@ -81,21 +81,21 @@ void XRNavigation::updateCachedValue(OSCMessage& msg) {
   }
   int index = m_oscAddrToFunctionsArrayIndexMap[buffer];
 
-  XRFunction* func = &m_functions[index];
+  ZrFunction* func = &m_functions[index];
   func->updateCachedValue(msg);
 }
 
-XRFunction& XRNavigation::currentFunction() const {
+ZrFunction& ZrNavigation::currentFunction() const {
   return m_functions[index()];
 }
 
 // ch/../config/name
 
 /**
- * @return the XRFunction to go to when the current function is @a other and
+ * @return the ZrFunction to go to when the current function is @a other and
  * the "right" button is pressed.
  */
-void XRNavigation::goRight() {
+void ZrNavigation::goRight() {
   TRACE();
   m_currentHPos++;
   if (m_currentHPos == H_COUNT) {
@@ -103,7 +103,7 @@ void XRNavigation::goRight() {
   }
 }
 
-void XRNavigation::goLeft() {
+void ZrNavigation::goLeft() {
   TRACE();
   m_currentHPos--;
   if (m_currentHPos < 0) {
@@ -111,7 +111,7 @@ void XRNavigation::goLeft() {
   }
 }
 
-void XRNavigation::goDown() {
+void ZrNavigation::goDown() {
   TRACE();
   m_currentVPos++;
   if (m_currentVPos == V_COUNT) {
@@ -119,7 +119,7 @@ void XRNavigation::goDown() {
   }
 }
 
-void XRNavigation::goUp() {
+void ZrNavigation::goUp() {
   TRACE();
   m_currentVPos--;
   if (m_currentVPos < 0) {
@@ -127,10 +127,6 @@ void XRNavigation::goUp() {
   }
 }
 
-void XRNavigation::clickPlus() {
-  currentFunction().clickPlus();
-}
+void ZrNavigation::clickPlus() { currentFunction().clickPlus(); }
 
-void XRNavigation::clickMinus() {
-    currentFunction().clickMinus();
-}
+void ZrNavigation::clickMinus() { currentFunction().clickMinus(); }
