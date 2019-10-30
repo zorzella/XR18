@@ -50,22 +50,22 @@ void ZrNavigation::buildFunctions() {
             ZrFuncTypeDescription::posToFuncTypeDescription(h, v);
         switch (toPopulate.m_typeDesc.type()) {
           case GAIN:
-            // toPopulate.m_name = "Gain";
             sprintf(temp, "/headamp/%02d/gain", channelNumber);
             toPopulate.m_oscAddr = temp;
-            // toPopulate.m_notch = 0.5;
+            break;
+          case EQ:
+            sprintf(temp, "/ch/%02d/eq/on", channelNumber);
+            toPopulate.m_oscAddr = temp;
             break;
           case FADER:
-            // toPopulate.m_name = "Fader";
             sprintf(temp, "/ch/%02d/mix/fader", channelNumber);
             toPopulate.m_oscAddr = temp;
-            // toPopulate.m_notch = 0.5;
             break;
           default:
             break;
         }
       }
-      if (toPopulate.m_oscAddr != UNKNOWN) {
+      if (toPopulate.m_oscAddr != UNKNOWN_OSC_ADDR) {
         // TODO?
         m_oscAddrToFunctionsArrayIndexMap.insert({toPopulate.m_oscAddr, ind});
       }

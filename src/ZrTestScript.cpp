@@ -57,8 +57,8 @@ const std::vector<std::string> CHANNELS_TO_TURN_ON_AND_OFF{
     //"/rtn/aux/mix/on",
 };
 
-const std::string CHANNEL_OFF = "OFF";  // i.e. Mute on
-const std::string CHANNEL_ON = "ON";    // i.e. Mute off
+// const std::string CHANNEL_OFF = "OFF";  // i.e. Mute on
+// const std::string CHANNEL_ON = "ON";    // i.e. Mute off
 
 const std::vector<std::string> CHANNEL_MSGS_TO_CHANGE_SEND_LEVEL{
     "/ch/01/mix/01/level",
@@ -105,7 +105,7 @@ void runTestScript() {
   delay(2000);
 
   if (false) {
-    sendReceiveOne(CHANNELS_TO_TURN_ON_AND_OFF[0], CHANNEL_OFF);
+    sendReceiveOne(CHANNELS_TO_TURN_ON_AND_OFF[0], FEATURE_OFF);
   }
 
   printCurrentFunction();
@@ -151,7 +151,7 @@ void runTestScript() {
 void sendABunchOfMessages() {
   warmup();
   sendReceive(CHANNEL_MSGS_TO_CHANGE_SEND_LEVEL, LEVEL_ON);
-  sendReceive(CHANNELS_TO_TURN_ON_AND_OFF, CHANNEL_OFF);
+  sendReceive(CHANNELS_TO_TURN_ON_AND_OFF, FEATURE_OFF);
   sendReceive(CHANNEL_MSGS_TO_CHANGE_SEND_LEVEL, LEVEL_OFF);
-  sendReceive(CHANNELS_TO_TURN_ON_AND_OFF, CHANNEL_ON);
+  sendReceive(CHANNELS_TO_TURN_ON_AND_OFF, FEATURE_ON);
 }

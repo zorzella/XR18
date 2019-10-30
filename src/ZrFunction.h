@@ -8,7 +8,10 @@
 #include "ZrFuncType.h"
 #include "ZrFuncTypeDescription.h"
 
-static const char UNKNOWN[] = "Unknown";
+static const char UNKNOWN_OSC_ADDR[] = "Unknown";
+
+const std::string FEATURE_OFF = "OFF";  // Note that turning a channel mix OFF is turning Mute on
+const std::string FEATURE_ON = "ON";    // See above
 
 class ZrFunction {
  public:
@@ -43,6 +46,8 @@ class ZrFunction {
   ZoscValue m_cachedValue;
 
   void clickChange(const float notch);
+  const void send(const std::string& msg) const;
+
 };
 
 #endif

@@ -9,7 +9,8 @@
 #include "ZrFuncTypeDescription.h"
 #include "ZrFunction.h"
 
-ZrFunction::ZrFunction() : m_hPos{-1}, m_vPos{-1}, m_oscAddr{UNKNOWN} {}
+ZrFunction::ZrFunction()
+    : m_hPos{-1}, m_vPos{-1}, m_oscAddr{UNKNOWN_OSC_ADDR} {}
 
 ZrFunction::ZrFunction(const int hPos, const int vPos,
                        const std::string oscAddr)
@@ -67,14 +68,26 @@ void ZrFunction::clickChange(const float humanNotch) {
   Serial.println("\n Timed out in clickChange.");
 }
 
+const void ZrFunction::send(const std::string& msg) const {
+  send2(m_oscAddr, msg);
+}
+
 void ZrFunction::clickPlus() {
   TRACE();
-  clickChange(m_typeDesc.humanNotch());
+  if (m_typeDesc.isOnOff()) {
+    send(FEATURE_ON);
+  } else {
+    clickChange(m_typeDesc.humanNotch());
+  }
 }
 
 void ZrFunction::clickMinus() {
   TRACE();
-  clickChange(-(m_typeDesc.humanNotch()));
+    if (m_typeDesc.isOnOff()) {
+    send(FEATURE_OFF);
+  } else {
+    clickChange(-(m_typeDesc.humanNotch()));
+  }
 }
 
 void ZrFunction::updateCachedValue(OSCMessage& msg) {
