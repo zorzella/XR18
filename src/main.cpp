@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 
+#include "heltecfac.h"
 // #include "Test5110.h"
 // #include <esp32-hal-touch.h>
 // #include "esp32-hal.h"
@@ -48,9 +49,15 @@ void setup() {
     ;
   }
 
+  if (true) {
+    setup_heltecfac();
+    return;
+  }
+
   // if (true) {
   //   delay(1000);
   //   setup5110();
+  //   return;
   // }
 
   if (DEBUG_WIFI) {
@@ -75,6 +82,12 @@ void setup() {
 }
 
 void loop() {
+
+  if (true) {
+    loop_heltecfac();
+    return;
+  }
+
   Serial.print("Waiting click button.");
   while (digitalRead(33) == HIGH) {
     Serial.print(".");
