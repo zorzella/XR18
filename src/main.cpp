@@ -13,6 +13,7 @@
 #include <sstream>
 #include <string>
 
+// #include "Test5110.h"
 // #include <esp32-hal-touch.h>
 // #include "esp32-hal.h"
 
@@ -41,10 +42,16 @@ const std::string M_XINFO = "/xinfo";
 const std::string M_XREMOTE = "/xremote";
 
 void setup() {
+
   Serial.begin(115200);  // DEBUG window
   while (!Serial) {
     ;
   }
+
+  // if (true) {
+  //   delay(1000);
+  //   setup5110();
+  // }
 
   if (DEBUG_WIFI) {
     // Give a second before doing anything, so the terminal is active
