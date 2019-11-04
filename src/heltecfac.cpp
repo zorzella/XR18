@@ -119,10 +119,10 @@ void setup_heltecfac() {
                true /*Serial Enable*/);
 
   logo();
-  delay(300);
-  Heltec.display->clear();
+  delay(1000);
+//   Heltec.display->clear();
 
-  WIFISetUp();
+//   WIFISetUp();
 }
 
 void loop_heltecfac() {

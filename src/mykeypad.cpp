@@ -8,11 +8,13 @@
 || #
 */
 
+#include "heltec.h"
+
 #include <ArduinoTrace.h>
 #include <Keypad.h>
-#include <heltec.h>
 // #include <oled/OLEDDisplay.h>
 
+#include "heltecfac.h"
 #include "mykeypad.h"
 
 const byte ROWS = 4;  // four rows
@@ -22,33 +24,65 @@ char hexaKeys[ROWS][COLS] = {{'1', '2', '3', 'A'},
                              {'4', '5', '6', 'B'},
                              {'7', '8', '9', 'C'},
                              {'E', '0', 'F', 'D'}};
-// byte rowPins[ROWS] = {3, 2, 1, 0}; //connect to the row pinouts of the keypad
-// byte colPins[COLS] = {7, 6, 5, 4}; //connect to the column pinouts of the
-// keypad
-byte rowPins[ROWS] = {23, 19, 22,
-                      21};  // connect to the row pinouts of the keypad
-byte colPins[COLS] = {16, 17, 5,
-                      18};  // connect to the column pinouts of the keypad
+// connect to the row pinouts of the keypad
+byte rowPins[ROWS] = {27, 14, 12, 13};
+
+// connect to the column pinouts of the keypad
+byte colPins[COLS] = {32, 33, 25, 26};
 
 // initialize an instance of class NewKeypad
 Keypad customKeypad =
     Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
-void setup_mykeypad() {
-  // TODO: not needed?
-	pinMode(LED,OUTPUT);
-	digitalWrite(LED,HIGH);
+void setup_heltecfac2() {
+  pinMode(LED, OUTPUT);
+  digitalWrite(LED, HIGH);
 
   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/,
-               true /*Serial Enable*/);
+               false /*Serial Enable*/);
+
+  logo();
+  delay(1000);
+  Heltec.display->clear();
+  for (int i = 0; i < 80; i += 20) {
+    for (int j = 0; j < 80; j += 20) {
+      Serial.print(i);
+      Serial.print(":");
+      Serial.println(j);
+      Heltec.display->clear();
+      Heltec.display->drawString(i, j, "Foobar");
+      Heltec.display->display();
+      delay(500);
+    }
+  }
+
+  // Heltec.display->clear();
+
+  // WIFISetUp();
+}
+
+void setup_mykeypad() {
+  Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/,
+               false /*Serial Enable*/);
+
+  Heltec.display->setColor(WHITE);
 
   Heltec.display->clear();
+  // Heltec.display->init();
+  // This does not work
+  // Heltec.display->flipScreenVertically();
 }
 
 void loop_mykeypad() {
+
   char customKey = customKeypad.getKey();
 
   if (customKey) {
+    // Heltec.display->clear();
+    Heltec.display->drawString(0, 0, "Barbar: 50\nFoobar: 10\nFoo");
+    Heltec.display->display();
+    // delay(1000);
+
     Serial.println(customKey);
     switch (customKey) {
       case 'A':
@@ -60,8 +94,18 @@ void loop_mykeypad() {
       case 'C':
         Heltec.display->setFont(ArialMT_Plain_24);
         break;
+      case 'E':
+        break;
+      case 'F':
+        break;
+      case 'D':
+        break;
+      case '0':
+        Heltec.display->clear();
+        break;
+      default:
+        break;
     }
-    Heltec.display->drawString(0, 0, "Foobar");
-    Heltec.display->display();
+    delay(300);
   }
 }
