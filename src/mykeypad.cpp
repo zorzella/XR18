@@ -11,7 +11,7 @@
 #include <ArduinoTrace.h>
 #include <Keypad.h>
 #include <heltec.h>
-#include <oled/OLEDDisplay.h>
+// #include <oled/OLEDDisplay.h>
 
 #include "mykeypad.h"
 
@@ -35,6 +35,10 @@ Keypad customKeypad =
     Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
 void setup_mykeypad() {
+  // TODO: not needed?
+	pinMode(LED,OUTPUT);
+	digitalWrite(LED,HIGH);
+
   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/,
                true /*Serial Enable*/);
 
