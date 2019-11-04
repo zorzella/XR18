@@ -17,6 +17,8 @@
 // #include "Test5110.h"
 // #include <esp32-hal-touch.h>
 // #include "esp32-hal.h"
+#include "myheltec.h"
+#include "mykeypad.h"
 
 #include "ZrComm.h"
 #include "ZrGlobal.h"
@@ -50,9 +52,14 @@ void setup() {
   }
 
   if (true) {
-    setup_heltecfac();
+    setupkeypad();
     return;
   }
+
+  // if (true) {
+  //   setup_heltecfac();
+  //   return;
+  // }
 
   // if (true) {
   //   delay(1000);
@@ -82,6 +89,11 @@ void setup() {
 }
 
 void loop() {
+
+  if (true) {
+    loopmykeypad();
+    return;
+  }
 
   if (true) {
     loop_heltecfac();
