@@ -22,6 +22,7 @@
 
 #include "ZrComm.h"
 #include "ZrGlobal.h"
+#include "ZrKeypad.h"
 #include "ZrTestScript.h"
 
 #define BRACELET_ON GPIO_NUM_27
