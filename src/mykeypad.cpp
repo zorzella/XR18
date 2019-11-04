@@ -24,42 +24,21 @@ char hexaKeys[ROWS][COLS] = {{'1', '2', '3', 'A'},
                              {'4', '5', '6', 'B'},
                              {'7', '8', '9', 'C'},
                              {'E', '0', 'F', 'D'}};
+// // connect to the row pinouts of the keypad
+// byte rowPins[ROWS] = {27, 14, 12, 13};
+
+// // connect to the column pinouts of the keypad
+// byte colPins[COLS] = {32, 33, 25, 26};
+
 // connect to the row pinouts of the keypad
-byte rowPins[ROWS] = {27, 14, 12, 13};
+byte rowPins[ROWS] = {23, 19, 22, 21};
 
 // connect to the column pinouts of the keypad
-byte colPins[COLS] = {32, 33, 25, 26};
+byte colPins[COLS] = {2, 17, 5, 18};
 
 // initialize an instance of class NewKeypad
 Keypad customKeypad =
     Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
-
-void setup_heltecfac2() {
-  pinMode(LED, OUTPUT);
-  digitalWrite(LED, HIGH);
-
-  Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/,
-               false /*Serial Enable*/);
-
-  logo();
-  delay(1000);
-  Heltec.display->clear();
-  for (int i = 0; i < 80; i += 20) {
-    for (int j = 0; j < 80; j += 20) {
-      Serial.print(i);
-      Serial.print(":");
-      Serial.println(j);
-      Heltec.display->clear();
-      Heltec.display->drawString(i, j, "Foobar");
-      Heltec.display->display();
-      delay(500);
-    }
-  }
-
-  // Heltec.display->clear();
-
-  // WIFISetUp();
-}
 
 void setup_mykeypad() {
   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/,
@@ -67,14 +46,12 @@ void setup_mykeypad() {
 
   Heltec.display->setColor(WHITE);
 
+  Heltec.display->init();
+  Heltec.display->flipScreenVertically();
   Heltec.display->clear();
-  // Heltec.display->init();
-  // This does not work
-  // Heltec.display->flipScreenVertically();
 }
 
 void loop_mykeypad() {
-
   char customKey = customKeypad.getKey();
 
   if (customKey) {
