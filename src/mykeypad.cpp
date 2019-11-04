@@ -34,14 +34,14 @@ byte colPins[COLS] = {16, 17, 5,
 Keypad customKeypad =
     Keypad(makeKeymap(hexaKeys), rowPins, colPins, ROWS, COLS);
 
-void setupkeypad() {
+void setup_mykeypad() {
   Heltec.begin(true /*DisplayEnable Enable*/, false /*LoRa Enable*/,
                true /*Serial Enable*/);
 
   Heltec.display->clear();
 }
 
-void loopmykeypad() {
+void loop_mykeypad() {
   char customKey = customKeypad.getKey();
 
   if (customKey) {

@@ -272,7 +272,7 @@ void testdrawline() {
 
 #define backlight_pin 11
 
-void setup5110()   {
+void setup_5110()   {
 //   Serial.begin(9600);
 
   TRACE();
@@ -406,6 +406,6 @@ void setup5110()   {
 }
 
 
-void loop5110() {
+void loop_5110() {
   
 }

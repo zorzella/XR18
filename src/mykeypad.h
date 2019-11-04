@@ -1,4 +1,4 @@
 #pragma once
 
-void setupkeypad();
-void loopmykeypad();
+void setup_mykeypad();
+void loop_mykeypad();

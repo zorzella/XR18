@@ -1,3 +1,5 @@
 #pragma once
 
-void setup5110();
+void setup_5110();
+
+void loop_5110();

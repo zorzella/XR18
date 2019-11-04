@@ -13,8 +13,8 @@
 #include <sstream>
 #include <string>
 
+#include "Test5110.h"
 #include "heltecfac.h"
-// #include "Test5110.h"
 // #include <esp32-hal-touch.h>
 // #include "esp32-hal.h"
 #include "myheltec.h"
@@ -44,28 +44,40 @@ int ledCount = 0;   // set the number of LEDs in the loop
 const std::string M_XINFO = "/xinfo";
 const std::string M_XREMOTE = "/xremote";
 
-void setup() {
+enum Mode {
+  XR,
+  MY_KEYPAD,
+  // MY_HELTEC,
+  HELTEC_FAC,
+  NOKIA_5110,
+};
 
+Mode m_mode = MY_KEYPAD;
+
+void setup() {
   Serial.begin(115200);  // DEBUG window
   while (!Serial) {
     ;
   }
 
-  if (true) {
-    setupkeypad();
-    return;
+  switch (m_mode) {
+    case XR:
+      // Let it continue
+      break;
+    case MY_KEYPAD:
+      setup_mykeypad();
+      return;
+    case HELTEC_FAC:
+      setup_heltecfac();
+      return;
+    case NOKIA_5110:
+      delay(1000);
+      setup_5110();
+      return;
+    default:
+      Serial.println("Unimplemented");
+      return;
   }
-
-  // if (true) {
-  //   setup_heltecfac();
-  //   return;
-  // }
-
-  // if (true) {
-  //   delay(1000);
-  //   setup5110();
-  //   return;
-  // }
 
   if (DEBUG_WIFI) {
     // Give a second before doing anything, so the terminal is active
@@ -89,15 +101,22 @@ void setup() {
 }
 
 void loop() {
-
-  if (true) {
-    loopmykeypad();
-    return;
-  }
-
-  if (true) {
-    loop_heltecfac();
-    return;
+  switch (m_mode) {
+    case XR:
+      // Let it continue
+      break;
+    case MY_KEYPAD:
+      loop_mykeypad();
+      return;
+    case HELTEC_FAC:
+      loop_heltecfac();
+      return;
+    case NOKIA_5110:
+      loop_5110();
+      return;
+    default:
+      Serial.println("Unimplemented");
+      return;
   }
 
   Serial.print("Waiting click button.");
