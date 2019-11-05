@@ -70,7 +70,9 @@ const std::string LEVEL_OFF = "-127";
 
 void printCurrentFunction() {
   Serial.print("Name: ");
-  Serial.print(navigation().currentFunction().humanName().c_str());
+  Serial.print(navigation().currentFunction().humanChannelName().c_str());
+  Serial.print(" - ");
+  Serial.print(navigation().currentFunction().humanFunctionName().c_str());
   Serial.print(", OSC: ");
   Serial.println(navigation().currentFunction().oscAddr().c_str());
 }

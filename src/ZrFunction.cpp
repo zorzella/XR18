@@ -10,24 +10,38 @@
 #include "ZrFunction.h"
 
 ZrFunction::ZrFunction()
-    : m_hPos{-1}, m_vPos{-1}, m_oscAddr{UNKNOWN_OSC_ADDR} {}
+    : m_hPos{-1},
+      m_vPos{-1},
+      m_oscAddr{UNKNOWN_OSC_ADDR},
+      m_humanChannelName{"??"},
+      m_humanCustomName{""} {}
 
-ZrFunction::ZrFunction(const int hPos, const int vPos,
-                       const std::string oscAddr)
-    : m_hPos(hPos), m_vPos(vPos), m_oscAddr(oscAddr) {}
+// ZrFunction::ZrFunction(const int hPos, const int vPos,
+//                        const std::string oscAddr,
+//                        const std::string humanChannelName)
+//     : m_hPos(hPos),
+//       m_vPos(vPos),
+//       m_oscAddr(oscAddr),
+//       m_humanChannelName(humanChannelName) {}
 
 void plus(OSCMessage& outParam, OSCMessage& source) { outParam = source; }
 
 const int ZrFunction::hPos() const { return m_hPos; }
 const int ZrFunction::vPos() const { return m_vPos; }
 
-const std::string ZrFunction::humanName() const {
+const std::string ZrFunction::humanChannelName() const {
+  return m_humanChannelName;
+}
+
+const std::string ZrFunction::humanFunctionName() const {
   return m_typeDesc.humanName();
 }
 
 const std::string ZrFunction::oscAddr() const { return m_oscAddr; }
 
 const float ZrFunction::notch() const { return m_typeDesc.humanNotch(); }
+
+const ZoscValue& ZrFunction::cachedValue() const { return m_cachedValue; }
 
 static const int CACHE_TOLERANCE = 500;
 
@@ -83,7 +97,7 @@ void ZrFunction::clickPlus() {
 
 void ZrFunction::clickMinus() {
   TRACE();
-    if (m_typeDesc.isOnOff()) {
+  if (m_typeDesc.isOnOff()) {
     send(FEATURE_OFF);
   } else {
     clickChange(-(m_typeDesc.humanNotch()));
@@ -100,10 +114,10 @@ void ZrFunction::updateCachedValue(OSCMessage& msg) {
     Serial.println("Too many data points! Ignoring.");
   }
   m_lastUpdated = millis();
-  m_cachedValue = ZoscValue(msg, 0);
+  m_cachedValue = ZoscValue(m_typeDesc, msg, 0);
   printRec(msg);
   Serial.print("New cached value: ");
-  Serial.print(m_cachedValue.asStr().c_str());
+  Serial.print(m_cachedValue.asStrOsc().c_str());
 
   Serial.print(", m_oscAddr: ");
   Serial.print(m_oscAddr.c_str());

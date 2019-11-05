@@ -7,30 +7,38 @@
 #include "ZrFuncTypeDescription.h"
 
 ZoscValue::ZoscValue()
-    : m_isPresent{false}, m_type{ZOSC_UNKNOWN}, m_asStr{""} {}
+    : m_isPresent{false}, m_type{ZOSC_UNKNOWN}, m_asStrOsc{""}, m_asStrHuman{""} {}
 
-ZoscValue::ZoscValue(OSCMessage& msg, int index) : m_isPresent{true} {
-  std::ostringstream strs;
+ZoscValue::ZoscValue(const ZrFuncTypeDescription& typeDesc, OSCMessage& msg,
+                     int index)
+    : m_isPresent{true} {
+  std::ostringstream strsOsc;
+  std::ostringstream strsHuman;
 
   if (msg.isInt(index)) {
     m_type = ZOSC_I;
     m_data.i = msg.getInt(index);
-    strs << m_data.i;
+    strsOsc << m_data.i;
+    strsHuman << typeDesc.oscValueToHuman(m_data.i);
   } else if (msg.isFloat(index)) {
     m_type = ZOSC_F;
     m_data.f = msg.getFloat(index);
-    strs << m_data.f;
+    strsOsc << m_data.f;
+    strsHuman << typeDesc.oscValueToHuman(m_data.f);
   } else if (msg.isDouble(index)) {
     m_type = ZOSC_D;
     m_data.d = msg.getDouble(index);
-    strs << m_data.d;
-  } else {
+    strsOsc << m_data.d;
+    strsHuman << typeDesc.oscValueToHuman(m_data.d);
+ } else {
     m_type = ZOSC_UNKNOWN;
     Serial.print("OSC type not yet implemented: ");
     Serial.println(msg.getType(index));
   }
-  m_asStr = strs.str();
-  strs.clear();
+  m_asStrOsc = strsOsc.str();
+  strsOsc.clear();
+  m_asStrHuman = strsHuman.str();
+  strsHuman.clear();
 }
 
 const ZoscValue ZoscValue::plus(const ZrFuncTypeDescription& typeDesc,
@@ -84,4 +92,6 @@ void ZoscValue::printNotYetImplemented() const {
   Serial.println(m_type);
 }
 
-const std::string& ZoscValue::asStr() const { return m_asStr; }
+const std::string& ZoscValue::asStrOsc() const { return m_asStrOsc; }
+
+const std::string& ZoscValue::asStrHuman() const { return m_asStrHuman; }

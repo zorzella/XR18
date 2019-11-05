@@ -15,20 +15,28 @@
 
 #include "Test5110.h"
 #include "heltecfac.h"
-// #include <esp32-hal-touch.h>
-// #include "esp32-hal.h"
 #include "myheltec.h"
 #include "mykeypad.h"
 
 #include "ZrComm.h"
+#include "ZrDisplay.h"
 #include "ZrGlobal.h"
 #include "ZrKeypad.h"
 #include "ZrTestScript.h"
 
-#define BRACELET_ON GPIO_NUM_27
-#define TOUCH GPIO_NUM_32
+enum Mode {
+  XR,
+  MY_KEYPAD,
+  // MY_HELTEC,
+  HELTEC_FAC,
+  NOKIA_5110,
+};
 
-static const int touchPin = 32;
+static Mode m_mode = XR;
+
+static bool WAIT_FOR_BUTTON_33 = false;
+
+static int BUTTON_33 = 33;
 
 // Setup button pins
 int myButtons[] = {};  // 39, 34, 25, 26};  // define the pins for the buttons
@@ -45,15 +53,7 @@ int ledCount = 0;   // set the number of LEDs in the loop
 const std::string M_XINFO = "/xinfo";
 const std::string M_XREMOTE = "/xremote";
 
-enum Mode {
-  XR,
-  MY_KEYPAD,
-  // MY_HELTEC,
-  HELTEC_FAC,
-  NOKIA_5110,
-};
 
-Mode m_mode = MY_KEYPAD;
 
 void setup() {
   Serial.begin(115200);  // DEBUG window
@@ -85,19 +85,19 @@ void setup() {
     delay(1000);
   }
 
-  // Setp pin mode for buttons
+  // Setp button pins as input pullup
   for (int i = 0; i < buttonCount; i++) {
-    pinMode(myButtons[i],
-            INPUT_PULLUP);  // initialize the button pin as a input
+    pinMode(myButtons[i], INPUT_PULLUP);
   }
 
-  // Setp pin mode for LEDs
+  // Setp LEDs as output
   for (int i = 0; i < ledCount; i++) {
-    pinMode(myLeds[i], OUTPUT);  // initialize the LED as an output
+    pinMode(myLeds[i], OUTPUT);
   }
 
-  pinMode(33, INPUT_PULLUP);
+  pinMode(BUTTON_33, INPUT_PULLUP);
 
+  setupDisplay();
   navigation().init();
 }
 
@@ -120,12 +120,14 @@ void loop() {
       return;
   }
 
-  Serial.print("Waiting click button.");
-  while (digitalRead(33) == HIGH) {
-    Serial.print(".");
-    delay(1000);
+  if (WAIT_FOR_BUTTON_33) {
+    Serial.print("Waiting for button click.");
+    while (digitalRead(BUTTON_33) == HIGH) {
+      Serial.print(".");
+      delay(1000);
+    }
+    Serial.println();
   }
-  Serial.println();
 
   if (WiFi.status() != WL_CONNECTED || xrIp() == INADDR_NONE) {
     Serial.println("Wifi down or XR unreachable. Reconnecting.");
@@ -137,7 +139,32 @@ void loop() {
     Serial.println("Wifi reconnection succeeded.");
   }
 
-  Serial.println("Wifi ok");
+  // Serial.println("Wifi ok");
   // sendABunchOfMessages();
-  runTestScript();
+  // runTestScript();
+
+  char currentKey = zrKeypad.getKey();
+  if (currentKey) {
+    switch(currentKey) {
+      case KEY_UP:
+      navigation().goUp();
+      break;
+      case KEY_DOWN:
+      navigation().goDown();
+      break;
+      case KEY_LEFT:
+      navigation().goLeft();
+      break;
+      case KEY_RIGHT:
+      navigation().goRight();
+      break;
+      case KEY_PLUS:
+      navigation().clickPlus();
+      break;
+      case KEY_MINUS:
+      navigation().clickMinus();
+      break;
+    }
+  }
+  refreshDisplay();
 }  // End of main loop

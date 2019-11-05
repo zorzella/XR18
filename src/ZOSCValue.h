@@ -17,7 +17,7 @@ class ZoscValue {
  public:
   ZoscValue();
   //   ZOSCValue(const ZOSCValue& other);
-  ZoscValue(OSCMessage& osc, int index);
+  ZoscValue(const ZrFuncTypeDescription& typeDesc, OSCMessage& osc, int index);
   //   ZOSCValue& operator=(const ZOSCValue& source);
 
   const bool isPresent() const;
@@ -26,14 +26,16 @@ class ZoscValue {
 
   void addItselfTo(OSCMessage& msg) const;
 
-  const std::string& asStr() const;
+  const std::string& asStrOsc() const;
+  const std::string& asStrHuman() const;
 
  private:
   bool m_isPresent;
 
   ZoscType m_type;
 
-  std::string m_asStr;
+  std::string m_asStrOsc;
+  std::string m_asStrHuman;
 
   union {
     // char * s; //string

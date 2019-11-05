@@ -94,7 +94,7 @@ bool send2(const std::string &one, const ZoscValue &two) {
 
   Serial.print(one.c_str());
   Serial.print(" ");
-  Serial.print(two.asStr().c_str());
+  Serial.print(two.asStrOsc().c_str());
 
   OSCMessage msg(one.c_str());
   two.addItselfTo(msg);

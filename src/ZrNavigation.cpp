@@ -46,6 +46,8 @@ void ZrNavigation::buildFunctions() {
       toPopulate.m_hPos = h;
       toPopulate.m_vPos = v;
       if (h < 18) {
+        sprintf(temp, "CH%02d", channelNumber);
+        toPopulate.m_humanChannelName = temp;
         toPopulate.m_typeDesc =
             ZrFuncTypeDescription::posToFuncTypeDescription(h, v);
         switch (toPopulate.m_typeDesc.type()) {
