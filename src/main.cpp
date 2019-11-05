@@ -143,6 +143,9 @@ void loop() {
   // sendABunchOfMessages();
   // runTestScript();
 
+  navigation().currentFunction().triggerCacheUpdateIfNeeded();
+
+ 
   char currentKey = zrKeypad.getKey();
   if (currentKey) {
     switch(currentKey) {
@@ -166,5 +169,9 @@ void loop() {
       break;
     }
   }
+  
+  OSCMessage msg;
+  receiveOscIfAny(msg);
+
   refreshDisplay();
 }  // End of main loop

@@ -34,6 +34,8 @@ class ZrFunction {
   void clickPlus();
   void clickMinus();
   void updateCachedValue(OSCMessage& msg);
+  bool triggerCacheUpdate();
+  bool triggerCacheUpdateIfNeeded();
 
  private:
   friend class ZrNavigation;
@@ -54,6 +56,7 @@ class ZrFunction {
 
   void clickChange(const float notch);
   const void send(const std::string& msg) const;
+  const bool cacheIsStale() const;
 };
 
 #endif

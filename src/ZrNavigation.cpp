@@ -11,7 +11,7 @@
 #include "ZrNavigation.h"
 
 static const int H_COUNT = 16;
-static const int V_COUNT = 2;
+static const int V_COUNT = 3;
 
 ZrFunction m_functions[H_COUNT * V_COUNT];
 // TODO: capacity!

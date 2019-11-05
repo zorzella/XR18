@@ -45,6 +45,19 @@ const ZoscValue& ZrFunction::cachedValue() const { return m_cachedValue; }
 
 static const int CACHE_TOLERANCE = 500;
 
+const bool ZrFunction::cacheIsStale() const {
+  return m_lastUpdated + CACHE_TOLERANCE < millis();
+};
+
+bool ZrFunction::triggerCacheUpdate() { return send1(m_oscAddr); }
+
+bool ZrFunction::triggerCacheUpdateIfNeeded() {
+  if (cacheIsStale()) {
+    return send1(m_oscAddr);
+  }
+  return true;
+}
+
 void ZrFunction::clickChange(const float humanNotch) {
   bool sentRefreshRequest = false;
   long timeoutAt = millis() + 2000;
@@ -53,16 +66,16 @@ void ZrFunction::clickChange(const float humanNotch) {
     Serial.print(m_oscAddr.c_str());
     Serial.print(", m_lastUpdated: ");
     Serial.println(m_lastUpdated);
-    if (m_lastUpdated + CACHE_TOLERANCE > millis()) {
+    if (!cacheIsStale()) {
       Serial.println("Cached value is up-to-date.");
       // ok, we seem to be sufficiently up-to-date
       send2(m_oscAddr, m_cachedValue.plus(m_typeDesc, humanNotch));
       // invalidate the cache and initiate a message that will refresh it
       m_lastUpdated = -1;
-      send1(m_oscAddr);
+      triggerCacheUpdate();
       return;
     } else if (!sentRefreshRequest) {
-      if (send1(m_oscAddr)) {
+      if (triggerCacheUpdate()) {
         sentRefreshRequest = true;
         Serial.print("Waiting for current value");
       } else {
@@ -114,6 +127,7 @@ void ZrFunction::updateCachedValue(OSCMessage& msg) {
     Serial.println("Too many data points! Ignoring.");
   }
   m_lastUpdated = millis();
+  // TODO!!!!!
   m_cachedValue = ZoscValue(m_typeDesc, msg, 0);
   printRec(msg);
   Serial.print("New cached value: ");
