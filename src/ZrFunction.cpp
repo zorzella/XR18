@@ -104,6 +104,7 @@ void ZrFunction::clickPlus() {
   TRACE();
   if (m_typeDesc.isOnOff()) {
     send(FEATURE_ON);
+    triggerCacheUpdate();
   } else {
     clickChange(m_typeDesc.humanNotch());
   }
@@ -113,6 +114,7 @@ void ZrFunction::clickMinus() {
   TRACE();
   if (m_typeDesc.isOnOff()) {
     send(FEATURE_OFF);
+    triggerCacheUpdate();
   } else {
     clickChange(-(m_typeDesc.humanNotch()));
   }

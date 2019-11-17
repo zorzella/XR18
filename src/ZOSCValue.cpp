@@ -24,7 +24,11 @@ void ZoscValue::setMessage(const ZrFuncTypeDescription& typeDesc,
     m_type = ZOSC_I;
     m_data.i = msg.getInt(index);
     strsOsc << m_data.i;
-    strsHuman << typeDesc.oscValueToHuman(m_data.i);
+    if (typeDesc.isOnOff()) {
+      strsHuman << (m_data.i == 0 ? "OFF" : "ON");
+    } else {
+      strsHuman << typeDesc.oscValueToHuman(m_data.i);
+    }
   } else if (msg.isFloat(index)) {
     m_type = ZOSC_F;
     m_data.f = msg.getFloat(index);
