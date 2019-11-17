@@ -4,6 +4,8 @@
 // *  I started this based on code By Vern Graner -- thank you!  *
 // ***************************************************************
 
+#include "ZrDebug.h"
+
 #include <Arduino.h>
 #include <ArduinoTrace.h>
 #include <OSCMessage.h>  // For OSC support
@@ -14,15 +16,14 @@
 #include <string>
 
 #include "Test5110.h"
-#include "heltecfac.h"
-#include "myheltec.h"
-#include "mykeypad.h"
-
 #include "ZrComm.h"
 #include "ZrDisplay.h"
 #include "ZrGlobal.h"
 #include "ZrKeypad.h"
 #include "ZrTestScript.h"
+#include "heltecfac.h"
+#include "myheltec.h"
+#include "mykeypad.h"
 
 enum Mode {
   XR,
@@ -52,8 +53,6 @@ int ledCount = 0;   // set the number of LEDs in the loop
 
 const std::string M_XINFO = "/xinfo";
 const std::string M_XREMOTE = "/xremote";
-
-
 
 void setup() {
   Serial.begin(115200);  // DEBUG window
@@ -145,31 +144,30 @@ void loop() {
 
   navigation().currentFunction().triggerCacheUpdateIfNeeded();
 
- 
   char currentKey = zrKeypad.getKey();
   if (currentKey) {
-    switch(currentKey) {
+    switch (currentKey) {
       case KEY_UP:
-      navigation().goUp();
-      break;
+        navigation().goUp();
+        break;
       case KEY_DOWN:
-      navigation().goDown();
-      break;
+        navigation().goDown();
+        break;
       case KEY_LEFT:
-      navigation().goLeft();
-      break;
+        navigation().goLeft();
+        break;
       case KEY_RIGHT:
-      navigation().goRight();
-      break;
+        navigation().goRight();
+        break;
       case KEY_PLUS:
-      navigation().clickPlus();
-      break;
+        navigation().clickPlus();
+        break;
       case KEY_MINUS:
-      navigation().clickMinus();
-      break;
+        navigation().clickMinus();
+        break;
     }
   }
-  
+
   OSCMessage msg;
   receiveOscIfAny(msg);
 

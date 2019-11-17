@@ -1,6 +1,8 @@
 #ifndef ZR_COMM_h
 #define ZR_COMM_h
 
+#include "ZrDebug.h"
+
 #include <OSCMessage.h>  // For OSC support
 #include <WiFi.h>        // For WiFi
 #include <WiFiUdp.h>     // For WiFi

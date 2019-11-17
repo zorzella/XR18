@@ -7,6 +7,7 @@
 || | Demonstrates changing the keypad size and key values.
 || #
 */
+#include "ZrDebug.h"
 
 #include "heltec.h"
 
@@ -14,9 +15,10 @@
 #include <Keypad.h>
 // #include <oled/OLEDDisplay.h>
 
+#include "ZrGlobal.h"
+#include "ZrKeypad.h"
 #include "heltecfac.h"
 #include "mykeypad.h"
-#include "ZrKeypad.h"
 
 // const byte ROWS = 4;  // four rows
 // const byte COLS = 4;  // four columns
@@ -59,9 +61,8 @@ void loop_mykeypad() {
   char customKey = zrKeypad.getKey();
 
   if (customKey) {
-
     snprintf(buffer, 50, "Key: %c", customKey);
-    
+
     Serial.println(buffer);
 
     Heltec.display->clear();
@@ -71,7 +72,7 @@ void loop_mykeypad() {
 
     Heltec.display->setFont(ArialMT_Plain_16);
     Heltec.display->drawString(0, 10, buffer);
-    
+
     Heltec.display->setFont(ArialMT_Plain_24);
     Heltec.display->drawString(0, 24, buffer);
     Heltec.display->display();

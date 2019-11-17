@@ -1,3 +1,5 @@
+#include "ZrDebug.h"
+
 #include <string>
 
 #include "ZrFuncTypeDescription.h"

@@ -1,6 +1,8 @@
 #ifndef ZR_FUNCTION_h
 #define ZR_FUNCTION_h
 
+#include "ZrDebug.h"
+
 #include <OSCMessage.h>
 #include <string>
 
@@ -50,6 +52,8 @@ class ZrFunction {
 
   // The timestamp when m_cachedValue was last updated (by updateCachedValue)
   unsigned long m_lastUpdated;
+  // The timestamp when a request to update m_cachedValue was last sent
+  unsigned long m_lastSentUpdateRequest;
 
   // The last known value of this function.
   ZoscValue m_cachedValue;
@@ -57,6 +61,7 @@ class ZrFunction {
   void clickChange(const float notch);
   const void send(const std::string& msg) const;
   const bool cacheIsStale() const;
+  const bool lastCacheUpdateRequestIsOld() const;
 };
 
 #endif

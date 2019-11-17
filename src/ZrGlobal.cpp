@@ -1,11 +1,9 @@
-#ifndef ZR_GLOBAL_INIT_h
-#define ZR_GLOBAL_INIT_h
+#include "ZrDebug.h"
 
+#include "ZrGlobal.h"
 #include "ZrComm.h"
 #include "ZrNavigation.h"
 #include "networks.h"
-
-const std::string M_STATUS = "/status";
 
 ZrNavigation m_navigation;
 
@@ -122,5 +120,3 @@ bool tryToReconnectWifi() {
   }
   return result;
 }
-
-#endif

@@ -1,6 +1,8 @@
 #ifndef ZR_NAVIGATION_h
 #define ZR_NAVIGATION_h
 
+#include "ZrDebug.h"
+
 #include <vector>
 
 #include "ZrFunction.h"

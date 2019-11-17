@@ -1,3 +1,5 @@
+#include "ZrDebug.h"
+
 #include <OSCMessage.h>
 #include <string>
 

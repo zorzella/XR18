@@ -1,5 +1,6 @@
-#include <ArduinoTrace.h>
+#include "ZrDebug.h"
 
+#include <ArduinoTrace.h>
 #include <OSCMessage.h>
 #include <string>
 
@@ -15,14 +16,6 @@ ZrFunction::ZrFunction()
       m_oscAddr{UNKNOWN_OSC_ADDR},
       m_humanChannelName{"??"},
       m_humanCustomName{""} {}
-
-// ZrFunction::ZrFunction(const int hPos, const int vPos,
-//                        const std::string oscAddr,
-//                        const std::string humanChannelName)
-//     : m_hPos(hPos),
-//       m_vPos(vPos),
-//       m_oscAddr(oscAddr),
-//       m_humanChannelName(humanChannelName) {}
 
 void plus(OSCMessage& outParam, OSCMessage& source) { outParam = source; }
 
@@ -43,22 +36,28 @@ const float ZrFunction::notch() const { return m_typeDesc.humanNotch(); }
 
 const ZoscValue& ZrFunction::cachedValue() const { return m_cachedValue; }
 
-static const int CACHE_TOLERANCE = 500;
+static const int CACHE_TOLERANCE = 2000;
 
 const bool ZrFunction::cacheIsStale() const {
   return m_lastUpdated + CACHE_TOLERANCE < millis();
 };
 
+const bool ZrFunction::lastCacheUpdateRequestIsOld() const {
+  return m_lastSentUpdateRequest + CACHE_TOLERANCE < millis();
+};
+
 bool ZrFunction::triggerCacheUpdate() { return send1(m_oscAddr); }
 
 bool ZrFunction::triggerCacheUpdateIfNeeded() {
-  if (cacheIsStale()) {
+  if (cacheIsStale() && lastCacheUpdateRequestIsOld()) {
+    m_lastSentUpdateRequest = millis();
     return send1(m_oscAddr);
   }
   return true;
 }
 
 void ZrFunction::clickChange(const float humanNotch) {
+  TRACE();
   bool sentRefreshRequest = false;
   long timeoutAt = millis() + 2000;
   while (millis() < timeoutAt) {
@@ -69,7 +68,9 @@ void ZrFunction::clickChange(const float humanNotch) {
     if (!cacheIsStale()) {
       Serial.println("Cached value is up-to-date.");
       // ok, we seem to be sufficiently up-to-date
-      send2(m_oscAddr, m_cachedValue.plus(m_typeDesc, humanNotch));
+      ZoscValue copy = m_cachedValue;
+      copy.plus(m_typeDesc, humanNotch);
+      send2(m_oscAddr, copy);
       // invalidate the cache and initiate a message that will refresh it
       m_lastUpdated = -1;
       triggerCacheUpdate();
@@ -127,8 +128,7 @@ void ZrFunction::updateCachedValue(OSCMessage& msg) {
     Serial.println("Too many data points! Ignoring.");
   }
   m_lastUpdated = millis();
-  // TODO!!!!!
-  m_cachedValue = ZoscValue(m_typeDesc, msg, 0);
+  m_cachedValue.setMessage(m_typeDesc, msg, 0);
   printRec(msg);
   Serial.print("New cached value: ");
   Serial.print(m_cachedValue.asStrOsc().c_str());

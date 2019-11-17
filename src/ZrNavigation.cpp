@@ -1,13 +1,15 @@
+#include "ZrDebug.h"
+
+#include <ArduinoTrace.h>
 #include <bits/stdc++.h>
 #include <iterator>
 #include <utility>
 #include <vector>
 
-#include <ArduinoTrace.h>
-
 #include "ZrFuncType.h"
 #include "ZrFuncTypeDescription.h"
 #include "ZrFunction.h"
+#include "ZrGlobal.h"
 #include "ZrNavigation.h"
 
 static const int H_COUNT = 16;

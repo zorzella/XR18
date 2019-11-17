@@ -1,6 +1,8 @@
 #ifndef ZR_GLOBAL_INIT_h
 #define ZR_GLOBAL_INIT_h
 
+#include "ZrDebug.h"
+
 #include "ZrNavigation.h"
 
 const std::string M_STATUS = "/status";

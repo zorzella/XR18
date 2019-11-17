@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ZrDebug.h"
+
 #include <OSCMessage.h>
 #include <inttypes.h>
 
@@ -16,13 +18,13 @@ enum ZoscType {
 class ZoscValue {
  public:
   ZoscValue();
-  //   ZOSCValue(const ZOSCValue& other);
-  ZoscValue(const ZrFuncTypeDescription& typeDesc, OSCMessage& osc, int index);
-  //   ZOSCValue& operator=(const ZOSCValue& source);
+
+  void setMessage(const ZrFuncTypeDescription& typeDesc, OSCMessage& msg,
+                  int index);
 
   const bool isPresent() const;
 
-  const ZoscValue plus(const ZrFuncTypeDescription& typeDesc, const float notch) const;
+  void plus(const ZrFuncTypeDescription& typeDesc, const float notch);
 
   void addItselfTo(OSCMessage& msg) const;
 

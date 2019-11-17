@@ -1,5 +1,7 @@
 #pragma once
 
+#include "ZrDebug.h"
+
 #include <string>
 
 #include "ZrFuncType.h"

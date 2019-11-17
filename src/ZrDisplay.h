@@ -1,6 +1,6 @@
 #pragma once
 
-// void setCurrentFunction();
+#include "ZrDebug.h"
 
 void setupDisplay();
 

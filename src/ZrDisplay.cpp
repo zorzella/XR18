@@ -1,3 +1,5 @@
+#include "ZrDebug.h"
+
 #include "heltec.h"
 
 #include "ZrComm.h"

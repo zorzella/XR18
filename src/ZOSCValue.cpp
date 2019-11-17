@@ -1,3 +1,5 @@
+#include "ZrDebug.h"
+
 #include <OSCMessage.h>
 #include <iostream>
 #include <sstream>
@@ -7,14 +9,17 @@
 #include "ZrFuncTypeDescription.h"
 
 ZoscValue::ZoscValue()
-    : m_isPresent{false}, m_type{ZOSC_UNKNOWN}, m_asStrOsc{""}, m_asStrHuman{""} {}
+    : m_isPresent{false},
+      m_type{ZOSC_UNKNOWN},
+      m_asStrOsc{""},
+      m_asStrHuman{""} {}
 
-ZoscValue::ZoscValue(const ZrFuncTypeDescription& typeDesc, OSCMessage& msg,
-                     int index)
-    : m_isPresent{true} {
+void ZoscValue::setMessage(const ZrFuncTypeDescription& typeDesc,
+                           OSCMessage& msg, int index) {
+  m_isPresent = true;
+
   std::ostringstream strsOsc;
   std::ostringstream strsHuman;
-
   if (msg.isInt(index)) {
     m_type = ZOSC_I;
     m_data.i = msg.getInt(index);
@@ -30,7 +35,7 @@ ZoscValue::ZoscValue(const ZrFuncTypeDescription& typeDesc, OSCMessage& msg,
     m_data.d = msg.getDouble(index);
     strsOsc << m_data.d;
     strsHuman << typeDesc.oscValueToHuman(m_data.d);
- } else {
+  } else {
     m_type = ZOSC_UNKNOWN;
     Serial.print("OSC type not yet implemented: ");
     Serial.println(msg.getType(index));
@@ -41,34 +46,31 @@ ZoscValue::ZoscValue(const ZrFuncTypeDescription& typeDesc, OSCMessage& msg,
   strsHuman.clear();
 }
 
-const ZoscValue ZoscValue::plus(const ZrFuncTypeDescription& typeDesc,
-                                const float humanNotch) const {
-  // float human = m_typeDesc.oscValueToHuman(m_cachedValue);
-  ZoscValue result{*this};
+void ZoscValue::plus(const ZrFuncTypeDescription& typeDesc,
+                     const float humanNotch) {
   switch (m_type) {
     case ZOSC_I: {
-      float oldHuman = typeDesc.oscValueToHuman(result.m_data.i);
+      float oldHuman = typeDesc.oscValueToHuman(m_data.i);
       float newHuman = oldHuman + humanNotch;
       float newOscData = typeDesc.humanToOscValue(newHuman);
-      result.m_data.i = newOscData;
+      m_data.i = newOscData;
     } break;
     case ZOSC_F: {
-      float oldHuman = typeDesc.oscValueToHuman(result.m_data.f);
+      float oldHuman = typeDesc.oscValueToHuman(m_data.f);
       float newHuman = oldHuman + humanNotch;
       float newOscData = typeDesc.humanToOscValue(newHuman);
-      result.m_data.f = newOscData;
+      m_data.f = newOscData;
     } break;
     case ZOSC_D: {
-      float oldHuman = typeDesc.oscValueToHuman(result.m_data.d);
+      float oldHuman = typeDesc.oscValueToHuman(m_data.d);
       float newHuman = oldHuman + humanNotch;
       float newOscData = typeDesc.humanToOscValue(newHuman);
-      result.m_data.d = newOscData;
+      m_data.d = newOscData;
     } break;
     default:
       printNotYetImplemented();
       break;
   }
-  return result;
 }
 
 void ZoscValue::addItselfTo(OSCMessage& msg) const {
