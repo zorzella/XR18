@@ -27,7 +27,7 @@ char display_buffer[BUFFER_SIZE];
 // ArialMT_Plain_24
 
 void refreshDisplay() {
-  ZrFunction& f = navigation().currentFunction();
+  ZrFunction& f = ZrNavigation::instance().currentFunction();
 
   Heltec.display->clear();
 

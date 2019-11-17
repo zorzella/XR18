@@ -5,9 +5,9 @@
 #include "ZrNavigation.h"
 #include "networks.h"
 
-ZrNavigation m_navigation;
+// static ZrNavigation m_navigation;
 
-ZrNavigation &navigation() { return m_navigation; }
+// ZrNavigation &navigation() { return ZrNavigation::instance(); }
 
 bool waitForConnection() {
   unsigned long timeoutAt = millis() + 4000;

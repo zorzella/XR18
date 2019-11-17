@@ -34,7 +34,7 @@ void receiveOscIfAny(OSCMessage &msg) {
     msg.fill(wifiUdp.read());
   }
 
-  navigation().updateCachedValue(msg);
+  ZrNavigation::instance().updateCachedValue(msg);
 }
 
 bool receiveOsc(OSCMessage &msg) {

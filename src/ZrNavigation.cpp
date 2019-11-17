@@ -37,6 +37,10 @@ fader/level parameter: dblevel = 40  * idx / (steps - 1) - 30; if idx >= steps /
 
  */
 
+static ZrNavigation m_instance;
+
+ZrNavigation& ZrNavigation::instance() { return m_instance; }
+
 void ZrNavigation::buildFunctions() {
   char temp[50];
 

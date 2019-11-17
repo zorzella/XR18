@@ -9,6 +9,8 @@
 
 class ZrNavigation {
  public:
+  static ZrNavigation& instance();
+
   void init();
 
   void updateCachedValue(OSCMessage& msg);

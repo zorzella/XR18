@@ -69,12 +69,15 @@ const std::string LEVEL_ON = "0";
 const std::string LEVEL_OFF = "-127";
 
 void printCurrentFunction() {
+
+  ZrNavigation navigation = ZrNavigation::instance();
+
   Serial.print("Name: ");
-  Serial.print(navigation().currentFunction().humanChannelName().c_str());
+  Serial.print(navigation.currentFunction().humanChannelName().c_str());
   Serial.print(" - ");
-  Serial.print(navigation().currentFunction().humanFunctionName().c_str());
+  Serial.print(navigation.currentFunction().humanFunctionName().c_str());
   Serial.print(", OSC: ");
-  Serial.println(navigation().currentFunction().oscAddr().c_str());
+  Serial.println(navigation.currentFunction().oscAddr().c_str());
 }
 
 void queryForName() {
@@ -112,38 +115,40 @@ void runTestScript() {
 
   printCurrentFunction();
 
-  navigation().goRight();
+  ZrNavigation navigation = ZrNavigation::instance();
+  
+  navigation.goRight();
   printCurrentFunction();
-  navigation().clickPlus();
+  navigation.clickPlus();
 
-  navigation().goRight();
+  navigation.goRight();
   printCurrentFunction();
 
-  navigation().goRight();
+  navigation.goRight();
   printCurrentFunction();
-  navigation().clickPlus();
+  navigation.clickPlus();
 
-  navigation().goUp();
+  navigation.goUp();
   printCurrentFunction();
-  navigation().clickMinus();
+  navigation.clickMinus();
 
   if (false) {
-    navigation().goUp();
+    navigation.goUp();
     printCurrentFunction();
 
-    navigation().goLeft();
+    navigation.goLeft();
     printCurrentFunction();
 
-    navigation().goLeft();
+    navigation.goLeft();
     printCurrentFunction();
 
-    navigation().goDown();
+    navigation.goDown();
     printCurrentFunction();
 
-    navigation().goDown();
+    navigation.goDown();
     printCurrentFunction();
 
-    navigation().goDown();
+    navigation.goDown();
     printCurrentFunction();
   }
 

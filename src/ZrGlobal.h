@@ -7,8 +7,6 @@
 
 const std::string M_STATUS = "/status";
 
-ZrNavigation &navigation();
-
 bool waitForConnection();
 
 bool discoverXrIp(IPAddress &result);

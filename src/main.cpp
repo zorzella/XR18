@@ -97,7 +97,7 @@ void setup() {
   pinMode(BUTTON_33, INPUT_PULLUP);
 
   setupDisplay();
-  navigation().init();
+  ZrNavigation::instance().init();
 }
 
 void loop() {
@@ -142,28 +142,30 @@ void loop() {
   // sendABunchOfMessages();
   // runTestScript();
 
-  navigation().currentFunction().triggerCacheUpdateIfNeeded();
+  ZrNavigation navigation = ZrNavigation::instance();
+
+  navigation.currentFunction().triggerCacheUpdateIfNeeded();
 
   char currentKey = zrKeypad.getKey();
   if (currentKey) {
     switch (currentKey) {
       case KEY_UP:
-        navigation().goUp();
+        navigation.goUp();
         break;
       case KEY_DOWN:
-        navigation().goDown();
+        navigation.goDown();
         break;
       case KEY_LEFT:
-        navigation().goLeft();
+        navigation.goLeft();
         break;
       case KEY_RIGHT:
-        navigation().goRight();
+        navigation.goRight();
         break;
       case KEY_PLUS:
-        navigation().clickPlus();
+        navigation.clickPlus();
         break;
       case KEY_MINUS:
-        navigation().clickMinus();
+        navigation.clickMinus();
         break;
     }
   }
