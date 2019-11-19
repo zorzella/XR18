@@ -33,7 +33,7 @@ class ZrComm {
  private:
   void tryToReconnectToNetwork();
   void tryToReconnectToXr();
-  bool connectThru2(const std::string &ssid, const std::string &pass);
+  void connectThru2(const std::string &ssid, const std::string &pass);
 };
 
 // IP of the XR18

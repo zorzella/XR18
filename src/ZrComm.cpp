@@ -64,17 +64,13 @@ void ZrComm::ensureConnection() {
     tryToReconnectToNetwork();
   } else {
     tryToReconnectToXr();
-    //   Serial.println("Wifi reconnection failed. Will try again in 200ms.");
-    //   delay(200);
-    //   return;
-    // }
   }
-  // Serial.println("Wifi reconnection succeeded.");
 }
 
 int m_indexOfNetworkCurrentlyBeingTried = -1;
 
 void ZrComm::tryToReconnectToNetwork() {
+  int oldIndex = m_indexOfNetworkCurrentlyBeingTried;
   // TODO: start with the last successful network
   if (m_indexOfNetworkCurrentlyBeingTried == -1) {
     // TODO: work for other networks.
@@ -83,15 +79,12 @@ void ZrComm::tryToReconnectToNetwork() {
 
   int i = m_indexOfNetworkCurrentlyBeingTried;
   // for (int i = 0; i < XR_NETWORKS.size(); i++) {
-    std::string ssid = XR_NETWORKS[i].ssid;
-    std::string pass = XR_NETWORKS[i].password;
-
+  std::string ssid = XR_NETWORKS[i].ssid;
+  std::string pass = XR_NETWORKS[i].password;
+  if (oldIndex == -1) {
     memcpy(m_networkName, ssid.c_str(), MAX_NAME_SIZE);
-
-    bool connectResult = connectThru2(ssid.c_str(), pass.c_str());
-    if (connectResult) {
-    }
-  // }
+  }
+  connectThru2(ssid.c_str(), pass.c_str());
 }
 
 void ZrComm::tryToReconnectToXr() {
@@ -99,25 +92,15 @@ void ZrComm::tryToReconnectToXr() {
     Serial.println("Trying to find and connect to an XR");
     m_reconnectionToXrStartedAtTimestamp = millis();
   }
-  // // TODO: start with the last successful network
-  // for (int i = 0; i < XR_NETWORKS.size(); i++) {
-  //   std::string ssid = XR_NETWORKS[i].ssid;
-  //   std::string pass = XR_NETWORKS[i].password;
-  //   bool connectResult = connectThru2(ssid.c_str(), pass.c_str());
-  //   if (connectResult) {
   bool discoverResult = discoverXrIp(m_xrIp);
   if (discoverResult) {
     // TODO: change to XR name, not IP
     memcpy(m_xrName, m_xrIp.toString().c_str(), MAX_NAME_SIZE);
     return;  // true
-  } else {
-    // result = discoverResult;
   }
-  // }
-  // }
 }
 
-bool ZrComm::connectThru2(const std::string &ssid, const std::string &pass) {
+void ZrComm::connectThru2(const std::string &ssid, const std::string &pass) {
   if (m_reconnectionToNetworkStartedAtTimestamp == 0) {
     Serial.println("Wifi down. Reconnecting.");
     m_reconnectionToNetworkStartedAtTimestamp = millis();
@@ -129,31 +112,6 @@ bool ZrComm::connectThru2(const std::string &ssid, const std::string &pass) {
     Serial.print(" ");
     WiFi.begin(ssid.c_str(), pass.c_str());
   }
-
-  bool result = waitForConnection();
-  int elapsed = millis() - m_reconnectionToNetworkStartedAtTimestamp;
-  if (result) {
-    Serial.print("Success in: ");
-    Serial.println(elapsed);
-    return result;
-  } else {
-    Serial.print("Failed to connect in: ");
-    Serial.println(elapsed);
-    return result;
-  }
-  Serial.print("Connected to WiFi: ");
-  Serial.println(ssid.c_str());
-
-  Serial.print("Local IP / Broadcast / Gateway: ");
-  Serial.println(WiFi.localIP());
-  Serial.print(" / ");
-  Serial.println(WiFi.broadcastIP());
-  Serial.print(" / ");
-  Serial.println(WiFi.gatewayIP());
-  Serial.println();
-  Serial.println();
-
-  return result;
 }
 
 IPAddress &xrIp() { return m_xrIp; };
