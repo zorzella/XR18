@@ -58,7 +58,7 @@ class ZrFunction {
   // The last known value of this function.
   ZoscValue m_cachedValue;
 
-  void clickChange(const float notch);
+  void clickChange(const double notch);
   const void send(const std::string& msg) const;
   const bool cacheIsStale() const;
   const bool lastCacheUpdateRequestIsOld() const;

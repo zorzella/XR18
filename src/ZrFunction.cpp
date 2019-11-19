@@ -56,7 +56,7 @@ bool ZrFunction::triggerCacheUpdateIfNeeded() {
   return true;
 }
 
-void ZrFunction::clickChange(const float humanNotch) {
+void ZrFunction::clickChange(const double humanNotch) {
   TRACE();
   bool sentRefreshRequest = false;
   long timeoutAt = millis() + 2000;

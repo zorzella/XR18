@@ -10,27 +10,27 @@ class ZrFuncTypeDescription {
  public:
   ZrFuncTypeDescription();
   ZrFuncTypeDescription(ZrFuncType type, std::string humanName,
-                        float humanNotch, boolean isOnOff);
+                        double humanNotch, boolean isOnOff);
 
   const ZrFuncType type() const;
   const std::string humanName() const;
-  const float humanNotch() const;
+  const double humanNotch() const;
   const bool isOnOff() const;
 
-  const float humanToOscValue(float human) const;
-  const float oscValueToHuman(float oscValue) const;
+  const double humanToOscValue(double human) const;
+  const double oscValueToHuman(double oscValue) const;
 
   static const ZrFuncTypeDescription fromType(const ZrFuncType type) {
     switch (type) {
       case GAIN:
         return ZrFuncTypeDescription(type, "Gain", 0.5, false);
       case EQ:
-        return ZrFuncTypeDescription(type, "EQ", 0, true);
+        return ZrFuncTypeDescription(type, "EQ", 0.0, true);
       case FADER:
-        return ZrFuncTypeDescription(type, "Fader", 0.5, false);
+        return ZrFuncTypeDescription(type, "Fader", 1.0, false);
       default:
         TRACE();
-        return ZrFuncTypeDescription(type, "Unknown", 0, false);
+        return ZrFuncTypeDescription(type, "Unknown", 0.0, false);
     }
   }
 
@@ -55,6 +55,6 @@ class ZrFuncTypeDescription {
  private:
   ZrFuncType m_type;
   std::string m_humanName;
-  float m_humanNotch;
+  double m_humanNotch;
   bool m_isOnOff;
 };

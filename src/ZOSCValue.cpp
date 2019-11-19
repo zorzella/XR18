@@ -51,7 +51,7 @@ void ZoscValue::setMessage(const ZrFuncTypeDescription& typeDesc,
 }
 
 void ZoscValue::plus(const ZrFuncTypeDescription& typeDesc,
-                     const float humanNotch) {
+                     const double humanNotch) {
   switch (m_type) {
     case ZOSC_I: {
       float oldHuman = typeDesc.oscValueToHuman(m_data.i);
@@ -66,9 +66,9 @@ void ZoscValue::plus(const ZrFuncTypeDescription& typeDesc,
       m_data.f = newOscData;
     } break;
     case ZOSC_D: {
-      float oldHuman = typeDesc.oscValueToHuman(m_data.d);
-      float newHuman = oldHuman + humanNotch;
-      float newOscData = typeDesc.humanToOscValue(newHuman);
+      double oldHuman = typeDesc.oscValueToHuman(m_data.d);
+      double newHuman = oldHuman + humanNotch;
+      double newOscData = typeDesc.humanToOscValue(newHuman);
       m_data.d = newOscData;
     } break;
     default:

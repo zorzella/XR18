@@ -9,12 +9,12 @@
 ZrFuncTypeDescription::ZrFuncTypeDescription()
     : m_type{TYPE_UNKNOWN},
       m_humanName{"Unknown"},
-      m_humanNotch{0},
+      m_humanNotch{0.0},
       m_isOnOff{false} {}
 
 ZrFuncTypeDescription::ZrFuncTypeDescription(ZrFuncType type,
                                              std::string humanName,
-                                             float humanNotch, boolean isOnOff)
+                                             double humanNotch, boolean isOnOff)
     : m_type{type},
       m_humanName{humanName},
       m_humanNotch{humanNotch},
@@ -26,13 +26,13 @@ const std::string ZrFuncTypeDescription::humanName() const {
   return m_humanName;
 }
 
-const float ZrFuncTypeDescription::humanNotch() const { return m_humanNotch; }
+const double ZrFuncTypeDescription::humanNotch() const { return m_humanNotch; }
 
 const bool ZrFuncTypeDescription::isOnOff() const {
   return m_isOnOff;
 }
 
-const float ZrFuncTypeDescription::humanToOscValue(float human) const {
+const double ZrFuncTypeDescription::humanToOscValue(double human) const {
   switch (m_type) {
     case GAIN:
       return ZrGain::humanToOscValue(human);
@@ -44,7 +44,7 @@ const float ZrFuncTypeDescription::humanToOscValue(float human) const {
   }
 }
 
-const float ZrFuncTypeDescription::oscValueToHuman(float oscValue) const {
+const double ZrFuncTypeDescription::oscValueToHuman(double oscValue) const {
   switch (m_type) {
     case GAIN:
       return ZrGain::oscValueToHuman(oscValue);

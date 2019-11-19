@@ -2,16 +2,9 @@
 
 class ZrFader {
  private:
-  static constexpr float HUMAN_MIN = -90.0;
-  static constexpr float HUMAN_MAX = 10.0;
 
  public:
-  // [0.0,1.0] fader(1024), -oo..10 dB
-  //                        around -90.0dB to 10.0dB
-  // values -89.8 and under are -oo
-
   /*
-
   fader/level parameter:
 
   dblevel =    40  * idx / (steps - 1) - 30; if idx >= steps / 2
@@ -39,7 +32,7 @@ class ZrFader {
       -oo is 0
   */
 
-  static const float humanToOscValue(const float human) {
+  static const double humanToOscValue(const double human) {
     if (human > -10) {
       return (human + 30.0) / 40.0;
     }
@@ -55,9 +48,9 @@ class ZrFader {
     return 0;
   }
 
-  static float myRound(float number) { return roundf(number * 10) / 10; }
+  static double myRound(double number) { return round(number * 10.0) / 10.0; }
 
-  static const float oscValueToHuman(const float oscValue) {
+  static const double oscValueToHuman(const double oscValue) {
     if (oscValue > 0.5) {  // human: -10 to 10
       return myRound(40 * oscValue - 30);
     }

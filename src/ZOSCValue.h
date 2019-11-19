@@ -24,7 +24,7 @@ class ZoscValue {
 
   const bool isPresent() const;
 
-  void plus(const ZrFuncTypeDescription& typeDesc, const float notch);
+  void plus(const ZrFuncTypeDescription& typeDesc, const double humanNotch);
 
   void addItselfTo(OSCMessage& msg) const;
 

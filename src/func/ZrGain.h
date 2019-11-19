@@ -2,24 +2,25 @@
 
 class ZrGain {
  private:
-  static constexpr float HUMAN_MIN = -12.0;
-  static constexpr float HUMAN_MAX = 60.0;
+  static constexpr double HUMAN_MIN = -12.0;
+  static constexpr double HUMAN_MAX = 60.0;
 
  public:
   //   GAIN, // [0.0,1.0] lin(145), -12..60 dB
 
-  static const float humanToOscValue(const float human) {
+  static const double humanToOscValue(const double human) {
     // HUMAN_MIN + (HUMAN_MAX - HUMAN_MIN) * result = human
     //             (HUMAN_MAX - HUMAN_MIN) * result = human - HUMAN_MIN
     //                                       result = (human - HUMAN_MIN) /
     //                                       (HUMAN_MAX - HUMAN_MIN)
-    float result = (human - HUMAN_MIN) / (HUMAN_MAX - HUMAN_MIN);
+    double result = (human - HUMAN_MIN) / (HUMAN_MAX - HUMAN_MIN);
     return result;
   }
 
-  static const float oscValueToHuman(const float oscValue) {
-    float result = HUMAN_MIN + (HUMAN_MAX - HUMAN_MIN) * oscValue;
-    result = roundf(result * 10) / 10;
+  static const double oscValueToHuman(const double oscValue) {
+    double result = HUMAN_MIN + (HUMAN_MAX - HUMAN_MIN) * oscValue;
+    // TODO: myRound
+    result = round(result * 10.0) / 10.0;
     return result;
   }
 };
