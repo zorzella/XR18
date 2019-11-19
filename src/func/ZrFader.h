@@ -3,6 +3,8 @@
 class ZrFader {
  private:
 
+  static double myRound(double number) { return round(number * 10.0) / 10.0; }
+
  public:
   /*
   fader/level parameter:
@@ -47,8 +49,6 @@ class ZrFader {
     }
     return 0;
   }
-
-  static double myRound(double number) { return round(number * 10.0) / 10.0; }
 
   static const double oscValueToHuman(const double oscValue) {
     if (oscValue > 0.5) {  // human: -10 to 10
