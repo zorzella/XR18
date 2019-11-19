@@ -19,6 +19,7 @@ class ZrGain {
 
   static const float oscValueToHuman(const float oscValue) {
     float result = HUMAN_MIN + (HUMAN_MAX - HUMAN_MIN) * oscValue;
+    result = roundf(result * 10) / 10;
     return result;
   }
 };
