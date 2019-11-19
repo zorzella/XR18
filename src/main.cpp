@@ -128,6 +128,7 @@ void loop() {
     Serial.println();
   }
 
+  if (false) {
   if (WiFi.status() != WL_CONNECTED || xrIp() == INADDR_NONE) {
     Serial.println("Wifi down or XR unreachable. Reconnecting.");
     if (!tryToReconnectWifi()) {
@@ -137,6 +138,8 @@ void loop() {
     }
     Serial.println("Wifi reconnection succeeded.");
   }
+  }
+  ZrComm::instance().ensureConnection();
 
   // Serial.println("Wifi ok");
   // sendABunchOfMessages();

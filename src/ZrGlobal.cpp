@@ -5,10 +5,6 @@
 #include "ZrNavigation.h"
 #include "networks.h"
 
-// static ZrNavigation m_navigation;
-
-// ZrNavigation &navigation() { return ZrNavigation::instance(); }
-
 bool waitForConnection() {
   unsigned long timeoutAt = millis() + 4000;
   wl_status_t lastStatus{WL_NO_SHIELD};

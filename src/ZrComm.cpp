@@ -7,6 +7,7 @@
 #include "ZrComm.h"
 #include "ZrGlobal.h"
 #include "ZrNavigation.h"
+#include "networks.h"
 
 WiFiUDP wifiUdp;  // A UDP instance to let us send and receive packets over UDP
 
@@ -16,6 +17,144 @@ unsigned long sendOkCount = 0;
 unsigned long sendErrorCount = 0;
 unsigned long recOkCount = 0;
 unsigned long recErrorCount = 0;
+
+ZrComm m_instance;
+
+ZrComm &ZrComm::instance() { return m_instance; }
+
+bool m_isConnectedToNetwork = false;
+
+bool ZrComm::isConnectedToNetwork() { return m_isConnectedToNetwork; }
+
+bool m_isConnectedToXr = false;
+
+bool ZrComm::isConnectedToXr() { return m_isConnectedToXr; }
+
+static const int MAX_NAME_SIZE = 50;
+
+byte m_networkName[MAX_NAME_SIZE] = "UNKNOWN";
+byte m_xrName[MAX_NAME_SIZE] = "UNKNOWN";
+
+byte *ZrComm::networkName() { return m_networkName; }
+
+byte *ZrComm::xrName() { return m_xrName; }
+
+long m_reconnectionToNetworkStartedAtTimestamp = 0;
+long m_reconnectionToXrStartedAtTimestamp = 0;
+
+void ZrComm::ensureConnection() {
+  if (WiFi.status() == WL_CONNECTED) {
+    m_isConnectedToNetwork = true;
+  } else {
+    m_isConnectedToNetwork = false;
+    m_isConnectedToXr = false;
+  }
+
+  if (xrIp() == INADDR_NONE) {
+    m_isConnectedToXr = false;
+  } else {
+    m_isConnectedToXr = true;
+  }
+
+  if (m_isConnectedToXr) {
+    return;
+  }
+
+  if (!m_isConnectedToNetwork) {
+    tryToReconnectToNetwork();
+  } else {
+    tryToReconnectToXr();
+    //   Serial.println("Wifi reconnection failed. Will try again in 200ms.");
+    //   delay(200);
+    //   return;
+    // }
+  }
+  // Serial.println("Wifi reconnection succeeded.");
+}
+
+int m_indexOfNetworkCurrentlyBeingTried = -1;
+
+void ZrComm::tryToReconnectToNetwork() {
+  // TODO: start with the last successful network
+  if (m_indexOfNetworkCurrentlyBeingTried == -1) {
+    // TODO: work for other networks.
+    m_indexOfNetworkCurrentlyBeingTried = 0;
+  }
+
+  int i = m_indexOfNetworkCurrentlyBeingTried;
+  // for (int i = 0; i < XR_NETWORKS.size(); i++) {
+    std::string ssid = XR_NETWORKS[i].ssid;
+    std::string pass = XR_NETWORKS[i].password;
+
+    memcpy(m_networkName, ssid.c_str(), MAX_NAME_SIZE);
+
+    bool connectResult = connectThru2(ssid.c_str(), pass.c_str());
+    if (connectResult) {
+    }
+  // }
+}
+
+void ZrComm::tryToReconnectToXr() {
+  if (m_reconnectionToXrStartedAtTimestamp == 0) {
+    Serial.println("Trying to find and connect to an XR");
+    m_reconnectionToXrStartedAtTimestamp = millis();
+  }
+  // // TODO: start with the last successful network
+  // for (int i = 0; i < XR_NETWORKS.size(); i++) {
+  //   std::string ssid = XR_NETWORKS[i].ssid;
+  //   std::string pass = XR_NETWORKS[i].password;
+  //   bool connectResult = connectThru2(ssid.c_str(), pass.c_str());
+  //   if (connectResult) {
+  bool discoverResult = discoverXrIp(m_xrIp);
+  if (discoverResult) {
+    // TODO: change to XR name, not IP
+    memcpy(m_xrName, m_xrIp.toString().c_str(), MAX_NAME_SIZE);
+    return;  // true
+  } else {
+    // result = discoverResult;
+  }
+  // }
+  // }
+}
+
+bool ZrComm::connectThru2(const std::string &ssid, const std::string &pass) {
+  if (m_reconnectionToNetworkStartedAtTimestamp == 0) {
+    Serial.println("Wifi down. Reconnecting.");
+    m_reconnectionToNetworkStartedAtTimestamp = millis();
+    // Connect to WiFi network
+    Serial.println();
+    Serial.println();
+    Serial.print("Connecting to ");
+    Serial.print(ssid.c_str());
+    Serial.print(" ");
+    WiFi.begin(ssid.c_str(), pass.c_str());
+  }
+
+  bool result = waitForConnection();
+  int elapsed = millis() - m_reconnectionToNetworkStartedAtTimestamp;
+  if (result) {
+    Serial.print("Success in: ");
+    Serial.println(elapsed);
+    return result;
+  } else {
+    Serial.print("Failed to connect in: ");
+    Serial.println(elapsed);
+    return result;
+  }
+  Serial.print("Connected to WiFi: ");
+  Serial.println(ssid.c_str());
+
+  Serial.print("Local IP / Broadcast / Gateway: ");
+  Serial.println(WiFi.localIP());
+  Serial.print(" / ");
+  Serial.println(WiFi.broadcastIP());
+  Serial.print(" / ");
+  Serial.println(WiFi.gatewayIP());
+  Serial.println();
+  Serial.println();
+
+  return result;
+}
 
 IPAddress &xrIp() { return m_xrIp; };
 

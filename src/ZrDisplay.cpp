@@ -29,9 +29,22 @@ char display_buffer[BUFFER_SIZE];
 void refreshDisplay() {
   ZrFunction& f = ZrNavigation::instance().currentFunction();
 
+  ZrComm zrComm = ZrComm::instance();
+
   Heltec.display->clear();
 
-  snprintf(display_buffer, BUFFER_SIZE, "%s", xrIp().toString().c_str());
+  if (zrComm.isConnectedToNetwork()) {
+    if (zrComm.isConnectedToXr()) {
+      snprintf(display_buffer, BUFFER_SIZE, "%s - %s", zrComm.networkName(),
+               zrComm.xrName());
+    } else {
+      snprintf(display_buffer, BUFFER_SIZE, "%s - finding an XR",
+               zrComm.networkName());
+    }
+  } else {
+    snprintf(display_buffer, BUFFER_SIZE, "Trying to connect to %s",
+             zrComm.networkName());
+  }
 
   Heltec.display->setFont(ArialMT_Plain_10);
   Heltec.display->drawString(0, 0, display_buffer);

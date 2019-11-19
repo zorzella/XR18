@@ -6,6 +6,7 @@
 #include <OSCMessage.h>  // For OSC support
 #include <WiFi.h>        // For WiFi
 #include <WiFiUdp.h>     // For WiFi
+#include <string>
 
 #include "ZoscValue.h"
 
@@ -16,6 +17,24 @@ const int SIZE_OF_RECEIVE_BUFFER = 100;
 
 // If true, we will print extra debug information about WIFI
 const bool DEBUG_WIFI = false;
+
+class ZrComm {
+ public:
+  static ZrComm &instance();
+
+  bool isConnectedToNetwork();
+  bool isConnectedToXr();
+
+  byte *networkName();
+  byte *xrName();
+
+  void ensureConnection();
+
+ private:
+  void tryToReconnectToNetwork();
+  void tryToReconnectToXr();
+  bool connectThru2(const std::string &ssid, const std::string &pass);
+};
 
 // IP of the XR18
 IPAddress &xrIp();
