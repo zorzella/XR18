@@ -19,7 +19,7 @@ class ZrGain {
 
   static const double oscValueToRoundedHuman(const double oscValue) {
     // TODO: myRound
-    return round(oscValueToHuman(oscValue));
+    return round(oscValueToHuman(oscValue) * 10.0) / 10.0;
   }
 
   static const double oscValueToHuman(const double oscValue) {

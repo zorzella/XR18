@@ -50,24 +50,47 @@ void ZoscValue::setMessage(const ZrFuncTypeDescription& typeDesc,
   strsHuman.clear();
 }
 
+static const bool QUANTIZE = true;
+
+// If QUANTIZE is false, simply return {value}
+// If QUANTIZE is true, quantize (round) {value} on {notch}
+// increments. I.e.
+static double maybeQuantize(const double value, const double notch) {
+  if (!QUANTIZE) {
+    return value;
+  }
+  double step = 1.0 / notch;
+  int temp = (int)round(value * step);
+  double result = temp / step;
+
+  // Serial.println("Quantization:");
+  // Serial.println(value);
+  // Serial.println(notch);
+  // Serial.println(step);
+  // Serial.println(temp);
+  // Serial.println(result);
+
+  return result;
+}
+
 void ZoscValue::plus(const ZrFuncTypeDescription& typeDesc,
                      const double humanNotch) {
   switch (m_type) {
     case ZOSC_I: {
       float oldHuman = typeDesc.oscValueToHuman(m_data.i);
-      float newHuman = oldHuman + humanNotch;
+      float newHuman = maybeQuantize(oldHuman + humanNotch, humanNotch);
       float newOscData = typeDesc.humanToOscValue(newHuman);
       m_data.i = newOscData;
     } break;
     case ZOSC_F: {
       float oldHuman = typeDesc.oscValueToHuman(m_data.f);
-      float newHuman = oldHuman + humanNotch;
+      float newHuman = maybeQuantize(oldHuman + humanNotch, humanNotch);
       float newOscData = typeDesc.humanToOscValue(newHuman);
       m_data.f = newOscData;
     } break;
     case ZOSC_D: {
       double oldHuman = typeDesc.oscValueToHuman(m_data.d);
-      double newHuman = oldHuman + humanNotch;
+      double newHuman = maybeQuantize(oldHuman + humanNotch, humanNotch);
       double newOscData = typeDesc.humanToOscValue(newHuman);
       m_data.d = newOscData;
     } break;
