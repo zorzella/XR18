@@ -7,7 +7,6 @@
 #include "ZrDebug.h"
 
 #include <Arduino.h>
-#include <ArduinoTrace.h>
 #include <OSCMessage.h>  // For OSC support
 #include <WiFi.h>        // For WiFi
 #include <WiFiUdp.h>     // For WiFi
@@ -50,9 +49,6 @@ int lastButtonState[] = {0, 0, 0, 0};  // previous state of the button
 // Setup LED pins
 int myLeds[] = {};  // 32, 15, 33, 27};  // define the pins for the LEDs
 int ledCount = 0;   // set the number of LEDs in the loop
-
-const std::string M_XINFO = "/xinfo";
-const std::string M_XREMOTE = "/xremote";
 
 void setup() {
   Serial.begin(115200);  // DEBUG window

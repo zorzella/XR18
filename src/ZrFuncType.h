@@ -1,6 +1,5 @@
 #pragma once
 
-#include <ArduinoTrace.h>
 #include <string>
 
 enum ZrFuncType {

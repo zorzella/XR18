@@ -1,11 +1,11 @@
 #include "ZrDebug.h"
 
-#include <ArduinoTrace.h>
 #include <bits/stdc++.h>
 #include <iterator>
 #include <utility>
 #include <vector>
 
+#include "ZrComm.h"
 #include "ZrFuncType.h"
 #include "ZrFuncTypeDescription.h"
 #include "ZrFunction.h"
@@ -96,7 +96,12 @@ void ZrNavigation::updateCachedValue(OSCMessage& msg) {
   auto it = m_oscAddrToFunctionsArrayIndexMap.find(buffer);
   if (it == m_oscAddrToFunctionsArrayIndexMap.end()) {
     std::string oscAddr = buffer;
-    if (oscAddr.find("/status", 0) != 0 || oscAddr.find("/xremote", 0) != 0) {
+    if (oscAddr.find(M_STATUS, 0) != std::string::npos) {
+      ZrComm::instance().mStatusReceived(msg);
+      return;
+    }
+
+    if (oscAddr.find(M_XREMOTE, 0) != std::string::npos) {
       return;
     }
 

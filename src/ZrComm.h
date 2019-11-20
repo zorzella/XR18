@@ -25,15 +25,18 @@ class ZrComm {
   bool isConnectedToNetwork();
   bool isConnectedToXr();
 
-  byte *networkName();
-  byte *xrName();
+  char *networkName();
+  char *xrName();
 
   void ensureConnection();
+
+  void mStatusReceived(OSCMessage& osc);
 
  private:
   void tryToReconnectToNetwork();
   void tryToReconnectToXr();
   void connectThru2(const std::string &ssid, const std::string &pass);
+  void triggerDiscoverXrIp(IPAddress &result);
 };
 
 // IP of the XR18

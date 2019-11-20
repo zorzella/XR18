@@ -1,6 +1,5 @@
 #include "ZrDebug.h"
 
-#include <ArduinoTrace.h>
 #include <OSCMessage.h>
 #include <string>
 

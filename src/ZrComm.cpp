@@ -32,12 +32,12 @@ bool ZrComm::isConnectedToXr() { return m_isConnectedToXr; }
 
 static const int MAX_NAME_SIZE = 50;
 
-byte m_networkName[MAX_NAME_SIZE] = "UNKNOWN";
-byte m_xrName[MAX_NAME_SIZE] = "UNKNOWN";
+char m_networkName[MAX_NAME_SIZE]{"UNKNOWN"};
+char m_xrName[MAX_NAME_SIZE]{"UNKNOWN"};
 
-byte *ZrComm::networkName() { return m_networkName; }
+char *ZrComm::networkName() { return m_networkName; }
 
-byte *ZrComm::xrName() { return m_xrName; }
+char *ZrComm::xrName() { return m_xrName; }
 
 long m_reconnectionToNetworkStartedAtTimestamp = 0;
 long m_reconnectionToXrStartedAtTimestamp = 0;
@@ -78,7 +78,6 @@ void ZrComm::tryToReconnectToNetwork() {
   }
 
   int i = m_indexOfNetworkCurrentlyBeingTried;
-  // for (int i = 0; i < XR_NETWORKS.size(); i++) {
   std::string ssid = XR_NETWORKS[i].ssid;
   std::string pass = XR_NETWORKS[i].password;
   if (oldIndex == -1) {
@@ -92,11 +91,21 @@ void ZrComm::tryToReconnectToXr() {
     Serial.println("Trying to find and connect to an XR");
     m_reconnectionToXrStartedAtTimestamp = millis();
   }
-  bool discoverResult = discoverXrIp(m_xrIp);
-  if (discoverResult) {
-    // TODO: change to XR name, not IP
-    memcpy(m_xrName, m_xrIp.toString().c_str(), MAX_NAME_SIZE);
-    return;  // true
+  triggerDiscoverXrIp(m_xrIp);
+}
+
+void ZrComm::triggerDiscoverXrIp(IPAddress &result) {
+  // TODO: handle XR_NAMES
+  IPAddress broadcastIp = WiFi.broadcastIP();
+  unsigned long timeoutAt = millis() + 1000;
+  while (millis() < timeoutAt) {
+    // TODO: try once, return to try again later
+    if (!send1To(broadcastIp, M_STATUS)) {
+      continue;
+    }
+
+    // TODO: remove delay
+    delay(500);
   }
 }
 
@@ -112,6 +121,19 @@ void ZrComm::connectThru2(const std::string &ssid, const std::string &pass) {
     Serial.print(" ");
     WiFi.begin(ssid.c_str(), pass.c_str());
   }
+}
+
+void ZrComm::mStatusReceived(OSCMessage &msg) {
+  TRACE();
+  char buffer[SIZE_OF_RECEIVE_BUFFER];
+  memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);
+  msg.getString(1, buffer);
+  Serial.print("Remote IP: ");
+  Serial.println(buffer);
+  m_xrIp.fromString(buffer);
+  msg.getString(2, m_xrName, MAX_NAME_SIZE);
+  Serial.print("Name: ");
+  Serial.println(m_xrName);
 }
 
 IPAddress &xrIp() { return m_xrIp; };

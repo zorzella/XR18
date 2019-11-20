@@ -20,7 +20,6 @@ All text above, and the splash screen must be included in any redistribution
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
 #include <Arduino.h>
-#include <ArduinoTrace.h>
 #include <SPI.h>
 
 #include "ZrGlobal.h"
