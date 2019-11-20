@@ -18,6 +18,7 @@ class ZrFuncTypeDescription {
   const bool isOnOff() const;
 
   const double humanToOscValue(double human) const;
+  const double oscValueToHuman(double oscValue) const;
   const double oscValueToRoundedHuman(double oscValue) const;
 
   static const ZrFuncTypeDescription fromType(const ZrFuncType type) {

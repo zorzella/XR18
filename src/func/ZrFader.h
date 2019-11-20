@@ -51,20 +51,24 @@ class ZrFader {
   }
 
   static const double oscValueToRoundedHuman(const double oscValue) {
+    return myRound(oscValueToHuman(oscValue));
+  }
+  
+  static const double oscValueToHuman(const double oscValue) {
     if (oscValue > 0.5) {  // human: -10 to 10
-      return myRound(40 * oscValue - 30);
+      return 40 * oscValue - 30;
     }
 
     if (oscValue > 0.25) {  // human: -30 to -10
-      return myRound(80 * oscValue - 50);
+      return 80 * oscValue - 50;
     }
 
     if (oscValue > 0.0625) {  // human: -60 to -30
-      return myRound(160 * oscValue) - 70;
+      return 160 * oscValue - 70;
     }
 
     if (oscValue > 0) {  // human: -89.9 to -60
-      return myRound(480 * oscValue) - 90;
+      return 480 * oscValue - 90;
     }
 
     return -90; // Yes, the manual says this is actually -144dB, but, whatever

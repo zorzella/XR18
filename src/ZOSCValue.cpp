@@ -54,19 +54,19 @@ void ZoscValue::plus(const ZrFuncTypeDescription& typeDesc,
                      const double humanNotch) {
   switch (m_type) {
     case ZOSC_I: {
-      float oldHuman = typeDesc.oscValueToRoundedHuman(m_data.i);
+      float oldHuman = typeDesc.oscValueToHuman(m_data.i);
       float newHuman = oldHuman + humanNotch;
       float newOscData = typeDesc.humanToOscValue(newHuman);
       m_data.i = newOscData;
     } break;
     case ZOSC_F: {
-      float oldHuman = typeDesc.oscValueToRoundedHuman(m_data.f);
+      float oldHuman = typeDesc.oscValueToHuman(m_data.f);
       float newHuman = oldHuman + humanNotch;
       float newOscData = typeDesc.humanToOscValue(newHuman);
       m_data.f = newOscData;
     } break;
     case ZOSC_D: {
-      double oldHuman = typeDesc.oscValueToRoundedHuman(m_data.d);
+      double oldHuman = typeDesc.oscValueToHuman(m_data.d);
       double newHuman = oldHuman + humanNotch;
       double newOscData = typeDesc.humanToOscValue(newHuman);
       m_data.d = newOscData;

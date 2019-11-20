@@ -18,9 +18,12 @@ class ZrGain {
   }
 
   static const double oscValueToRoundedHuman(const double oscValue) {
-    double result = HUMAN_MIN + (HUMAN_MAX - HUMAN_MIN) * oscValue;
     // TODO: myRound
-    result = round(result * 10.0) / 10.0;
+    return round(oscValueToHuman(oscValue));
+  }
+
+  static const double oscValueToHuman(const double oscValue) {
+    double result = HUMAN_MIN + (HUMAN_MAX - HUMAN_MIN) * oscValue;
     return result;
   }
 };

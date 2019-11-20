@@ -44,6 +44,18 @@ const double ZrFuncTypeDescription::humanToOscValue(double human) const {
   }
 }
 
+const double ZrFuncTypeDescription::oscValueToHuman(double oscValue) const {
+  switch (m_type) {
+    case GAIN:
+      return ZrGain::oscValueToHuman(oscValue);
+    case FADER:
+      return ZrFader::oscValueToHuman(oscValue);
+    default:
+      TRACE();
+      return 0;
+  }
+}
+
 const double ZrFuncTypeDescription::oscValueToRoundedHuman(double oscValue) const {
   switch (m_type) {
     case GAIN:
