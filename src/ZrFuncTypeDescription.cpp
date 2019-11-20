@@ -44,12 +44,12 @@ const double ZrFuncTypeDescription::humanToOscValue(double human) const {
   }
 }
 
-const double ZrFuncTypeDescription::oscValueToHuman(double oscValue) const {
+const double ZrFuncTypeDescription::oscValueToRoundedHuman(double oscValue) const {
   switch (m_type) {
     case GAIN:
-      return ZrGain::oscValueToHuman(oscValue);
+      return ZrGain::oscValueToRoundedHuman(oscValue);
     case FADER:
-      return ZrFader::oscValueToHuman(oscValue);
+      return ZrFader::oscValueToRoundedHuman(oscValue);
     default:
       TRACE();
       return 0;

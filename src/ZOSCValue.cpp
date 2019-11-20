@@ -27,18 +27,18 @@ void ZoscValue::setMessage(const ZrFuncTypeDescription& typeDesc,
     if (typeDesc.isOnOff()) {
       strsHuman << (m_data.i == 0 ? "OFF" : "ON");
     } else {
-      strsHuman << typeDesc.oscValueToHuman(m_data.i);
+      strsHuman << typeDesc.oscValueToRoundedHuman(m_data.i);
     }
   } else if (msg.isFloat(index)) {
     m_type = ZOSC_F;
     m_data.f = msg.getFloat(index);
     strsOsc << m_data.f;
-    strsHuman << typeDesc.oscValueToHuman(m_data.f);
+    strsHuman << typeDesc.oscValueToRoundedHuman(m_data.f);
   } else if (msg.isDouble(index)) {
     m_type = ZOSC_D;
     m_data.d = msg.getDouble(index);
     strsOsc << m_data.d;
-    strsHuman << typeDesc.oscValueToHuman(m_data.d);
+    strsHuman << typeDesc.oscValueToRoundedHuman(m_data.d);
   } else {
     m_type = ZOSC_UNKNOWN;
     Serial.print("OSC type not yet implemented: ");
@@ -54,19 +54,19 @@ void ZoscValue::plus(const ZrFuncTypeDescription& typeDesc,
                      const double humanNotch) {
   switch (m_type) {
     case ZOSC_I: {
-      float oldHuman = typeDesc.oscValueToHuman(m_data.i);
+      float oldHuman = typeDesc.oscValueToRoundedHuman(m_data.i);
       float newHuman = oldHuman + humanNotch;
       float newOscData = typeDesc.humanToOscValue(newHuman);
       m_data.i = newOscData;
     } break;
     case ZOSC_F: {
-      float oldHuman = typeDesc.oscValueToHuman(m_data.f);
+      float oldHuman = typeDesc.oscValueToRoundedHuman(m_data.f);
       float newHuman = oldHuman + humanNotch;
       float newOscData = typeDesc.humanToOscValue(newHuman);
       m_data.f = newOscData;
     } break;
     case ZOSC_D: {
-      double oldHuman = typeDesc.oscValueToHuman(m_data.d);
+      double oldHuman = typeDesc.oscValueToRoundedHuman(m_data.d);
       double newHuman = oldHuman + humanNotch;
       double newOscData = typeDesc.humanToOscValue(newHuman);
       m_data.d = newOscData;

@@ -50,7 +50,7 @@ class ZrFader {
     return 0;
   }
 
-  static const double oscValueToHuman(const double oscValue) {
+  static const double oscValueToRoundedHuman(const double oscValue) {
     if (oscValue > 0.5) {  // human: -10 to 10
       return myRound(40 * oscValue - 30);
     }
