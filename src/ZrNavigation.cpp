@@ -21,7 +21,7 @@ ZrPage m_currentPage;
 // TODO
 ZrFunction m_functions[ZrPage::H_COUNT * ZrPage::V_COUNT];
 // TODO: capacity!
-std::map<std::string, int> m_oscAddrToFunctionsArrayIndexMap;
+std::map<std::string, ZrFunction*> m_oscAddrToFunctionMap;
 
 // int m_currentHPos;
 // int m_currentVPos;
@@ -82,7 +82,7 @@ void ZrNavigation::buildFunctions() {
       }
       if (toPopulate.m_oscAddr != UNKNOWN_OSC_ADDR) {
         // TODO?
-        m_oscAddrToFunctionsArrayIndexMap.insert({toPopulate.m_oscAddr, ind});
+        m_oscAddrToFunctionMap.insert({toPopulate.m_oscAddr, &toPopulate});
       }
     }
   }
@@ -100,8 +100,8 @@ void ZrNavigation::updateCachedValue(OSCMessage& msg) {
   char buffer[SIZE_OF_OSC_ADDRESS_BUFFER];
   msg.getAddress(buffer);
 
-  auto it = m_oscAddrToFunctionsArrayIndexMap.find(buffer);
-  if (it == m_oscAddrToFunctionsArrayIndexMap.end()) {
+  auto it = m_oscAddrToFunctionMap.find(buffer);
+  if (it == m_oscAddrToFunctionMap.end()) {
     std::string oscAddr = buffer;
     if (oscAddr.find(M_STATUS, 0) != std::string::npos) {
       ZrComm::instance().mStatusReceived(msg);
@@ -116,10 +116,10 @@ void ZrNavigation::updateCachedValue(OSCMessage& msg) {
     Serial.println(buffer);
     return;
   }
-  int index = m_oscAddrToFunctionsArrayIndexMap[buffer];
+  ZrFunction* func = m_oscAddrToFunctionMap[buffer];
 
-  ZrFunction& func = m_functions[index];
-  func.updateCachedValue(msg);
+  // ZrFunction& func = m_functions[index];
+  func->updateCachedValue(msg);
 }
 
 ZrFunction& ZrNavigation::currentFunction() const {
