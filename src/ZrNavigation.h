@@ -16,6 +16,8 @@ class ZrNavigation {
   void updateCachedValue(OSCMessage& msg);
 
   ZrFunction& currentFunction() const;
+  const int getCurrentPageIndex() const;
+
   void goRight();
   void goLeft();
   void goUp();
@@ -23,6 +25,7 @@ class ZrNavigation {
 
   void clickPlus();
   void clickMinus();
+  void clickPage();
 
  private:
   void buildFunctions();

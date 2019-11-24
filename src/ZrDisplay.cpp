@@ -27,7 +27,8 @@ char display_buffer[BUFFER_SIZE];
 // ArialMT_Plain_24
 
 void refreshDisplay() {
-  ZrFunction& f = ZrNavigation::instance().currentFunction();
+  ZrNavigation zrNavigation = ZrNavigation::instance();
+  ZrFunction& currentFunction = zrNavigation.currentFunction();
 
   ZrComm zrComm = ZrComm::instance();
 
@@ -49,13 +50,15 @@ void refreshDisplay() {
   Heltec.display->setFont(ArialMT_Plain_10);
   Heltec.display->drawString(0, 0, display_buffer);
 
-  snprintf(display_buffer, BUFFER_SIZE, "channel: %s",
-           f.humanChannelName().c_str());
+  snprintf(display_buffer, BUFFER_SIZE, "(%i) channel: %s",
+           zrNavigation.getCurrentPageIndex(),
+           currentFunction.humanChannelName().c_str());
   Heltec.display->setFont(ArialMT_Plain_16);
   Heltec.display->drawString(0, 10, display_buffer);
 
-  snprintf(display_buffer, BUFFER_SIZE, "%s: %s", f.humanFunctionName().c_str(),
-           f.cachedValue().asStrHuman().c_str());
+  snprintf(display_buffer, BUFFER_SIZE, "%s: %s",
+           currentFunction.humanFunctionName().c_str(),
+           currentFunction.cachedValue().asStrHuman().c_str());
 
   //   Heltec.display->setFont(ArialMT_Plain_24);
   Heltec.display->drawString(0, 24, display_buffer);

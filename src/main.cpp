@@ -166,6 +166,8 @@ void loop() {
       case KEY_MINUS:
         navigation.clickMinus();
         break;
+      case KEY_PAGE:
+        navigation.clickPage();
     }
   }
 

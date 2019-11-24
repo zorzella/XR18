@@ -11,20 +11,27 @@
 #include "ZrFunction.h"
 #include "ZrGlobal.h"
 #include "ZrNavigation.h"
+#include "ZrPage.h"
 
-static const int H_COUNT = 16;
-static const int V_COUNT = 3;
+// static const int H_COUNT = 16;
+// static const int V_COUNT = 3;
+static const int PAGE_COUNT = 2;
 
-ZrFunction m_functions[H_COUNT * V_COUNT];
+ZrPage m_currentPage;
+// TODO
+ZrFunction m_functions[ZrPage::H_COUNT * ZrPage::V_COUNT];
 // TODO: capacity!
 std::map<std::string, int> m_oscAddrToFunctionsArrayIndexMap;
 
-int m_currentHPos;
-int m_currentVPos;
+// int m_currentHPos;
+// int m_currentVPos;
+int m_currentPageIndex;
 
-static const int index(int h, int v) { return h + v * H_COUNT; }
+static const int index(int h, int v) { return h + v * ZrPage::H_COUNT; }
 
-const int index() { return index(m_currentHPos, m_currentVPos); }
+const int index() {
+  return index(m_currentPage.m_currentHPos, m_currentPage.m_currentVPos);
+}
 
 /*
 
@@ -44,8 +51,8 @@ ZrNavigation& ZrNavigation::instance() { return m_instance; }
 void ZrNavigation::buildFunctions() {
   char temp[50];
 
-  for (int h = 0; h < H_COUNT; h++) {
-    for (int v = 0; v < V_COUNT; v++) {
+  for (int h = 0; h < m_currentPage.m_hCount; h++) {
+    for (int v = 0; v < m_currentPage.m_vCount; v++) {
       int channelNumber = h + 1;
       int ind = index(h, v);
       ZrFunction& toPopulate = m_functions[ind];
@@ -125,38 +132,26 @@ ZrFunction& ZrNavigation::currentFunction() const {
  * @return the ZrFunction to go to when the current function is @a other and
  * the "right" button is pressed.
  */
-void ZrNavigation::goRight() {
-  TRACE();
-  m_currentHPos++;
-  if (m_currentHPos == H_COUNT) {
-    m_currentHPos = 0;
-  }
-}
+void ZrNavigation::goRight() { m_currentPage.goRight(); }
 
-void ZrNavigation::goLeft() {
-  TRACE();
-  m_currentHPos--;
-  if (m_currentHPos < 0) {
-    m_currentHPos = H_COUNT - 1;
-  }
-}
+void ZrNavigation::goLeft() { m_currentPage.goLeft(); }
 
-void ZrNavigation::goDown() {
-  TRACE();
-  m_currentVPos++;
-  if (m_currentVPos == V_COUNT) {
-    m_currentVPos = 0;
-  }
-}
+void ZrNavigation::goDown() { m_currentPage.goDown(); }
 
-void ZrNavigation::goUp() {
-  TRACE();
-  m_currentVPos--;
-  if (m_currentVPos < 0) {
-    m_currentVPos = V_COUNT - 1;
-  }
-}
+void ZrNavigation::goUp() { m_currentPage.goUp(); }
 
 void ZrNavigation::clickPlus() { currentFunction().clickPlus(); }
 
 void ZrNavigation::clickMinus() { currentFunction().clickMinus(); }
+
+const int ZrNavigation::getCurrentPageIndex() const {
+  return m_currentPageIndex;
+}
+
+void ZrNavigation::clickPage() {
+  TRACE();
+  m_currentPageIndex++;
+  if (m_currentPageIndex == PAGE_COUNT) {
+    m_currentPageIndex = 0;
+  }
+}
