@@ -41,6 +41,7 @@ class ZrFunction {
 
  private:
   friend class ZrNavigation;
+  friend class ZrChannelsPagePopulator;
 
   int m_hPos;
   int m_vPos;

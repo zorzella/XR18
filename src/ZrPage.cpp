@@ -36,3 +36,11 @@ void ZrPage::goUp() {
     m_currentVPos = m_vCount - 1;
   }
 }
+
+const int ZrPage::indexOf(int h, int v) const {
+  return h + v * ZrPage::H_COUNT;
+}
+
+const int ZrPage::index() const {
+  return indexOf(m_currentHPos, m_currentVPos);
+}

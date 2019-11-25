@@ -12,25 +12,19 @@
 #include "ZrGlobal.h"
 #include "ZrNavigation.h"
 #include "ZrPage.h"
+#include "page/ZrChannelsPagePopulator.h"
 
-// static const int H_COUNT = 16;
-// static const int V_COUNT = 3;
 static const int PAGE_COUNT = 2;
 
 ZrPage m_currentPage;
-// TODO
-ZrFunction m_functions[ZrPage::H_COUNT * ZrPage::V_COUNT];
+
 // TODO: capacity!
 std::map<std::string, ZrFunction*> m_oscAddrToFunctionMap;
 
-// int m_currentHPos;
-// int m_currentVPos;
 int m_currentPageIndex;
 
-static const int index(int h, int v) { return h + v * ZrPage::H_COUNT; }
-
 const int index() {
-  return index(m_currentPage.m_currentHPos, m_currentPage.m_currentVPos);
+  return m_currentPage.index();
 }
 
 /*
@@ -49,41 +43,11 @@ static ZrNavigation m_instance;
 ZrNavigation& ZrNavigation::instance() { return m_instance; }
 
 void ZrNavigation::buildFunctions() {
-  char temp[50];
+  ZrChannelsPagePopulator::populate(m_currentPage);
 
-  for (int h = 0; h < m_currentPage.m_hCount; h++) {
-    for (int v = 0; v < m_currentPage.m_vCount; v++) {
-      int channelNumber = h + 1;
-      int ind = index(h, v);
-      ZrFunction& toPopulate = m_functions[ind];
-      toPopulate.m_hPos = h;
-      toPopulate.m_vPos = v;
-      if (h < 18) {
-        sprintf(temp, "CH%02d", channelNumber);
-        toPopulate.m_humanChannelName = temp;
-        toPopulate.m_typeDesc =
-            ZrFuncTypeDescription::posToFuncTypeDescription(h, v);
-        switch (toPopulate.m_typeDesc.type()) {
-          case GAIN:
-            sprintf(temp, "/headamp/%02d/gain", channelNumber);
-            toPopulate.m_oscAddr = temp;
-            break;
-          case EQ:
-            sprintf(temp, "/ch/%02d/eq/on", channelNumber);
-            toPopulate.m_oscAddr = temp;
-            break;
-          case FADER:
-            sprintf(temp, "/ch/%02d/mix/fader", channelNumber);
-            toPopulate.m_oscAddr = temp;
-            break;
-          default:
-            break;
-        }
-      }
-      if (toPopulate.m_oscAddr != UNKNOWN_OSC_ADDR) {
-        // TODO?
-        m_oscAddrToFunctionMap.insert({toPopulate.m_oscAddr, &toPopulate});
-      }
+  for (ZrFunction& toPopulate : m_currentPage.m_functions) {
+    if (toPopulate.m_oscAddr != UNKNOWN_OSC_ADDR) {
+      m_oscAddrToFunctionMap.insert({toPopulate.m_oscAddr, &toPopulate});
     }
   }
 }
@@ -118,19 +82,17 @@ void ZrNavigation::updateCachedValue(OSCMessage& msg) {
   }
   ZrFunction* func = m_oscAddrToFunctionMap[buffer];
 
-  // ZrFunction& func = m_functions[index];
   func->updateCachedValue(msg);
 }
 
 ZrFunction& ZrNavigation::currentFunction() const {
-  return m_functions[index()];
+  return m_currentPage.m_functions[index()];
 }
 
 // ch/../config/name
 
 /**
- * @return the ZrFunction to go to when the current function is @a other and
- * the "right" button is pressed.
+ * Changes the "current" function as per clicking the "right" button.
  */
 void ZrNavigation::goRight() { m_currentPage.goRight(); }
 
