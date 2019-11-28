@@ -60,10 +60,6 @@ void ZrFunction::clickChange(const double humanNotch) {
   bool sentRefreshRequest = false;
   long timeoutAt = millis() + 2000;
   while (millis() < timeoutAt) {
-    Serial.print("m_oscAddr: ");
-    Serial.print(m_oscAddr.c_str());
-    Serial.print(", m_lastUpdated: ");
-    Serial.println(m_lastUpdated);
     if (!cacheIsStale()) {
       Serial.println("Cached value is up-to-date.");
       // ok, we seem to be sufficiently up-to-date
