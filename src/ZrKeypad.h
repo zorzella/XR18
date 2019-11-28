@@ -15,6 +15,7 @@
 
  */
 static const char KEY_PAGE{'1'};
+static const char KEY_DEBUG{'2'};
 
 static const char KEY_UP{'6'};
 static const char KEY_DOWN{'F'};

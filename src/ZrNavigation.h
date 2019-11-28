@@ -27,6 +27,8 @@ class ZrNavigation {
   void clickMinus();
   void clickPage();
 
+  void printDebug();
+
  private:
   void buildFunctions();
 };

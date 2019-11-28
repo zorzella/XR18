@@ -118,3 +118,5 @@ void ZrNavigation::clickPage() {
     m_currentPageIndex = 0;
   }
 }
+
+void ZrNavigation::printDebug() {}

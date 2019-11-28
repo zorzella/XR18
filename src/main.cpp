@@ -168,6 +168,8 @@ void loop() {
         break;
       case KEY_PAGE:
         navigation.clickPage();
+      case KEY_DEBUG:
+        navigation.printDebug();
     }
   }
 
