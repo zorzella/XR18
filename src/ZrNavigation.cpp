@@ -16,7 +16,7 @@
 
 static const int PAGE_COUNT = 2;
 
-ZrPage m_currentPage;
+ZrPage m_currentPage{ZrPage::V_COUNT, ZrPage::H_COUNT};
 
 // TODO: capacity!
 std::map<std::string, ZrFunction*> m_oscAddrToFunctionMap;
@@ -45,7 +45,8 @@ ZrNavigation& ZrNavigation::instance() { return m_instance; }
 void ZrNavigation::buildFunctions() {
   ZrChannelsPagePopulator::populate(m_currentPage);
 
-  for (ZrFunction& toPopulate : m_currentPage.m_functions) {
+  for (int i = 0; i < m_currentPage.indexCount(); i++) {
+    ZrFunction& toPopulate = m_currentPage.m_functions[i];
     if (toPopulate.m_oscAddr != UNKNOWN_OSC_ADDR) {
       m_oscAddrToFunctionMap.insert({toPopulate.m_oscAddr, &toPopulate});
     }
