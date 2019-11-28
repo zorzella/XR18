@@ -5,3 +5,4 @@
 .vscode/ipch
 extra_script.py
 src/networks.h
+src/*-workspace
