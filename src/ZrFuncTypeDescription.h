@@ -29,6 +29,8 @@ class ZrFuncTypeDescription {
         return ZrFuncTypeDescription(type, "EQ", 0.0, true);
       case FADER:
         return ZrFuncTypeDescription(type, "Fader", 1.0, false);
+      case SNAPSHOT:
+        return ZrFuncTypeDescription(type, "Name", 0.0, false);
       default:
         TRACE();
         return ZrFuncTypeDescription(type, "Unknown", 0.0, false);
@@ -39,5 +41,6 @@ class ZrFuncTypeDescription {
   ZrFuncType m_type;
   std::string m_humanName;
   double m_humanNotch;
+  // TODO
   bool m_isOnOff;
 };

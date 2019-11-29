@@ -50,7 +50,7 @@ void refreshDisplay() {
   Heltec.display->setFont(ArialMT_Plain_10);
   Heltec.display->drawString(0, 0, display_buffer);
 
-  snprintf(display_buffer, BUFFER_SIZE, "(%i) channel: %s",
+  snprintf(display_buffer, BUFFER_SIZE, "(%i) %s",
            zrNavigation.getCurrentPageIndex(),
            currentFunction.humanChannelName().c_str());
   Heltec.display->setFont(ArialMT_Plain_16);

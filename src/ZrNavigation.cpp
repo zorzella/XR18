@@ -14,8 +14,9 @@
 #include "ZrPage.h"
 #include "page/ZrChannelsPagePopulator.h"
 #include "page/ZrMasterPagePopulator.h"
+#include "page/ZrSnapshotPagePopulator.h"
 
-static const int PAGE_COUNT = 2;
+static const int PAGE_COUNT = 3;
 
 ZrPage m_channelsPage{ZrChannelsPagePopulator::V_COUNT,
                       ZrChannelsPagePopulator::H_COUNT};
@@ -23,7 +24,10 @@ ZrPage m_channelsPage{ZrChannelsPagePopulator::V_COUNT,
 ZrPage m_masterPage{ZrMasterPagePopulator::V_COUNT,
                     ZrMasterPagePopulator::H_COUNT};
 
-ZrPage m_pages[2]{m_channelsPage, m_masterPage};
+ZrPage m_snapshotPage{ZrSnapshotPagePopulator::V_COUNT,
+                    ZrSnapshotPagePopulator::H_COUNT};
+
+ZrPage m_pages[3]{m_channelsPage, m_masterPage, m_snapshotPage};
 
 // TODO: capacity!
 std::map<std::string, ZrFunction*> m_oscAddrToFunctionMap;
@@ -52,6 +56,7 @@ ZrPage& ZrNavigation::currentPage() const {
 void ZrNavigation::buildFunctions() {
   ZrChannelsPagePopulator::populate(m_pages[0]);
   ZrMasterPagePopulator::populate(m_pages[1]);
+  ZrSnapshotPagePopulator::populate(m_pages[2]);
 
   for (ZrPage& zrPage : m_pages) {
     for (int i = 0; i < zrPage.indexCount(); i++) {
