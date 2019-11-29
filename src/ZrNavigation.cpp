@@ -23,9 +23,7 @@ std::map<std::string, ZrFunction*> m_oscAddrToFunctionMap;
 
 int m_currentPageIndex;
 
-const int index() {
-  return m_currentPage.index();
-}
+const int index() { return m_currentPage.index(); }
 
 /*
 
@@ -103,9 +101,19 @@ void ZrNavigation::goDown() { m_currentPage.goDown(); }
 
 void ZrNavigation::goUp() { m_currentPage.goUp(); }
 
-void ZrNavigation::clickPlus() { currentFunction().clickPlus(); }
+void ZrNavigation::clickPlus() {
+  if (!ZrComm::instance().isConnectedToXr()) {
+    return;
+  }
+  currentFunction().clickPlus();
+}
 
-void ZrNavigation::clickMinus() { currentFunction().clickMinus(); }
+void ZrNavigation::clickMinus() {
+  if (!ZrComm::instance().isConnectedToXr()) {
+    return;
+  }
+  currentFunction().clickMinus();
+}
 
 const int ZrNavigation::getCurrentPageIndex() const {
   return m_currentPageIndex;

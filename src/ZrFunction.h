@@ -37,7 +37,7 @@ class ZrFunction {
   void clickMinus();
   void updateCachedValue(OSCMessage& msg);
   bool triggerCacheUpdate();
-  bool triggerCacheUpdateIfNeeded();
+  void triggerCacheUpdateIfNeeded();
 
  private:
   friend class ZrNavigation;

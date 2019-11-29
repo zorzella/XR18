@@ -144,6 +144,9 @@ IPAddress &xrIp() { return m_xrIp; };
  * Return true if a message was there to be received, false otherwise.
  */
 void receiveOscIfAny(OSCMessage &msg) {
+  if (!ZrComm::instance().isConnectedToNetwork()) {
+    return;
+  }
   int size = wifiUdp.parsePacket();
 
   if (size == 0) {

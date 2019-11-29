@@ -12,9 +12,13 @@
 ZrFunction::ZrFunction()
     : m_hPos{-1},
       m_vPos{-1},
+      m_typeDesc{},
       m_oscAddr{UNKNOWN_OSC_ADDR},
       m_humanChannelName{"??"},
-      m_humanCustomName{""} {}
+      m_humanCustomName{""},
+      m_lastUpdated{0},
+      m_lastSentUpdateRequest{0},
+      m_cachedValue{} {}
 
 void plus(OSCMessage& outParam, OSCMessage& source) { outParam = source; }
 
@@ -47,12 +51,16 @@ const bool ZrFunction::lastCacheUpdateRequestIsOld() const {
 
 bool ZrFunction::triggerCacheUpdate() { return send1(m_oscAddr); }
 
-bool ZrFunction::triggerCacheUpdateIfNeeded() {
-  if (cacheIsStale() && lastCacheUpdateRequestIsOld()) {
-    m_lastSentUpdateRequest = millis();
-    return send1(m_oscAddr);
+void ZrFunction::triggerCacheUpdateIfNeeded() {
+  if (!ZrComm::instance().isConnectedToNetwork()) {
+    return;
   }
-  return true;
+  if (cacheIsStale() && lastCacheUpdateRequestIsOld()) {
+    TRACE();
+    if (send1(m_oscAddr)) {
+      m_lastSentUpdateRequest = millis();
+    }
+  }
 }
 
 void ZrFunction::clickChange(const double humanNotch) {
