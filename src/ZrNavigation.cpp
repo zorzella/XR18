@@ -17,18 +17,18 @@
 
 static const int PAGE_COUNT = 2;
 
-ZrPage m_currentPage{ZrChannelsPagePopulator::V_COUNT,
-                     ZrChannelsPagePopulator::H_COUNT};
+ZrPage m_channelsPage{ZrChannelsPagePopulator::V_COUNT,
+                      ZrChannelsPagePopulator::H_COUNT};
 
 ZrPage m_masterPage{ZrMasterPagePopulator::V_COUNT,
-                     ZrMasterPagePopulator::H_COUNT};
+                    ZrMasterPagePopulator::H_COUNT};
+
+ZrPage m_pages[2]{m_channelsPage, m_masterPage};
 
 // TODO: capacity!
 std::map<std::string, ZrFunction*> m_oscAddrToFunctionMap;
 
 int m_currentPageIndex;
-
-const int index() { return m_currentPage.index(); }
 
 /*
 
@@ -45,13 +45,20 @@ static ZrNavigation m_instance;
 
 ZrNavigation& ZrNavigation::instance() { return m_instance; }
 
-void ZrNavigation::buildFunctions() {
-  ZrChannelsPagePopulator::populate(m_currentPage);
+ZrPage& ZrNavigation::currentPage() const {
+  return m_pages[m_currentPageIndex];
+}
 
-  for (int i = 0; i < m_currentPage.indexCount(); i++) {
-    ZrFunction& toPopulate = m_currentPage.m_functions[i];
-    if (toPopulate.oscAddr() != UNKNOWN_OSC_ADDR) {
-      m_oscAddrToFunctionMap.insert({toPopulate.oscAddr(), &toPopulate});
+void ZrNavigation::buildFunctions() {
+  ZrChannelsPagePopulator::populate(m_pages[0]);
+  ZrMasterPagePopulator::populate(m_pages[1]);
+
+  for (ZrPage& zrPage : m_pages) {
+    for (int i = 0; i < zrPage.indexCount(); i++) {
+      ZrFunction& toPopulate = zrPage.m_functions[i];
+      if (toPopulate.oscAddr() != UNKNOWN_OSC_ADDR) {
+        m_oscAddrToFunctionMap.insert({toPopulate.oscAddr(), &toPopulate});
+      }
     }
   }
 }
@@ -90,7 +97,7 @@ void ZrNavigation::updateCachedValue(OSCMessage& msg) {
 }
 
 ZrFunction& ZrNavigation::currentFunction() const {
-  return m_currentPage.m_functions[index()];
+  return currentPage().m_functions[currentPage().index()];
 }
 
 // ch/../config/name
@@ -98,13 +105,13 @@ ZrFunction& ZrNavigation::currentFunction() const {
 /**
  * Changes the "current" function as per clicking the "right" button.
  */
-void ZrNavigation::goRight() { m_currentPage.goRight(); }
+void ZrNavigation::goRight() { currentPage().goRight(); }
 
-void ZrNavigation::goLeft() { m_currentPage.goLeft(); }
+void ZrNavigation::goLeft() { currentPage().goLeft(); }
 
-void ZrNavigation::goDown() { m_currentPage.goDown(); }
+void ZrNavigation::goDown() { currentPage().goDown(); }
 
-void ZrNavigation::goUp() { m_currentPage.goUp(); }
+void ZrNavigation::goUp() { currentPage().goUp(); }
 
 void ZrNavigation::clickPlus() {
   if (!ZrComm::instance().isConnectedToXr()) {

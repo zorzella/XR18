@@ -12,21 +12,20 @@ class ZrMasterPagePopulator {
 
     for (int h = 0; h < currentPage.m_hCount; h++) {
       for (int v = 0; v < currentPage.m_vCount; v++) {
-        int channelNumber = h + 1;
         int ind = index(currentPage, h, v);
         ZrFunction& toPopulate = currentPage.m_functions[ind];
         toPopulate.m_hPos = h;
         toPopulate.m_vPos = v;
-        sprintf(temp, "CH%02d", channelNumber);
+        sprintf(temp, "LR");
         toPopulate.m_humanChannelName = temp;
         toPopulate.m_typeDesc = posToFuncTypeDescription(h, v);
         switch (toPopulate.m_typeDesc.type()) {
           case EQ:
-            sprintf(temp, "/ch/%02d/eq/on", channelNumber);
+            sprintf(temp, "/lr/eq/on");
             toPopulate.m_oscAddr = temp;
             break;
           case FADER:
-            sprintf(temp, "/ch/%02d/mix/fader", channelNumber);
+            sprintf(temp, "/lr/mix/fader");
             toPopulate.m_oscAddr = temp;
             break;
           default:
@@ -42,13 +41,11 @@ class ZrMasterPagePopulator {
   }
 
   static const ZrFuncType typeForPosition(int h, int v) {
-    if (h >= 0 && h <= 17) {
-      switch (v) {
-        case 0:
-          return EQ;
-        case 1:
-          return FADER;
-      }
+    switch (v) {
+      case 0:
+        return EQ;
+      case 1:
+        return FADER;
     }
     return TYPE_UNKNOWN;
   }

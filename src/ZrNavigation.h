@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "ZrFunction.h"
+#include "ZrPage.h"
 
 class ZrNavigation {
  public:
@@ -17,6 +18,7 @@ class ZrNavigation {
 
   ZrFunction& currentFunction() const;
   const int getCurrentPageIndex() const;
+  ZrPage& currentPage() const;
 
   void goRight();
   void goLeft();
