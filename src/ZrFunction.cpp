@@ -52,7 +52,7 @@ const bool ZrFunction::lastCacheUpdateRequestIsOld() const {
 bool ZrFunction::triggerCacheUpdate() { return send1(m_oscAddr); }
 
 void ZrFunction::triggerCacheUpdateIfNeeded() {
-  if (!ZrComm::instance().isConnectedToNetwork()) {
+  if (!ZrComm::instance().isConnectedToXr()) {
     return;
   }
   if (cacheIsStale() && lastCacheUpdateRequestIsOld()) {
