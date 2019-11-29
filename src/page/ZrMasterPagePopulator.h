@@ -2,10 +2,10 @@
 
 #include "ZrPage.h"
 
-class ZrChannelsPagePopulator {
+class ZrMasterPagePopulator {
  public:
-  static const int H_COUNT = 16;
-  static const int V_COUNT = 3;
+  static const int H_COUNT = 1;
+  static const int V_COUNT = 2;
 
   static void populate(ZrPage& currentPage) {
     char temp[50];
@@ -17,27 +17,20 @@ class ZrChannelsPagePopulator {
         ZrFunction& toPopulate = currentPage.m_functions[ind];
         toPopulate.m_hPos = h;
         toPopulate.m_vPos = v;
-        if (h < 18) {
-          sprintf(temp, "CH%02d", channelNumber);
-          toPopulate.m_humanChannelName = temp;
-          toPopulate.m_typeDesc =
-              posToFuncTypeDescription(h, v);
-          switch (toPopulate.m_typeDesc.type()) {
-            case GAIN:
-              sprintf(temp, "/headamp/%02d/gain", channelNumber);
-              toPopulate.m_oscAddr = temp;
-              break;
-            case EQ:
-              sprintf(temp, "/ch/%02d/eq/on", channelNumber);
-              toPopulate.m_oscAddr = temp;
-              break;
-            case FADER:
-              sprintf(temp, "/ch/%02d/mix/fader", channelNumber);
-              toPopulate.m_oscAddr = temp;
-              break;
-            default:
-              break;
-          }
+        sprintf(temp, "CH%02d", channelNumber);
+        toPopulate.m_humanChannelName = temp;
+        toPopulate.m_typeDesc = posToFuncTypeDescription(h, v);
+        switch (toPopulate.m_typeDesc.type()) {
+          case EQ:
+            sprintf(temp, "/ch/%02d/eq/on", channelNumber);
+            toPopulate.m_oscAddr = temp;
+            break;
+          case FADER:
+            sprintf(temp, "/ch/%02d/mix/fader", channelNumber);
+            toPopulate.m_oscAddr = temp;
+            break;
+          default:
+            break;
         }
       }
     }
@@ -52,10 +45,8 @@ class ZrChannelsPagePopulator {
     if (h >= 0 && h <= 17) {
       switch (v) {
         case 0:
-          return GAIN;
-        case 1:
           return EQ;
-        case 2:
+        case 1:
           return FADER;
       }
     }

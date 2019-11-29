@@ -35,24 +35,6 @@ class ZrFuncTypeDescription {
     }
   }
 
-  static const ZrFuncType typeForPosition(int h, int v) {
-    if (h >= 0 && h <= 17) {
-      switch (v) {
-        case 0:
-          return GAIN;
-        case 1:
-          return EQ;
-        case 2:
-          return FADER;
-      }
-    }
-    return TYPE_UNKNOWN;
-  }
-
-  static const ZrFuncTypeDescription posToFuncTypeDescription(int h, int v) {
-    return fromType(typeForPosition(h, v));
-  }
-
  private:
   ZrFuncType m_type;
   std::string m_humanName;

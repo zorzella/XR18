@@ -40,8 +40,8 @@ class ZrFunction {
   void triggerCacheUpdateIfNeeded();
 
  private:
-  friend class ZrNavigation;
   friend class ZrChannelsPagePopulator;
+  friend class ZrMasterPagePopulator;
 
   int m_hPos;
   int m_vPos;

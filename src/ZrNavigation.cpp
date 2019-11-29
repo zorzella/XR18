@@ -13,11 +13,15 @@
 #include "ZrNavigation.h"
 #include "ZrPage.h"
 #include "page/ZrChannelsPagePopulator.h"
+#include "page/ZrMasterPagePopulator.h"
 
 static const int PAGE_COUNT = 2;
 
 ZrPage m_currentPage{ZrChannelsPagePopulator::V_COUNT,
                      ZrChannelsPagePopulator::H_COUNT};
+
+ZrPage m_masterPage{ZrMasterPagePopulator::V_COUNT,
+                     ZrMasterPagePopulator::H_COUNT};
 
 // TODO: capacity!
 std::map<std::string, ZrFunction*> m_oscAddrToFunctionMap;
@@ -46,8 +50,8 @@ void ZrNavigation::buildFunctions() {
 
   for (int i = 0; i < m_currentPage.indexCount(); i++) {
     ZrFunction& toPopulate = m_currentPage.m_functions[i];
-    if (toPopulate.m_oscAddr != UNKNOWN_OSC_ADDR) {
-      m_oscAddrToFunctionMap.insert({toPopulate.m_oscAddr, &toPopulate});
+    if (toPopulate.oscAddr() != UNKNOWN_OSC_ADDR) {
+      m_oscAddrToFunctionMap.insert({toPopulate.oscAddr(), &toPopulate});
     }
   }
 }
