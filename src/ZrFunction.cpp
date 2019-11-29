@@ -74,7 +74,7 @@ void ZrFunction::clickChange(const double humanNotch) {
       copy.plus(m_typeDesc, humanNotch);
       send2(m_oscAddr, copy);
       // invalidate the cache and initiate a message that will refresh it
-      m_lastUpdated = -1;
+      m_lastUpdated = 0;
       triggerCacheUpdate();
       return;
     } else if (!sentRefreshRequest) {
