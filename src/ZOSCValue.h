@@ -12,6 +12,7 @@ enum ZoscType {
   ZOSC_I,
   ZOSC_F,
   ZOSC_D,
+  ZOSC_S,
   // ZOSC_L,
 };
 
@@ -40,7 +41,7 @@ class ZoscValue {
   std::string m_asStrHuman;
 
   union {
-    // char * s; //string
+    char * s; //string
     int32_t i;  // int
     float f;    // float
     double d;   // double

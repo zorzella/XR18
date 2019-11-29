@@ -18,27 +18,35 @@ void ZoscValue::setMessage(const ZrFuncTypeDescription& typeDesc,
                            OSCMessage& msg, int index) {
   m_isPresent = true;
 
+  OSCData* oscData = msg.getOSCData(index);
+
   std::ostringstream strsOsc;
   std::ostringstream strsHuman;
-  if (msg.isInt(index)) {
+  if (oscData->type == 'i') {
     m_type = ZOSC_I;
-    m_data.i = msg.getInt(index);
+    m_data.i = oscData->getInt();
     strsOsc << m_data.i;
     if (typeDesc.isOnOff()) {
       strsHuman << (m_data.i == 0 ? "OFF" : "ON");
     } else {
       strsHuman << typeDesc.oscValueToRoundedHuman(m_data.i);
     }
-  } else if (msg.isFloat(index)) {
+  } else if (oscData->type == 'f') {
     m_type = ZOSC_F;
-    m_data.f = msg.getFloat(index);
+    m_data.f = oscData->getFloat();
     strsOsc << m_data.f;
     strsHuman << typeDesc.oscValueToRoundedHuman(m_data.f);
-  } else if (msg.isDouble(index)) {
+  } else if (oscData->type == 'd') {
     m_type = ZOSC_D;
-    m_data.d = msg.getDouble(index);
+    m_data.d = oscData->getDouble();
     strsOsc << m_data.d;
     strsHuman << typeDesc.oscValueToRoundedHuman(m_data.d);
+  } else if (oscData->type == 's') {
+    m_type = ZOSC_S;
+    m_data.s = new char[oscData->bytes];
+    oscData->getString(m_data.s);
+    strsOsc << m_data.s;
+    strsHuman << m_data.s;
   } else {
     m_type = ZOSC_UNKNOWN;
     Serial.print("OSC type not yet implemented: ");
