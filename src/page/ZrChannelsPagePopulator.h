@@ -11,8 +11,8 @@ class ZrChannelsPagePopulator {
     char temp[50];
 
     for (int h = 0; h < currentPage.m_hCount; h++) {
+      int channelNumber = h + 1;
       for (int v = 0; v < currentPage.m_vCount; v++) {
-        int channelNumber = h + 1;
         int ind = index(currentPage, h, v);
         ZrFunction& toPopulate = currentPage.m_functions[ind];
         toPopulate.m_hPos = h;
