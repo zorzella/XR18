@@ -56,6 +56,9 @@ void setup() {
     ;
   }
 
+  WiFi.persistent(false);
+  WiFi.mode(WIFI_STA);
+
   switch (m_mode) {
     case XR:
       // Let it continue
