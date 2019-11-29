@@ -16,7 +16,8 @@
 
 static const int PAGE_COUNT = 2;
 
-ZrPage m_currentPage{ZrPage::V_COUNT, ZrPage::H_COUNT};
+ZrPage m_currentPage{ZrChannelsPagePopulator::V_COUNT,
+                     ZrChannelsPagePopulator::H_COUNT};
 
 // TODO: capacity!
 std::map<std::string, ZrFunction*> m_oscAddrToFunctionMap;

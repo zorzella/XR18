@@ -1,10 +1,11 @@
-#include "ZrDebug.h"
 #include "ZrPage.h"
+#include "ZrDebug.h"
 
 ZrPage::ZrPage(int vCount, int hCount)
     : m_vCount{vCount},
       m_hCount{hCount},
-      m_indexCount{vCount * hCount} {}
+      m_indexCount{vCount * hCount},
+      m_functions{new ZrFunction[vCount * hCount]} {}
 
 /**
  * @return the ZrFunction to go to when the current function is @a other and
@@ -43,7 +44,7 @@ void ZrPage::goUp() {
 }
 
 const int ZrPage::indexOf(int h, int v) const {
-  return h + v * ZrPage::H_COUNT;
+  return h + v * m_hCount;
 }
 
 const int ZrPage::index() const {

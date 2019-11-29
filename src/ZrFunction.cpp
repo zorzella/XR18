@@ -56,7 +56,6 @@ void ZrFunction::triggerCacheUpdateIfNeeded() {
     return;
   }
   if (cacheIsStale() && lastCacheUpdateRequestIsOld()) {
-    TRACE();
     if (send1(m_oscAddr)) {
       m_lastSentUpdateRequest = millis();
     }

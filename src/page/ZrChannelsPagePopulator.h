@@ -4,14 +4,17 @@
 
 class ZrChannelsPagePopulator {
  public:
-  static void populate(ZrPage& m_currentPage) {
+  static const int H_COUNT = 16;
+  static const int V_COUNT = 3;
+
+  static void populate(ZrPage& currentPage) {
     char temp[50];
 
-    for (int h = 0; h < m_currentPage.m_hCount; h++) {
-      for (int v = 0; v < m_currentPage.m_vCount; v++) {
+    for (int h = 0; h < currentPage.m_hCount; h++) {
+      for (int v = 0; v < currentPage.m_vCount; v++) {
         int channelNumber = h + 1;
-        int ind = index(h, v);
-        ZrFunction& toPopulate = m_currentPage.m_functions[ind];
+        int ind = index(currentPage, h, v);
+        ZrFunction& toPopulate = currentPage.m_functions[ind];
         toPopulate.m_hPos = h;
         toPopulate.m_vPos = v;
         if (h < 18) {
@@ -41,5 +44,5 @@ class ZrChannelsPagePopulator {
   }
 
  private:
-  static const int index(int h, int v) { return h + v * ZrPage::H_COUNT; }
+  static const int index(ZrPage& currentPage, int h, int v) { return h + v * currentPage.m_hCount; }
 };

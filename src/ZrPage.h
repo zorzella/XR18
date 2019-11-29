@@ -8,15 +8,11 @@ class ZrPage {
 
   ZrPage(int vCount, int hCount);
 
-  // TODO!
-  static const int H_COUNT = 16;
-  static const int V_COUNT = 3;
-
-  ZrFunction m_functions[ZrPage::H_COUNT * ZrPage::V_COUNT];
-
   const int m_vCount;
   const int m_hCount;
   const int m_indexCount;
+
+  ZrFunction* m_functions;
 
   int m_currentHPos;
   int m_currentVPos;
