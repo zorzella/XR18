@@ -34,7 +34,7 @@ void ZoscValue::setMessage(const ZrFuncTypeDescription& typeDesc,
         strsHuman << typeDesc.oscValueToRoundedHuman(m_data.i);
         break;
       default:
-        Serial.print("Unimplemented: ");
+        Serial.print("Unimplemented plus minus: ");
         Serial.println(typeDesc.getPlusMinusBehavior());
         break;
     }

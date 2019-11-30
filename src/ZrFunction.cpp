@@ -56,7 +56,7 @@ void ZrFunction::triggerCacheUpdateIfNeeded() {
     return;
   }
   if (cacheIsStale() && lastCacheUpdateRequestIsOld()) {
-    if (send1(m_oscAddr)) {
+    if (triggerCacheUpdate()) {
       m_lastSentUpdateRequest = millis();
     }
   }
@@ -98,19 +98,18 @@ void ZrFunction::clickChange(const double humanNotch) {
   Serial.println("\n Timed out in clickChange.");
 }
 
-const void ZrFunction::send(const std::string& msg) const {
-  send2(m_oscAddr, msg);
-}
-
 void ZrFunction::clickPlus() {
   TRACE();
   switch (m_typeDesc.getPlusMinusBehavior()) {
     case ON_OFF:
-      send(FEATURE_ON);
+      send2(m_oscAddr, FEATURE_ON);
       triggerCacheUpdate();
       break;
     case INC_DEC:
       clickChange(m_typeDesc.humanNotch());
+      break;
+    case LOAD_NONE:
+      // TODO
       break;
     case NONE:
       break;
@@ -125,7 +124,7 @@ void ZrFunction::clickMinus() {
   TRACE();
   switch (m_typeDesc.getPlusMinusBehavior()) {
     case ON_OFF:
-      send(FEATURE_OFF);
+      send2(m_oscAddr, FEATURE_OFF);
       triggerCacheUpdate();
     case INC_DEC:
       clickChange(-(m_typeDesc.humanNotch()));

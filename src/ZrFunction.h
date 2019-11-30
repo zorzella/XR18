@@ -61,7 +61,6 @@ class ZrFunction {
   ZoscValue m_cachedValue;
 
   void clickChange(const double notch);
-  const void send(const std::string& msg) const;
   const bool cacheIsStale() const;
   const bool lastCacheUpdateRequestIsOld() const;
 };
