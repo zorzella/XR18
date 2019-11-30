@@ -6,16 +6,23 @@
 
 #include "ZrFuncType.h"
 
+enum PlusMinusBehavior {
+  NONE,
+  INC_DEC,
+  ON_OFF,
+  LOAD_NONE,
+};
+
 class ZrFuncTypeDescription {
  public:
-  ZrFuncTypeDescription();
+  ZrFuncTypeDescription() = delete;
   ZrFuncTypeDescription(ZrFuncType type, std::string humanName,
-                        double humanNotch, boolean isOnOff);
+                        double humanNotch, PlusMinusBehavior plusMinusBehavior);
 
   const ZrFuncType type() const;
   const std::string humanName() const;
   const double humanNotch() const;
-  const bool isOnOff() const;
+  const PlusMinusBehavior getPlusMinusBehavior() const;
 
   const double humanToOscValue(double human) const;
   const double oscValueToHuman(double oscValue) const;
@@ -24,23 +31,23 @@ class ZrFuncTypeDescription {
   static const ZrFuncTypeDescription fromType(const ZrFuncType type) {
     switch (type) {
       case GAIN:
-        return ZrFuncTypeDescription(type, "Gain", 0.5, false);
+        return ZrFuncTypeDescription(type, "Gain", 0.5, INC_DEC);
       case EQ:
-        return ZrFuncTypeDescription(type, "EQ", 0.0, true);
+        return ZrFuncTypeDescription(type, "EQ", 0.0, ON_OFF);
       case FADER:
-        return ZrFuncTypeDescription(type, "Fader", 1.0, false);
+        return ZrFuncTypeDescription(type, "Fader", 1.0, INC_DEC);
       case SNAPSHOT:
-        return ZrFuncTypeDescription(type, "Name", 0.0, false);
+        return ZrFuncTypeDescription(type, "Name", 0.0, LOAD_NONE);
       default:
         TRACE();
-        return ZrFuncTypeDescription(type, "Unknown", 0.0, false);
+        return ZrFuncTypeDescription(type, "Unknown", 0.0, NONE);
     }
   }
 
  private:
+  // TODO: make all these const?
   ZrFuncType m_type;
   std::string m_humanName;
   double m_humanNotch;
-  // TODO
-  bool m_isOnOff;
+  PlusMinusBehavior m_plusMinusBehavior;
 };

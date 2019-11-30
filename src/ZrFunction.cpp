@@ -12,7 +12,7 @@
 ZrFunction::ZrFunction()
     : m_hPos{-1},
       m_vPos{-1},
-      m_typeDesc{},
+      m_typeDesc{TYPE_UNKNOWN, "Unknown", 0.0, NONE},
       m_oscAddr{UNKNOWN_OSC_ADDR},
       m_humanChannelName{"??"},
       m_humanCustomName{""},
@@ -104,21 +104,39 @@ const void ZrFunction::send(const std::string& msg) const {
 
 void ZrFunction::clickPlus() {
   TRACE();
-  if (m_typeDesc.isOnOff()) {
-    send(FEATURE_ON);
-    triggerCacheUpdate();
-  } else {
-    clickChange(m_typeDesc.humanNotch());
+  switch (m_typeDesc.getPlusMinusBehavior()) {
+    case ON_OFF:
+      send(FEATURE_ON);
+      triggerCacheUpdate();
+      break;
+    case INC_DEC:
+      clickChange(m_typeDesc.humanNotch());
+      break;
+    case NONE:
+      break;
+    default:
+      Serial.print("Unimplemented plus minus: ");
+      Serial.println(m_typeDesc.getPlusMinusBehavior());
+      break;
   }
 }
 
 void ZrFunction::clickMinus() {
   TRACE();
-  if (m_typeDesc.isOnOff()) {
-    send(FEATURE_OFF);
-    triggerCacheUpdate();
-  } else {
-    clickChange(-(m_typeDesc.humanNotch()));
+  switch (m_typeDesc.getPlusMinusBehavior()) {
+    case ON_OFF:
+      send(FEATURE_OFF);
+      triggerCacheUpdate();
+    case INC_DEC:
+      clickChange(-(m_typeDesc.humanNotch()));
+    case NONE:
+      break;
+    case LOAD_NONE:
+      break;
+    default:
+      Serial.print("Unimplemented plus minus: ");
+      Serial.println(m_typeDesc.getPlusMinusBehavior());
+      break;
   }
 }
 

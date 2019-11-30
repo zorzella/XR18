@@ -6,19 +6,14 @@
 #include "func/ZrFader.h"
 #include "func/ZrGain.h"
 
-ZrFuncTypeDescription::ZrFuncTypeDescription()
-    : m_type{TYPE_UNKNOWN},
-      m_humanName{"Unknown"},
-      m_humanNotch{0.0},
-      m_isOnOff{false} {}
-
 ZrFuncTypeDescription::ZrFuncTypeDescription(ZrFuncType type,
                                              std::string humanName,
-                                             double humanNotch, boolean isOnOff)
+                                             double humanNotch, PlusMinusBehavior plusMinusBehavior)
     : m_type{type},
       m_humanName{humanName},
       m_humanNotch{humanNotch},
-      m_isOnOff{isOnOff} {}
+      // m_isOnOff{isOnOff},
+      m_plusMinusBehavior {plusMinusBehavior} {}
 
 const ZrFuncType ZrFuncTypeDescription::type() const { return m_type; }
 
@@ -28,7 +23,10 @@ const std::string ZrFuncTypeDescription::humanName() const {
 
 const double ZrFuncTypeDescription::humanNotch() const { return m_humanNotch; }
 
-const bool ZrFuncTypeDescription::isOnOff() const { return m_isOnOff; }
+const PlusMinusBehavior ZrFuncTypeDescription::getPlusMinusBehavior() const {
+  return m_plusMinusBehavior;
+}
+
 
 const double ZrFuncTypeDescription::humanToOscValue(double human) const {
   switch (m_type) {

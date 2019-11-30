@@ -26,7 +26,7 @@ class ZrSnapshotPagePopulator {
             toPopulate.m_oscAddr = temp;
             break;
           default:
-            Serial.print("Unimplemented: ");
+            Serial.print("Unimplemented type: ");
             Serial.println(toPopulate.m_typeDesc.type());
             break;
         }

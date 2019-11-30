@@ -26,10 +26,17 @@ void ZoscValue::setMessage(const ZrFuncTypeDescription& typeDesc,
     m_type = ZOSC_I;
     m_data.i = oscData->getInt();
     strsOsc << m_data.i;
-    if (typeDesc.isOnOff()) {
-      strsHuman << (m_data.i == 0 ? "OFF" : "ON");
-    } else {
-      strsHuman << typeDesc.oscValueToRoundedHuman(m_data.i);
+    switch (typeDesc.getPlusMinusBehavior()) {
+      case ON_OFF:
+        break;
+        strsHuman << (m_data.i == 0 ? "OFF" : "ON");
+      case INC_DEC:
+        strsHuman << typeDesc.oscValueToRoundedHuman(m_data.i);
+        break;
+      default:
+        Serial.print("Unimplemented: ");
+        Serial.println(typeDesc.getPlusMinusBehavior());
+        break;
     }
   } else if (oscData->type == 'f') {
     m_type = ZOSC_F;
