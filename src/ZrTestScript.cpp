@@ -77,7 +77,7 @@ void printCurrentFunction() {
   Serial.print(" - ");
   Serial.print(navigation.currentFunction().humanFunctionName().c_str());
   Serial.print(", OSC: ");
-  Serial.println(navigation.currentFunction().oscAddr().c_str());
+  Serial.println(navigation.currentFunction().readValueOscAddr().c_str());
 }
 
 void queryForName() {

@@ -23,7 +23,9 @@ class ZrSnapshotPagePopulator {
         switch (toPopulate.m_typeDesc.type()) {
           case SNAPSHOT:
             sprintf(temp, "/-snap/%02d/name", snapshotNumber);
-            toPopulate.m_oscAddr = temp;
+            toPopulate.m_readValueOscAddr = temp;
+            sprintf(temp, "/-snap/load");
+            toPopulate.m_actionOscAddr = temp;
             break;
           default:
             Serial.print("Unimplemented type: ");

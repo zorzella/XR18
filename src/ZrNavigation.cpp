@@ -61,8 +61,8 @@ void ZrNavigation::buildFunctions() {
   for (ZrPage& zrPage : m_pages) {
     for (int i = 0; i < zrPage.indexCount(); i++) {
       ZrFunction& toPopulate = zrPage.m_functions[i];
-      if (toPopulate.oscAddr() != UNKNOWN_OSC_ADDR) {
-        m_oscAddrToFunctionMap.insert({toPopulate.oscAddr(), &toPopulate});
+      if (toPopulate.readValueOscAddr() != UNKNOWN_OSC_ADDR) {
+        m_oscAddrToFunctionMap.insert({toPopulate.readValueOscAddr(), &toPopulate});
       }
     }
   }

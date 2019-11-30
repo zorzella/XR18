@@ -28,7 +28,7 @@ class ZrFunction {
 
   const std::string humanChannelName() const;
   const std::string humanFunctionName() const;
-  const std::string oscAddr() const;
+  const std::string readValueOscAddr() const;
   const float notch() const;
   const int hPos() const;
   const int vPos() const;
@@ -48,7 +48,8 @@ class ZrFunction {
   int m_vPos;
 
   ZrFuncTypeDescription m_typeDesc;
-  std::string m_oscAddr;
+  std::string m_readValueOscAddr;
+  std::string m_actionOscAddr;
   std::string m_humanChannelName;
   std::string m_humanCustomName;
 

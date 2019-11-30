@@ -13,7 +13,8 @@ ZrFunction::ZrFunction()
     : m_hPos{-1},
       m_vPos{-1},
       m_typeDesc{TYPE_UNKNOWN, "Unknown", 0.0, NONE},
-      m_oscAddr{UNKNOWN_OSC_ADDR},
+      m_readValueOscAddr{UNKNOWN_OSC_ADDR},
+      m_actionOscAddr{UNKNOWN_OSC_ADDR},
       m_humanChannelName{"??"},
       m_humanCustomName{""},
       m_lastUpdated{0},
@@ -33,7 +34,9 @@ const std::string ZrFunction::humanFunctionName() const {
   return m_typeDesc.humanName();
 }
 
-const std::string ZrFunction::oscAddr() const { return m_oscAddr; }
+const std::string ZrFunction::readValueOscAddr() const {
+  return m_readValueOscAddr;
+}
 
 const float ZrFunction::notch() const { return m_typeDesc.humanNotch(); }
 
@@ -49,7 +52,7 @@ const bool ZrFunction::lastCacheUpdateRequestIsOld() const {
   return m_lastSentUpdateRequest + CACHE_TOLERANCE < millis();
 };
 
-bool ZrFunction::triggerCacheUpdate() { return send1(m_oscAddr); }
+bool ZrFunction::triggerCacheUpdate() { return send1(m_readValueOscAddr); }
 
 void ZrFunction::triggerCacheUpdateIfNeeded() {
   if (!ZrComm::instance().isConnectedToXr()) {
@@ -72,7 +75,7 @@ void ZrFunction::clickChange(const double humanNotch) {
       // ok, we seem to be sufficiently up-to-date
       ZoscValue copy = m_cachedValue;
       copy.plus(m_typeDesc, humanNotch);
-      send2(m_oscAddr, copy);
+      send2(m_actionOscAddr, copy);
       // invalidate the cache and initiate a message that will refresh it
       m_lastUpdated = 0;
       triggerCacheUpdate();
@@ -102,14 +105,14 @@ void ZrFunction::clickPlus() {
   TRACE();
   switch (m_typeDesc.getPlusMinusBehavior()) {
     case ON_OFF:
-      send2(m_oscAddr, FEATURE_ON);
+      send2(m_actionOscAddr, FEATURE_ON);
       triggerCacheUpdate();
       break;
     case INC_DEC:
       clickChange(m_typeDesc.humanNotch());
       break;
     case LOAD_NONE:
-      // TODO
+      send2(m_actionOscAddr, m_vPos + 1);
       break;
     case NONE:
       break;
@@ -124,7 +127,7 @@ void ZrFunction::clickMinus() {
   TRACE();
   switch (m_typeDesc.getPlusMinusBehavior()) {
     case ON_OFF:
-      send2(m_oscAddr, FEATURE_OFF);
+      send2(m_actionOscAddr, FEATURE_OFF);
       triggerCacheUpdate();
     case INC_DEC:
       clickChange(-(m_typeDesc.humanNotch()));
@@ -154,8 +157,10 @@ void ZrFunction::updateCachedValue(OSCMessage& msg) {
   Serial.print("New cached value: ");
   Serial.print(m_cachedValue.asStrOsc().c_str());
 
-  Serial.print(", m_oscAddr: ");
-  Serial.print(m_oscAddr.c_str());
+  Serial.print(", m_readValueOscAddr: ");
+  Serial.print(m_readValueOscAddr.c_str());
+  Serial.print(", m_actionOscAddr: ");
+  Serial.print(m_actionOscAddr.c_str());
   Serial.print(", m_lastUpdated: ");
   Serial.println(m_lastUpdated);
 }

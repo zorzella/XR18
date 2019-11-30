@@ -25,15 +25,18 @@ class ZrChannelsPagePopulator {
           switch (toPopulate.m_typeDesc.type()) {
             case GAIN:
               sprintf(temp, "/headamp/%02d/gain", channelNumber);
-              toPopulate.m_oscAddr = temp;
+              toPopulate.m_readValueOscAddr = temp;
+              toPopulate.m_actionOscAddr = temp;
               break;
             case EQ:
               sprintf(temp, "/ch/%02d/eq/on", channelNumber);
-              toPopulate.m_oscAddr = temp;
+              toPopulate.m_readValueOscAddr = temp;
+              toPopulate.m_actionOscAddr = temp;
               break;
             case FADER:
               sprintf(temp, "/ch/%02d/mix/fader", channelNumber);
-              toPopulate.m_oscAddr = temp;
+              toPopulate.m_readValueOscAddr = temp;
+              toPopulate.m_actionOscAddr = temp;
               break;
             default:
               break;

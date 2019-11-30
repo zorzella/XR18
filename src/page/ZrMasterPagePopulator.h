@@ -22,11 +22,13 @@ class ZrMasterPagePopulator {
         switch (toPopulate.m_typeDesc.type()) {
           case EQ:
             sprintf(temp, "/lr/eq/on");
-            toPopulate.m_oscAddr = temp;
+            toPopulate.m_readValueOscAddr = temp;
+            toPopulate.m_actionOscAddr = temp;
             break;
           case FADER:
             sprintf(temp, "/lr/mix/fader");
-            toPopulate.m_oscAddr = temp;
+            toPopulate.m_readValueOscAddr = temp;
+            toPopulate.m_actionOscAddr = temp;
             break;
           default:
             break;
