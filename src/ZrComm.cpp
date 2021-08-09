@@ -11,7 +11,7 @@
 
 WiFiUDP wifiUdp;  // A UDP instance to let us send and receive packets over UDP
 
-IPAddress m_xrIp{INADDR_NONE};  // IP of the XR18
+IPAddress m_xrIp{Z_INADDR_NONE};  // IP of the XR18
 
 unsigned long sendOkCount = 0;
 unsigned long sendErrorCount = 0;
@@ -23,8 +23,11 @@ ZrComm m_instance;
 ZrComm &ZrComm::instance() { return m_instance; }
 
 bool m_isConnectedToNetwork = false;
+wl_status_t m_wifiStatus = WL_CONNECTION_LOST;
 
+void ZrComm::setIsConnectedToNetwork(bool isConnected) { m_isConnectedToNetwork = isConnected; }
 bool ZrComm::isConnectedToNetwork() { return m_isConnectedToNetwork; }
+wl_status_t ZrComm::wifiStatus() { return m_wifiStatus; }
 
 bool m_isConnectedToXr = false;
 
@@ -43,14 +46,15 @@ long m_reconnectionToNetworkStartedAtTimestamp = 0;
 long m_reconnectionToXrStartedAtTimestamp = 0;
 
 void ZrComm::ensureConnection() {
-  if (WiFi.status() == WL_CONNECTED) {
+  m_wifiStatus = WiFi.status();
+  if (m_wifiStatus == WL_CONNECTED) {
     m_isConnectedToNetwork = true;
   } else {
     m_isConnectedToNetwork = false;
     m_isConnectedToXr = false;
   }
 
-  if (xrIp() == INADDR_NONE) {
+  if (xrIp() == Z_INADDR_NONE) {
     m_isConnectedToXr = false;
   } else {
     m_isConnectedToXr = true;
@@ -116,10 +120,22 @@ void ZrComm::connectThru2(const std::string &ssid, const std::string &pass) {
     // Connect to WiFi network
     Serial.println();
     Serial.println();
-    Serial.print("Connecting to ");
+    Serial.print("Reconnecting to ");
     Serial.print(ssid.c_str());
-    Serial.print(" ");
+    Serial.print(": ");
+    Serial.print(ssid.c_str());
+    Serial.print(" - '");
+    Serial.print(pass.c_str());
+    Serial.print("' ");
+    WiFi.disconnect();
+    Serial.print(". First disconnecting");
+    while(WiFi.status() != WL_DISCONNECTED) {
+      Serial.print(".");
+      delay(100);
+    }
+    Serial.print("done.");
     WiFi.begin(ssid.c_str(), pass.c_str());
+    Serial.print("begun");
   }
 }
 
@@ -323,7 +339,7 @@ void receiveAndPrintOscIfAny() {
 
 bool receiveOscWithAddress(OSCMessage &msg, const std::string &address) {
   unsigned long startTs = millis();
-  unsigned long timeoutAt = startTs + 400;
+  unsigned long timeoutAt = startTs + 800;
 
   char buffer[SIZE_OF_RECEIVE_BUFFER];
   memset(buffer, 0, SIZE_OF_RECEIVE_BUFFER);

@@ -17,4 +17,9 @@ bool connectThru(const std::string &ssid, const std::string &pass);
 
 bool tryToReconnectWifi();
 
+void zdelay(int delayMs);
+
+const float DELAY_MULTIPLIER = 3.7F;
+const float TIMEOUT_MULTIPLIER = 3.7F;
+
 #endif

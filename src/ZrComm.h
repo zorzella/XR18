@@ -10,19 +10,23 @@
 
 #include "ZoscValue.h"
 
+const IPAddress Z_INADDR_NONE(255, 255, 255, 255);
+
 const unsigned int XR_PORT =
     10024;  // remote port to receive OSC X-AIR is 10024, X32 is 10023
 
 const int SIZE_OF_RECEIVE_BUFFER = 100;
 
 // If true, we will print extra debug information about WIFI
-const bool DEBUG_WIFI = false;
+const bool DEBUG_WIFI = true;
 
 class ZrComm {
  public:
   static ZrComm &instance();
 
+  void setIsConnectedToNetwork(bool isConnected);
   bool isConnectedToNetwork();
+  wl_status_t wifiStatus();
   bool isConnectedToXr();
 
   char *networkName();

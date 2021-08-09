@@ -79,8 +79,8 @@ void setup() {
   }
 
   if (DEBUG_WIFI) {
-    // Give a second before doing anything, so the terminal is active
-    delay(1000);
+    // Wait a little before doing continuing, so the terminal is active
+    delay(2000);
   }
 
   // Setp button pins as input pullup
@@ -127,17 +127,18 @@ void loop() {
     Serial.println();
   }
 
-  if (false) {
-  if (WiFi.status() != WL_CONNECTED || xrIp() == INADDR_NONE) {
-    Serial.println("Wifi down or XR unreachable. Reconnecting.");
-    if (!tryToReconnectWifi()) {
-      Serial.println("Wifi reconnection failed. Will try again in 200ms.");
-      delay(200);
-      return;
+  if (true) {
+    if (WiFi.status() != WL_CONNECTED || xrIp() == Z_INADDR_NONE) {
+      Serial.println("Wifi down or XR unreachable. Reconnecting.");
+      if (!tryToReconnectWifi()) {
+        Serial.println("Wifi reconnection failed. Will try again in 200ms.");
+        delay(200);
+        return;
+      }
+      Serial.println("Wifi reconnection succeeded.");
     }
-    Serial.println("Wifi reconnection succeeded.");
   }
-  }
+
   ZrComm::instance().ensureConnection();
 
   // Serial.println("Wifi ok");

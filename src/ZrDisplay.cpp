@@ -43,7 +43,8 @@ void refreshDisplay() {
                zrComm.networkName());
     }
   } else {
-    snprintf(display_buffer, BUFFER_SIZE, "Trying to connect to %s",
+    snprintf(display_buffer, BUFFER_SIZE, "(%i) Trying to connect to %s",
+             zrComm.wifiStatus(),
              zrComm.networkName());
   }
 
